@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>登録確認</title>
+</head>
+<body>
+    <h1>以下の内容で登録します</h1>
+    <form th:action="@{/regist}" method="post">
+        <table th:object="${wordForm}">
+            <tr>
+                <th>word</th>
+                <td>
+					<span th:text="*{word}"></span>
+					<input type="hidden" th:field="*{word}">					
+				</td>
+            </tr>
+            <tr>
+                <th>content</th>
+                <td>
+					<span th:text="*{content}"></span>
+					<input type="hidden" th:field="*{content}">					
+				</td>
+            </tr>
+            <tr>
+                <th>category</th>
+                <td>
+					<span th:text="*{categoryName}"></span>
+					<input type="hidden" th:field="*{categoryId}">					
+				</td>
+            </tr>
+        </table>
+        <button>登録する</button>
+    </form>
+</body>
+</html>

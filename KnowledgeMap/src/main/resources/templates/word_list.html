@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>単語一覧</title>
+</head>
+<body>
+	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
+    <h1>word一覧</h1>
+    <ul>
+        <li th:each="word : ${wordList}">
+			<a th:href="@{/wordDetail/{name}(name=${word.name}, id=${word.id})}" 
+			   th:text="${word.name}"></a>
+		</li>
+    </ul>
+</body>
+</html>

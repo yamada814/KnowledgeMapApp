@@ -1,0 +1,31 @@
+
+# Eclipse関連ファイル
+.metadata/
+.plugins/
+.settings/
+bin/
+tmp/
+*.tmp
+*.bak
+*.log
+*.class
+*.project
+*.classpath
+*.prefs
+*.launch
+
+# Gradle関連ファイル
+.gradle/
+build/
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# OS関連ファイル
+.DS_Store
+Thumbs.db
+
+# その他
+*.swp
+*~

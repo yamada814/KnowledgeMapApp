@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>word詳細</title>
+</head>
+<body>
+    <h1>word_detail</h1>
+    <article th:object="${word}">
+        <section>
+            <h2>category</h2>
+            <p th:text="*{category.name}"></p>
+        </section>
+        <section>
+            <h2>name</h2>
+            <p th:text="*{name}"></p>
+        </section>
+        <section>
+            <h2>content</h2>
+            <p th:text="*{content}"></p>
+        </section>
+</body>
+</html>

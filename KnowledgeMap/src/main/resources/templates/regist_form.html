@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>単語の登録</title>
+</head>
+<body>
+    <h1>新規登録</h1>
+    <form th:action="@{/registConfirm}" method="post">
+        <table th:object="${wordForm}">
+            <tr>
+                <th>word</th>
+                <td>
+                    <input type="text" th:field="*{word}">
+					<span th:errors="*{word}"></span>
+                </td>
+            </tr>
+            <tr>              
+                <th>content</th>
+                <td>
+                    <textarea th:field="*{content}"></textarea>
+					<span th:errors="*{content}"></span>
+                </td>
+            </tr>
+            <tr>
+                <th>category</th>
+                <td>
+                    <select th:field="*{categoryId}" required>
+                        <option value="">カテゴリを選択</option>
+                        <option th:each="category : ${categories}" 
+								th:value="${category.id}"
+								th:text="${category.name}">
+						</option>
+                    </select>
+					<span th:errors="*{categoryId}"></span>
+                </td>
+            </tr>               
+        </table>
+        <button>登録内容の確認</button>	
+    </form>
+	<a th:href="@{wordList}">一覧へ戻る</a>
+</body>
+</html>
