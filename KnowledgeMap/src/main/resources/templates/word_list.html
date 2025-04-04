@@ -7,6 +7,7 @@
 <body>
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
 	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
+	<div th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
     <h1>word一覧</h1>
     <ul>
         <li th:each="word : ${wordList}">

@@ -22,5 +22,10 @@
         <form th:action="@{/wordDetail/{id}/delete(id=${word.id})}" method="post">
             <button type="submit">削除</button>
         </form>
+        <form th:action="@{/wordDetail/{id}/editForm(id=${word.id})}" method="post">
+            <button type="submit">変更</button>
+        </form>
+		<a th:href="@{/wordList}">一覧へ戻る</a>
+		
 </body>
 </html>
