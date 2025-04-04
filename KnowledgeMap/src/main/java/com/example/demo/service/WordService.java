@@ -9,7 +9,8 @@ import com.example.demo.form.WordForm;
 public interface WordService {
 	public void addWord(WordForm wordForm);
     public List<Word> findAll();
-    public Optional<Word> findById(Long id);
+    public Optional<Word> findById(Integer id);
     public void delete(Word word);
+    public void deleteById(Integer id);
     
 }

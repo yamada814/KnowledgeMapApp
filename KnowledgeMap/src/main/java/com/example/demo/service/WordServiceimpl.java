@@ -39,7 +39,7 @@ public class WordServiceimpl implements WordService{
 	}
 
 	@Override
-	public Optional<Word> findById(Long id) {
+	public Optional<Word> findById(Integer id) {
 		Optional<Word> wordOpt = wordRepository.findById(id);
 		return wordOpt;
 	}
@@ -48,4 +48,10 @@ public class WordServiceimpl implements WordService{
 	public void delete(Word word) {
 		wordRepository.delete(word);
 	}
+
+	@Override
+	public void deleteById(Integer id) {
+		wordRepository.deleteById(id);
+	}
+
 }

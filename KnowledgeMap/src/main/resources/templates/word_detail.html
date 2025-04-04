@@ -19,5 +19,8 @@
             <h2>content</h2>
             <p th:text="*{content}"></p>
         </section>
+        <form th:action="@{/wordDetail/{id}/delete(id=${word.id})}" method="post">
+            <button type="submit">削除</button>
+        </form>
 </body>
 </html>

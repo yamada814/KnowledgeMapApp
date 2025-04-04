@@ -6,10 +6,11 @@
 </head>
 <body>
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
+	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
     <h1>word一覧</h1>
     <ul>
         <li th:each="word : ${wordList}">
-			<a th:href="@{/wordDetail/{name}(name=${word.name}, id=${word.id})}" 
+			<a th:href="@{/wordDetail/{id}(id=${word.id})}" 
 			   th:text="${word.name}"></a>
 		</li>
     </ul>

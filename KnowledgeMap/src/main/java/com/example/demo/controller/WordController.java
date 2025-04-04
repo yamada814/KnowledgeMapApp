@@ -7,12 +7,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.entity.Category;
-import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.WordService;
@@ -24,9 +21,8 @@ import lombok.RequiredArgsConstructor;
 public class WordController {
 	private final WordService wordService;
 	private final CategoryService categoryService;
-	
-	//test
-	
+
+	//word一覧表示
 	@GetMapping("/wordList")
 	public String showWordList(Model model) {
 		model.addAttribute("wordList", wordService.findAll());
@@ -39,29 +35,16 @@ public class WordController {
 //			Model model){
 //		return "リクエストを正常に受け付けました" + name + id;
 //	}
-	@GetMapping("/wordDetail/{name}")
-	public String showDetail(
-			@PathVariable String name,
-			@RequestParam Long id,
-			Model model){
-		Optional<Word> wordOpt = wordService.findById(id);
-		if(wordOpt.isEmpty()) {
-			return "word_detail_error";
-		}
-//		System.out.println("■ ■ ■ ■ ■ ■ ");
-//		System.out.println(wordOpt.get().getName());
-		model.addAttribute("word", wordOpt.get());
-		return "word_detail";
-	}
 
-
-	
+	//新規登録画面
 	@GetMapping("/showWordForm")
 	public String showWordForm(Model model) {
 		model.addAttribute("wordForm", new WordForm());
 		model.addAttribute("categories", categoryService.findAll());
 		return "regist_form";
 	}
+	
+	//登録内容確認
 	@PostMapping("/registConfirm")
 	public String registConfirm(
 			@Validated WordForm wordForm,
@@ -78,6 +61,8 @@ public class WordController {
 		wordForm.setCategoryName(categoryOpt.get().getName());		
 		return "regist_confirm";
 	}
+	
+	//DB新規登録
 	@PostMapping("/regist")
 	public String regist(WordForm wordForm,Model model) {
 		System.out.println("受け取ったcategoryId = " + wordForm.getCategoryId());
