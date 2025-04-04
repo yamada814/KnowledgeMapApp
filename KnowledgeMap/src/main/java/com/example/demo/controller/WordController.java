@@ -25,6 +25,8 @@ public class WordController {
 	private final WordService wordService;
 	private final CategoryService categoryService;
 	
+	//test
+	
 	@GetMapping("/wordList")
 	public String showWordList(Model model) {
 		model.addAttribute("wordList", wordService.findAll());
