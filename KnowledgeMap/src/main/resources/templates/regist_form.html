@@ -30,7 +30,7 @@
                         <option th:each="category : ${categories}" 
 								th:value="${category.id}"
 								th:text="${category.name}">
-						</option>
+						</option>						
                     </select>
 					<span th:errors="*{categoryId}"></span>
                 </td>
@@ -38,6 +38,6 @@
         </table>
         <button>登録内容の確認</button>	
     </form>
-	<a th:href="@{wordList}">一覧へ戻る</a>
+	<a th:href="@{/wordList}">一覧へ戻る</a>
 </body>
 </html>

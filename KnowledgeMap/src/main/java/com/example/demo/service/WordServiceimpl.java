@@ -20,15 +20,12 @@ public class WordServiceimpl implements WordService{
 
 	@Override
 	public void addWord(WordForm wordForm) {
-		Word word = new Word();
-		
+		Word word = new Word();	
 		word.setName(wordForm.getWord());
 		word.setContent(wordForm.getContent());
-		
 		// wordForm型の の categoryId から Category型に変換して Word型にセット
 		Optional<Category> categoryOpt =  categoryRepository.findById(wordForm.getCategoryId()); 
-		word.setCategory(categoryOpt.get());
-		
+		word.setCategory(categoryOpt.get());	
 		wordRepository.save(word);	
 	}
 
@@ -52,6 +49,18 @@ public class WordServiceimpl implements WordService{
 	@Override
 	public void deleteById(Integer id) {
 		wordRepository.deleteById(id);
+	}
+
+	@Override
+	public void updateWord(Integer id, WordForm wordForm) {
+		Optional<Word> wordOpt = wordRepository.findById(id);
+		Word word = wordOpt.get();		
+		word.setName(wordForm.getWord());
+		word.setContent(wordForm.getContent());	
+		// wordForm型の の categoryId から Category型に変換して Word型にセット
+		Optional<Category> categoryOpt =  categoryRepository.findById(wordForm.getCategoryId()); 
+		word.setCategory(categoryOpt.get());
+		wordRepository.save(word);	
 	}
 
 }

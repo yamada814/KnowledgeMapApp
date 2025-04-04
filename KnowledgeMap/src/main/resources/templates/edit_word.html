@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>word編集</h1>
+	<form th:action="@{/wordDetail/{id}/edit(id=${word.id})}" method="post">
+	    <table th:object="${wordForm}">
+	        <tr>
+	            <th>word</th>
+	            <td>
+	                <input type="text" th:field="*{word}">
+					<span th:errors="*{word}"></span>
+	            </td>
+	        </tr>
+	        <tr>              
+	            <th>content</th>
+	            <td>
+	                <textarea th:field="*{content}"></textarea>
+					<span th:errors="*{content}"></span>
+	            </td>
+	        </tr>
+	        <tr>
+	            <th>category</th>
+	            <td>
+	                <select th:field="*{categoryId}" required>
+	                    <option value="">カテゴリを選択</option>
+	                    <option th:each="category : ${categories}" 
+								th:value="${category.id}"
+								th:text="${category.name}"
+								th:selected="${category.id} == ${word.id}">
+						</option>
+	                </select>
+					<span th:errors="*{categoryId}"></span>
+	            </td>
+	        </tr>               
+	    </table>
+	    <button>編集する</button>	
+	</form>
+	<a th:href="@{/wordDetail/{id}(id=${word.id})}">wordDetailへ戻る</a>
+</body>
+</html>
