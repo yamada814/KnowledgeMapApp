@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.demo.entity.Category;
+import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.WordService;
@@ -28,13 +29,13 @@ public class WordController {
 		model.addAttribute("wordList", wordService.findAll());
 		return "word_list";
 	}
-//	@GetMapping("/wordDetail/{name}")
-//	public @ResponseBody String showDetail(
-//			@PathVariable String name,
-//			@RequestParam int id,
-//			Model model){
-//		return "リクエストを正常に受け付けました" + name + id;
-//	}
+	//	@GetMapping("/wordDetail/{name}")
+	//	public @ResponseBody String showDetail(
+	//			@PathVariable String name,
+	//			@RequestParam int id,
+	//			Model model){
+	//		return "リクエストを正常に受け付けました" + name + id;
+	//	}
 
 	//新規登録画面
 	@GetMapping("/showWordForm")
@@ -43,38 +44,49 @@ public class WordController {
 		model.addAttribute("categories", categoryService.findAll());
 		return "regist_form";
 	}
-	
+
 	//登録内容確認
 	@PostMapping("/registConfirm")
 	public String registConfirm(
 			@Validated WordForm wordForm,
 			BindingResult result,
 			Model model) {
-		if(result.hasErrors()) {
+		if (result.hasErrors()) {
 			model.addAttribute("categories", categoryService.findAll());
 			return "regist_form";
 		}
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
-		if(categoryOpt.isEmpty()) {
+		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
-		wordForm.setCategoryName(categoryOpt.get().getName());		
+		wordForm.setCategoryName(categoryOpt.get().getName());
 		return "regist_confirm";
 	}
-	
-	//DB新規登録
-	@PostMapping("/regist")
-	public String regist(WordForm wordForm,Model model) {
-		System.out.println("受け取ったcategoryId = " + wordForm.getCategoryId());
-		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
-		if(categoryOpt.isEmpty()) {
-			return "regist_error";
-		}	
-		wordService.addWord(wordForm);
-		model.addAttribute("regist_ok", "登録完了しました");
+	@GetMapping("/registCancel")
+	public String registCancel(Model model) {
+		model.addAttribute("regist_cancel", "登録がキャンセルされました");
 		model.addAttribute("wordList", wordService.findAll());
 		return "word_list";
 	}
 
+	//DB新規登録
+	@PostMapping("/regist")
+	public String regist(WordForm wordForm, Model model) {
+		System.out.println("受け取ったcategoryId = " + wordForm.getCategoryId());
+		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
+		if (categoryOpt.isEmpty()) {
+			return "regist_error";
+		}
+		Optional<Word> wordOpt = wordService.findByName(wordForm.getWord());
+		if (wordOpt.isPresent()) {
+			model.addAttribute("word",wordOpt.get());
+			model.addAttribute("categories", categoryService.findAll());
+			return "regist_cancel_or_edit";
+		} else {
+			model.addAttribute("regist_ok", "登録完了しました");
+			model.addAttribute("wordList", wordService.findAll());
+			return "word_list";
+		}
+	}
 
 }

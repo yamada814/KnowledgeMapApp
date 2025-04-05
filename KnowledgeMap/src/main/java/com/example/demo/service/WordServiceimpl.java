@@ -17,7 +17,13 @@ import lombok.RequiredArgsConstructor;
 public class WordServiceimpl implements WordService{
 	private final WordRepository wordRepository;
 	private final CategoryRepository categoryRepository;
-
+	
+	// nameで検索
+	@Override
+	public Optional<Word> findByName(String name) {
+		return wordRepository.findByName(name);
+	}
+	
 	@Override
 	public void addWord(WordForm wordForm) {
 		Word word = new Word();	
@@ -25,9 +31,10 @@ public class WordServiceimpl implements WordService{
 		word.setContent(wordForm.getContent());
 		// wordForm型の の categoryId から Category型に変換して Word型にセット
 		Optional<Category> categoryOpt =  categoryRepository.findById(wordForm.getCategoryId()); 
-		word.setCategory(categoryOpt.get());	
+		word.setCategory(categoryOpt.get());
 		wordRepository.save(word);	
 	}
+	
 
 	@Override
 	public List<Word> findAll() {
