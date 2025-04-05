@@ -7,7 +7,7 @@ import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
 
 public interface WordService {
-	public Optional<Word> findByName(String name);
+	public Optional<Word> findByWordName(String name);
 	public void addWord(WordForm wordForm);
     public List<Word> findAll();
     public Optional<Word> findById(Integer id);

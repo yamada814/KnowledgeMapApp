@@ -72,21 +72,21 @@ public class WordController {
 	//DB新規登録
 	@PostMapping("/regist")
 	public String regist(WordForm wordForm, Model model) {
-		System.out.println("受け取ったcategoryId = " + wordForm.getCategoryId());
+//		System.out.println("受け取ったcategoryId = " + wordForm.getCategoryId());
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
-		Optional<Word> wordOpt = wordService.findByName(wordForm.getWord());
+		Optional<Word> wordOpt = wordService.findByWordName(wordForm.getWordName());
 		if (wordOpt.isPresent()) {
 			model.addAttribute("word",wordOpt.get());
 			model.addAttribute("categories", categoryService.findAll());
 			return "regist_cancel_or_edit";
-		} else {
-			model.addAttribute("regist_ok", "登録完了しました");
-			model.addAttribute("wordList", wordService.findAll());
-			return "word_list";
 		}
+		wordService.addWord(wordForm);
+		model.addAttribute("regist_ok", "登録完了しました");
+		model.addAttribute("wordList", wordService.findAll());
+		return "word_list";
 	}
 
 }

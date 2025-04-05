@@ -62,7 +62,7 @@ public class WordDetailController {
 		Word word = wordOpt.get();
 		// 編集用wordFormに、DBから検索したwordの値をセット
 		WordForm wordForm = new WordForm();
-		wordForm.setWord(word.getName());
+		wordForm.setWordName(word.getWordName());
 		wordForm.setContent(word.getContent());
 		wordForm.setCategoryId(word.getCategory().getId());
 		wordForm.setCategoryName(word.getCategory().getName());	

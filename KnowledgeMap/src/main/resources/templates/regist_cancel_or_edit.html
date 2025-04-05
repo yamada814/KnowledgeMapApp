@@ -6,15 +6,15 @@
 </head>
 <body>
 	<h1>登録確認</h1>
-	<p><span th:text="${word.name}"></span>はすでに登録されています。</p>
+	<p><span th:text="${word.wordName}"></span>はすでに登録されています。</p>
 	    <table th:object="${word}">
 	        <tr>
 	            <th>word</th>
-	            <td th:text="*{name}"></td>
+	            <td th:text="*{wordName}"></td>
 	        </tr>
 	        <tr>              
 	            <th>content</th>
-	            <td th:text="*{name}"></td>
+	            <td th:text="*{content}"></td>
 	        </tr>
 	        <tr>
 	            <th>category</th>
