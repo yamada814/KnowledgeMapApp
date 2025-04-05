@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.demo.entity.Category;
@@ -44,6 +45,12 @@ public class WordController {
 		model.addAttribute("categories", categoryService.findAll());
 		return "regist_form";
 	}
+	//登録画面へ戻るとき
+	@PostMapping("showWordForm")
+	public String backToWordForm(@ModelAttribute("wordForm") WordForm wordForm, Model model) { 
+	model.addAttribute("categories", categoryService.findAll());
+	return "regist_form";
+}
 
 	//登録内容確認
 	@PostMapping("/registConfirm")
@@ -54,10 +61,18 @@ public class WordController {
 		if (result.hasErrors()) {
 			model.addAttribute("categories", categoryService.findAll());
 			return "regist_form";
-		}
+		}		
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
+		}
+		//登録しようとしてるwordがすでに存在している確認
+		Optional<Word> wordOpt = wordService.findByWordName(wordForm.getWordName());
+		if (wordOpt.isPresent()) {
+			model.addAttribute("word",wordOpt.get());
+			model.addAttribute("categories", categoryService.findAll());
+			model.addAttribute("exists",wordOpt.isPresent());
+			return "regist_confirm";
 		}
 		wordForm.setCategoryName(categoryOpt.get().getName());
 		return "regist_confirm";
