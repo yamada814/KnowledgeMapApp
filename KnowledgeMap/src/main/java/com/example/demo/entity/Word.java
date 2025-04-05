@@ -13,8 +13,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import com.example.demo.entity.Category;
-
 import lombok.Data;
 
 /*
@@ -31,8 +29,8 @@ public class Word {
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	@Column(name="word")
-	private String name;
+	@Column(name="word_name")
+	private String wordName;
 	@Column(name="content")
 	private String content;
     @ManyToOne

@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class WordForm {
 	@NotBlank(message="wordが空です")
-    private String word;
+    private String wordName;
 	@NotBlank(message="contentが空です")
     private String content;
 	@NotNull(message="categoryが選択されていません")

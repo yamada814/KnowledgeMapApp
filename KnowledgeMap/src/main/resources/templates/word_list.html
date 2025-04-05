@@ -13,7 +13,7 @@
     <ul>
         <li th:each="word : ${wordList}">
 			<a th:href="@{/wordDetail/{id}(id=${word.id})}" 
-			   th:text="${word.name}"></a>
+			   th:text="${word.wordName}"></a>
 		</li>
     </ul>
 </body>

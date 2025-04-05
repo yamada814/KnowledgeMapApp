@@ -20,14 +20,14 @@ public class WordServiceimpl implements WordService{
 	
 	// nameで検索
 	@Override
-	public Optional<Word> findByName(String name) {
-		return wordRepository.findByName(name);
+	public Optional<Word> findByWordName(String name) {
+		return wordRepository.findByWordName(name);
 	}
 	
 	@Override
 	public void addWord(WordForm wordForm) {
 		Word word = new Word();	
-		word.setName(wordForm.getWord());
+		word.setWordName(wordForm.getWordName());
 		word.setContent(wordForm.getContent());
 		// wordForm型の の categoryId から Category型に変換して Word型にセット
 		Optional<Category> categoryOpt =  categoryRepository.findById(wordForm.getCategoryId()); 
@@ -62,7 +62,7 @@ public class WordServiceimpl implements WordService{
 	public void updateWord(Integer id, WordForm wordForm) {
 		Optional<Word> wordOpt = wordRepository.findById(id);
 		Word word = wordOpt.get();		
-		word.setName(wordForm.getWord());
+		word.setWordName(wordForm.getWordName());
 		word.setContent(wordForm.getContent());	
 		// wordForm型の の categoryId から Category型に変換して Word型にセット
 		Optional<Category> categoryOpt =  categoryRepository.findById(wordForm.getCategoryId()); 
