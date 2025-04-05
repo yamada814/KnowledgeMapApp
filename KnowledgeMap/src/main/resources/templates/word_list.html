@@ -5,11 +5,12 @@
 <title>単語一覧</title>
 </head>
 <body>
+	<a th:href="@{/showWordForm}">word新規登録画面へ</a>
+    <h1>word一覧</h1>
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
 	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
 	<div th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
 	<div th:if="${regist_cancel} != null" th:text="${regist_cancel}"></div>
-    <h1>word一覧</h1>
     <ul>
         <li th:each="word : ${wordList}">
 			<a th:href="@{/wordDetail/{id}(id=${word.id})}" 
