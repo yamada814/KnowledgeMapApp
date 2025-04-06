@@ -24,7 +24,7 @@ public class WordController {
 	private final WordService wordService;
 	private final CategoryService categoryService;
 
-	//word一覧表示
+	// word一覧表示
 	@GetMapping("/wordList")
 	public String showWordList(Model model) {
 		model.addAttribute("wordList", wordService.findAll());
@@ -45,12 +45,13 @@ public class WordController {
 		model.addAttribute("categories", categoryService.findAll());
 		return "regist_form";
 	}
-	//登録画面へ戻るとき
+
+	// 登録画面へ戻るとき
 	@PostMapping("showWordForm")
-	public String backToWordForm(@ModelAttribute("wordForm") WordForm wordForm, Model model) { 
-	model.addAttribute("categories", categoryService.findAll());
-	return "regist_form";
-}
+	public String backToWordForm(@ModelAttribute("wordForm") WordForm wordForm, Model model) {
+		model.addAttribute("categories", categoryService.findAll());
+		return "regist_form";
+	}
 
 	//登録内容確認
 	@PostMapping("/registConfirm")
@@ -61,7 +62,20 @@ public class WordController {
 		if (result.hasErrors()) {
 			model.addAttribute("categories", categoryService.findAll());
 			return "regist_form";
-		}		
+		}
+		// categoryNameに入力があった場合
+		String newCategoryName = wordForm.getCategoryName();
+		if (newCategoryName != null && !newCategoryName.isBlank()) {
+			// 入力されたcatgoryNameが登録済みではないか
+			Optional<Category> categoryOpt =  categoryService.searchByName(newCategoryName);
+			if (categoryOpt.isEmpty()) { // 登録済みではない -> categoryテーブルへ新規登録
+				int newCategoryId = categoryService.addCategory(newCategoryName);
+				wordForm.setCategoryId(newCategoryId);
+			} else { // 登録済み -> 登録済みのcategoryNameからcategoryIdを取得してフォームにセット
+				wordForm.setCategoryId(categoryOpt.get().getId());
+			}
+		}
+		// selectタグから入力があった場合
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
@@ -69,14 +83,15 @@ public class WordController {
 		//登録しようとしてるwordがすでに存在している確認
 		Optional<Word> wordOpt = wordService.findByWordName(wordForm.getWordName());
 		if (wordOpt.isPresent()) {
-			model.addAttribute("word",wordOpt.get());
+			model.addAttribute("word", wordOpt.get());
 			model.addAttribute("categories", categoryService.findAll());
-			model.addAttribute("exists",wordOpt.isPresent());
+			model.addAttribute("exists", wordOpt.isPresent());
 			return "regist_confirm";
 		}
 		wordForm.setCategoryName(categoryOpt.get().getName());
 		return "regist_confirm";
 	}
+
 	@GetMapping("/registCancel")
 	public String registCancel(Model model) {
 		model.addAttribute("regist_cancel", "登録がキャンセルされました");
@@ -87,16 +102,17 @@ public class WordController {
 	//DB新規登録
 	@PostMapping("/regist")
 	public String regist(WordForm wordForm, Model model) {
-//		System.out.println("受け取ったcategoryId = " + wordForm.getCategoryId());
+		//categoryのチェック
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
+		//登録済みののwordでないかチェック
 		Optional<Word> wordOpt = wordService.findByWordName(wordForm.getWordName());
 		if (wordOpt.isPresent()) {
-			model.addAttribute("word",wordOpt.get());
+			model.addAttribute("word", wordOpt.get());
 			model.addAttribute("categories", categoryService.findAll());
-			return "regist_cancel_or_edit";
+			return "regist_confirm";
 		}
 		wordService.addWord(wordForm);
 		model.addAttribute("regist_ok", "登録完了しました");

@@ -22,5 +22,18 @@ public class CategoryServiceImpl implements CategoryService {
 		Optional<Category>  categoryOpt = categoryRepository.findById(categoryId);
 		return categoryOpt;
 	}
+	//nameで検索
+	@Override
+	public Optional<Category> searchByName(String categoryName) {
+		return categoryRepository.findByName(categoryName);
+	}
+	//nameで登録してそのidを返す
+	@Override
+	public Integer addCategory(String categoryName) {
+		Category category = new Category();
+		category.setName(categoryName);
+		categoryRepository.save(category);
+		return category.getId();
+	}
 
 }
