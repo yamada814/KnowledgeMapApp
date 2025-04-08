@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
@@ -101,7 +102,7 @@ public class WordController {
 
 	//DB新規登録
 	@PostMapping("/regist")
-	public String regist(WordForm wordForm, Model model) {
+	public String regist(WordForm wordForm, Model model,RedirectAttributes redirectAttribute) {
 		//categoryのチェック
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		if (categoryOpt.isEmpty()) {
@@ -115,9 +116,9 @@ public class WordController {
 			return "regist_confirm";
 		}
 		wordService.addWord(wordForm);
-		model.addAttribute("regist_ok", "登録完了しました");
-		model.addAttribute("wordList", wordService.findAll());
-		return "word_list";
+		redirectAttribute.addFlashAttribute("regist_ok", "登録完了しました");
+		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
+		return "redirect:/wordList";
 	}
 
 }
