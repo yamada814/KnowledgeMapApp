@@ -21,7 +21,7 @@ public class CategoryRepositoryTest {
 		category.setName("テストカテゴリー");
 		categoryRepository.save(category);
 		
-		Optional<Category>  categoryOpt =  categoryRepository.findByName(category.getName());
+		Optional<Category>  categoryOpt = categoryRepository.findByName(category.getName());
 		
 		assertThat(categoryOpt).isPresent();
 		assertThat(categoryOpt.get().getName()).isEqualTo("テストカテゴリー");
