@@ -76,12 +76,12 @@ public class WordController {
 				wordForm.setCategoryId(categoryOpt.get().getId());
 			}
 		}
-		// selectタグから入力があった場合
+		// selectタグからcategoryIdの入力があった場合
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
-		//登録しようとしてるwordがすでに存在している確認
+		//登録しようとしてるwordがすでに存在しているか確認
 		Optional<Word> wordOpt = wordService.findByWordName(wordForm.getWordName());
 		if (wordOpt.isPresent()) {
 			model.addAttribute("word", wordOpt.get());
@@ -120,5 +120,6 @@ public class WordController {
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
 		return "redirect:/wordList";
 	}
+	
 
 }
