@@ -14,7 +14,7 @@ import com.example.demo.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
-public class WordServiceimpl implements WordService{
+public class WordServiceImpl implements WordService{
 	private final WordRepository wordRepository;
 	private final CategoryRepository categoryRepository;
 	
