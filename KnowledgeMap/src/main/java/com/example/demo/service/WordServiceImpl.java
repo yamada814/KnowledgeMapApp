@@ -22,42 +22,35 @@ public class WordServiceImpl implements WordService{
 	@Override
 	public Optional<Word> findByWordName(String name) {
 		return wordRepository.findByWordName(name);
-	}
-	
+	}	
 	@Override
 	public void addWord(WordForm wordForm) {
 		Word word = new Word();	
 		word.setWordName(wordForm.getWordName());
 		word.setContent(wordForm.getContent());
-		// wordForm型の の categoryId から Category型に変換して Word型にセット
+		// wordForm型の categoryId から Category型に変換して Word型にセット
 		Optional<Category> categoryOpt =  categoryRepository.findById(wordForm.getCategoryId()); 
 		word.setCategory(categoryOpt.get());
 		wordRepository.save(word);	
 	}
-	
-
 	@Override
 	public List<Word> findAll() {
 		List<Word> words = wordRepository.findAll();
 		return words;
 	}
-
 	@Override
 	public Optional<Word> findById(Integer id) {
 		Optional<Word> wordOpt = wordRepository.findById(id);
 		return wordOpt;
 	}
-
 	@Override
 	public void delete(Word word) {
 		wordRepository.delete(word);
 	}
-
 	@Override
 	public void deleteById(Integer id) {
 		wordRepository.deleteById(id);
 	}
-
 	@Override
 	public void updateWord(Integer id, WordForm wordForm) {
 		Optional<Word> wordOpt = wordRepository.findById(id);
@@ -69,5 +62,4 @@ public class WordServiceImpl implements WordService{
 		word.setCategory(categoryOpt.get());
 		wordRepository.save(word);	
 	}
-
 }
