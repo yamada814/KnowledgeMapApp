@@ -70,14 +70,15 @@ public class WordController {
 			// 入力されたcatgoryNameが登録済みではないか
 			Optional<Category> categoryOpt =  categoryService.searchByName(newCategoryName);
 			if (categoryOpt.isEmpty()) { // 登録済みではない -> categoryテーブルへ新規登録
-				int newCategoryId = categoryService.addCategory(newCategoryName);
-				wordForm.setCategoryId(newCategoryId);
+				Category newCategory = categoryService.addCategory(newCategoryName);
+				wordForm.setCategoryId(newCategory.getId());
 			} else { // 登録済み -> 登録済みのcategoryNameからcategoryIdを取得してフォームにセット
 				wordForm.setCategoryId(categoryOpt.get().getId());
 			}
 		}
-		// selectタグからcategoryIdの入力があった場合
+		// categoryIdからcategoryNameをセット
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
+		wordForm.setCategoryName(categoryOpt.get().getName());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
@@ -89,7 +90,6 @@ public class WordController {
 			model.addAttribute("exists", wordOpt.isPresent());
 			return "regist_confirm";
 		}
-		wordForm.setCategoryName(categoryOpt.get().getName());
 		return "regist_confirm";
 	}
 
@@ -108,18 +108,9 @@ public class WordController {
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
-		//登録済みののwordでないかチェック
-		Optional<Word> wordOpt = wordService.findByWordName(wordForm.getWordName());
-		if (wordOpt.isPresent()) {
-			model.addAttribute("word", wordOpt.get());
-			model.addAttribute("categories", categoryService.findAll());
-			return "regist_confirm";
-		}
 		wordService.addWord(wordForm);
 		redirectAttribute.addFlashAttribute("regist_ok", "登録完了しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
 		return "redirect:/wordList";
 	}
-	
-
 }

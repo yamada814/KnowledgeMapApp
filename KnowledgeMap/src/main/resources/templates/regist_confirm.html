@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
 	<meta charset="UTF-8">
 	<title>登録確認</title>
 </head>
 <body>
 	<h1>登録確認</h1>
+	<!-- wordが既存だった場合 -->
 	<div th:if="${exists}">
-		<h2></h2><span th:text="${word.wordName}"></span>はすでに登録されています。</h2>
-		<table th:object="${word}">
+		<!-- 登録済みの内容 -->
+		<h2><span th:text="${word.wordName}"></span> はすでに登録されています。</h2>
+		<h3>【登録済みの内容】</h3>
+		<table th:object="${word}" border="1">
 			<tr>
 				<th>word</th>
 				<td th:text="*{wordName}"></td>
@@ -23,16 +25,67 @@
 				<td th:text="*{category.name}"></td>
 			</tr>
 		</table>
-		<a th:href="@{/registCancel}">新規登録をキャンセルする</a>
-		<form th:action="@{/wordDetail/{id}/editForm(id=${word.id})}" method="post">
-			<button type="submit">登録内容を編集する</button>
-		</form>
-		<a th:href="@{/wordDetail/{id}(id=${word.id})}">wordDetailへ戻る</a>
+
+		<!-- 登録済み内容の選択肢 -->
+		<div>
+			<h4>この登録済みの内容に対して：</h4>
+			<ul>
+				<li>
+					<a th:href="@{/registCancel}">登録をキャンセルする</a>
+				</li>
+				<li>
+					<form th:action="@{/wordDetail/{id}/editForm(id=${word.id})}" method="post" style="display:inline;">
+						<button type="submit">既存の登録内容を編集する</button>
+					</form>
+				</li>
+			</ul>
+		</div>
+		<!-- 入力された内容 -->
+		<h3>【あなたが入力した内容】</h3>
+		<table th:object="${wordForm}" border="1">
+			<tr>
+				<th>word</th>
+				<td th:text="*{wordName}"></td>
+			</tr>
+			<tr>
+				<th>content</th>
+				<td th:text="*{content}"></td>
+			</tr>
+			<tr>
+				<th>category</th>
+				<td th:text="*{categoryName}"></td>
+			</tr>
+		</table>
+
+		<!-- 入力内容の選択肢 -->
+		<div>
+			<h4>この入力内容に対して：</h4>
+			<ul>
+				<li>
+					<form th:action="@{/wordDetail/{id}/edit(id=${word.id})}" method="post" th:object="${wordForm}">
+						<input type="hidden" th:field="*{wordName}">
+						<input type="hidden" th:field="*{content}">
+						<input type="hidden" th:field="*{categoryId}">
+						<button type="submit">既存のwordをこの内容で上書きする</button>
+					</form>
+				</li>
+				<li>
+					<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}" style="display:inline;">
+						<input type="hidden" th:field="*{wordName}">
+						<input type="hidden" th:field="*{content}">
+						<input type="hidden" th:field="*{categoryId}">
+						<button type="submit">入力画面に戻って修正する</button>
+					</form>
+				</li>
+			</ul>
+		</div>
 	</div>
+
+	<!-- wordが未登録の場合 -->
 	<div th:unless="${exists}">
 		<h2>以下の内容で登録します</h2>
-		<form th:action="@{/regist}" method="post">
-			<table th:object="${wordForm}">
+		<form th:action="@{/regist}" method="post" th:object="${wordForm}">
+			<table>
 				<tr>
 					<th>word</th>
 					<td>
@@ -57,13 +110,12 @@
 			</table>
 			<button type="submit">登録する</button>
 		</form>
-		<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}">
+		<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}" style="display:inline;">
 			<input type="hidden" th:field="*{wordName}">
 			<input type="hidden" th:field="*{content}">
 			<input type="hidden" th:field="*{categoryId}">
-			<button type="submit">登録画面へ戻る</button>
+			<button type="submit">入力画面に戻って修正する</button>
 		</form>
 	</div>
 </body>
-
 </html>
