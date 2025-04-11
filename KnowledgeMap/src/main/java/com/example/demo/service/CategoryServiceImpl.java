@@ -29,11 +29,11 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 	//nameで登録してそのidを返す
 	@Override
-	public Integer addCategory(String categoryName) {
+	public Category addCategory(String categoryName) {
 		Category category = new Category();
 		category.setName(categoryName);
 		categoryRepository.save(category);
-		return category.getId();
+		return category;
 	}
 
 }
