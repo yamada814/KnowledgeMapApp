@@ -86,8 +86,8 @@ public class CategoryServiceImpleTest {
 	        return arg;
 	    }).when(categoryRepository).save(any(Category.class));
 
-	    Integer resultId = categoryServiceImpl.addCategory(categoryName);
-	    assertThat(resultId).isEqualTo(1);
+	    Category category = categoryServiceImpl.addCategory(categoryName);
+	    assertThat(category.getId()).isEqualTo(1);
 	}
 
 }

@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 
+import com.example.demo.entity.Category;
+
 @SpringBootTest(webEnvironment=WebEnvironment.NONE)
 @Sql("ServiceRepositoryIntegrationTest.sql")
 @Transactional
@@ -20,9 +22,9 @@ public class CategoryServiceTest {
 	@Test
 	void testAddCategory() {
 		String categoryName = "category3";
-		Integer id = categoryService.addCategory(categoryName);
-		var found = categoryService.findByCategoryId(id);
+		Category category = categoryService.addCategory(categoryName);
+		var found = categoryService.findByCategoryId(category.getId());
 		assertThat(found).isPresent();
-		assertThat(found.get().getId()).isEqualTo(id);
+		assertThat(found.get().getId()).isEqualTo(category.getId());
 	}
 }
