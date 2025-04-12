@@ -57,9 +57,9 @@ public class WordServiceImpl implements WordService{
 		Word word = wordOpt.get();		
 		word.setWordName(wordForm.getWordName());
 		word.setContent(wordForm.getContent());	
-		// wordForm型の の categoryId から Category型に変換して Word型にセット
+		// wordForm型 の categoryId から Category型に変換して Word型にセット
 		Optional<Category> categoryOpt =  categoryRepository.findById(wordForm.getCategoryId()); 
 		word.setCategory(categoryOpt.get());
-		wordRepository.save(word);	
+		wordRepository.save(word);
 	}
 }

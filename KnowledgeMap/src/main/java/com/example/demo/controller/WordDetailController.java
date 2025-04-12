@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
 import com.example.demo.service.CategoryService;
@@ -43,16 +45,22 @@ public class WordDetailController {
 	@PostMapping("/{id}/delete")
 	public String deleteWord(
 			@PathVariable("id") Integer id,
-			Model model){
+			RedirectAttributes redirectAttributes){
+		Optional<Word> wordOpt = wordService.findById(id);
+		if(wordOpt.isEmpty()) {
+			redirectAttributes.addFlashAttribute("delete_error","指定されたwordは存在しません");
+			redirectAttributes.addFlashAttribute("wordList",wordService.findAll());
+			return "redirect:/wordList";
+		}
 		wordService.deleteById(id);
-		model.addAttribute("wordList", wordService.findAll());
-		model.addAttribute("delete_ok", "wordを削除しました");
-		return "word_list";	
+		redirectAttributes.addFlashAttribute("wordList", wordService.findAll());
+		redirectAttributes.addFlashAttribute("delete_ok", "wordを削除しました");
+		return "redirect:/wordList";	
 	}
 	
 	//word編集画面
-	@PostMapping("/{id}/editForm")
-	public String editWord(
+	@GetMapping("/{id}/editForm")
+	public String editWordForm(
 			@PathVariable("id") Integer id,
 			Model model){
 		Optional<Word> wordOpt =  wordService.findById(id);
@@ -65,13 +73,11 @@ public class WordDetailController {
 		wordForm.setWordName(word.getWordName());
 		wordForm.setContent(word.getContent());
 		wordForm.setCategoryId(word.getCategory().getId());
-		wordForm.setCategoryName(word.getCategory().getName());	
 		model.addAttribute("wordForm", wordForm);
 		//category選択肢一覧をセット
 		model.addAttribute("categories", categoryService.findAll());
 		//編集用にwordもセット
-		model.addAttribute("word", word);
-		
+		model.addAttribute("word", word);	
 		return "edit_word";	
 	}
 	//word編集
@@ -79,18 +85,44 @@ public class WordDetailController {
 	public String editWord(
 			@Validated WordForm wordForm,
 			BindingResult result,
+			RedirectAttributes redirectAttribute,
 			Model model,
 			@PathVariable("id") Integer id) {
+		Optional<Word> wordOpt = wordService.findById(id);
+		if(wordOpt.isEmpty()) {
+			return "word_detail_error";
+		}
+		Word word = wordOpt.get();
 		if(result.hasErrors()) {
-			Optional<Word> wordOpt =  wordService.findById(id);
-			Word word = wordOpt.get();
 			model.addAttribute("word", word);
 			model.addAttribute("categories", categoryService.findAll());
 			return "edit_word";
 		}
+		//wordNameのカブリチェック
+		Optional<Word> existingWordOpt = wordService.findByWordName(wordForm.getWordName());
+		if(existingWordOpt.isPresent() && !existingWordOpt.get().getId().equals(id)) {
+			wordForm.setWordName(word.getWordName());
+			model.addAttribute("word", word);
+			model.addAttribute("categories", categoryService.findAll());
+			model.addAttribute("word_duplicate",existingWordOpt.get().getWordName() + "は既に登録済です");
+			return "edit_word";
+		}
+		//categoryNameに入力がある場合
+		String newCategoryName = wordForm.getCategoryName();
+		if (newCategoryName != null && !newCategoryName.isBlank()) {
+			// 入力されたcatgoryNameが登録済みか
+			Optional<Category> categoryOpt =  categoryService.searchByName(newCategoryName);
+			if (categoryOpt.isEmpty()) { // 登録済みではない -> categoryテーブルへ新規追加
+				Category newCategory = categoryService.addCategory(newCategoryName);
+				wordForm.setCategoryId(newCategory.getId());
+			} else { // 登録済み -> 登録済みのcategoryNameからcategoryIdを取得してフォームにセット
+				wordForm.setCategoryId(categoryOpt.get().getId());
+			}
+		}
+//		System.out.println("■ ■ ■ ■ ■ wordForm.categoryId:" + wordForm.getCategoryId());	
 		wordService.updateWord(id,wordForm);
-		model.addAttribute("edit_ok","編集が完了しました");
-		model.addAttribute("wordList",wordService.findAll());
-		return "word_list";
+		redirectAttribute.addFlashAttribute("edit_ok","編集が完了しました");
+		redirectAttribute.addFlashAttribute("wordList",wordService.findAll());
+		return "redirect:/wordList";
 	}
 }

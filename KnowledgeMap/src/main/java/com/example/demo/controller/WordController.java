@@ -102,7 +102,7 @@ public class WordController {
 
 	//DB新規登録
 	@PostMapping("/regist")
-	public String regist(WordForm wordForm, Model model,RedirectAttributes redirectAttribute) {
+	public String regist(WordForm wordForm,RedirectAttributes redirectAttribute) {
 		//categoryのチェック
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		if (categoryOpt.isEmpty()) {

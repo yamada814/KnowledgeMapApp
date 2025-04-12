@@ -6,6 +6,7 @@
 </head>
 <body>
 	<h1>word編集</h1>
+	<p th:if="${word_duplicate} != null" th:text="${word_duplicate}"></p>
 	<form th:action="@{/wordDetail/{id}/edit(id=${word.id})}" method="post">
 	    <table th:object="${wordForm}">
 	        <tr>
@@ -34,6 +35,8 @@
 						</option>
 	                </select>
 					<span th:errors="*{categoryId}"></span>
+					<p>または新しいカテゴリーをつくる<input type="text" th:field="*{categoryName}" th:value="${#fields.hasErrors('*') or wordForm.categoryName != null ? wordForm.categoryName : ''}"></p>
+					<span th:errors="*{categoryNotNull}"></span>
 	            </td>
 	        </tr>               
 	    </table>
