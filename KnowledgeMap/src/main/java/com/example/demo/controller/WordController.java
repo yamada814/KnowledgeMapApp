@@ -78,16 +78,16 @@ public class WordController {
 		}
 		// categoryIdからcategoryNameをセット
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
-		wordForm.setCategoryName(categoryOpt.get().getName());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
+		wordForm.setCategoryName(categoryOpt.get().getName());
 		//登録しようとしてるwordがすでに存在しているか確認
 		Optional<Word> wordOpt = wordService.findByWordName(wordForm.getWordName());
 		if (wordOpt.isPresent()) {
 			model.addAttribute("word", wordOpt.get());
 			model.addAttribute("categories", categoryService.findAll());
-			model.addAttribute("exists", wordOpt.isPresent());
+			model.addAttribute("exists", true);
 			return "regist_confirm";
 		}
 		return "regist_confirm";
