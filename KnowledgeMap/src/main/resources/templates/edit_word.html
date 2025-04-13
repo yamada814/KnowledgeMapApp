@@ -1,47 +1,57 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
 </head>
+
 <body>
 	<h1>word編集</h1>
 	<p th:if="${word_duplicate} != null" th:text="${word_duplicate}"></p>
 	<form th:action="@{/wordDetail/{id}/edit(id=${word.id})}" method="post">
-	    <table th:object="${wordForm}">
-	        <tr>
-	            <th>word</th>
-	            <td>
-	                <input type="text" th:field="*{wordName}">
+		<table th:object="${wordForm}">
+			<tr>
+				<th>word</th>
+				<td>
+					<input type="text" th:field="*{wordName}">
 					<span th:errors="*{wordName}"></span>
-	            </td>
-	        </tr>
-	        <tr>              
-	            <th>content</th>
-	            <td>
-	                <textarea th:field="*{content}"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<th>content</th>
+				<td>
+					<textarea th:field="*{content}"></textarea>
 					<span th:errors="*{content}"></span>
-	            </td>
-	        </tr>
-	        <tr>
-	            <th>category</th>
-	            <td>
-	                <select th:field="*{categoryId}" required>
-	                    <option value="">カテゴリを選択</option>
-	                    <option th:each="category : ${categories}" 
-								th:value="${category.id}"
-								th:text="${category.name}"
-								th:selected="${category.id} == ${word.id}">
+				</td>
+			</tr>
+			<tr>
+				<th>category</th>
+				<td>
+					<select th:field="*{categoryId}" required>
+						<option value="">カテゴリを選択</option>
+						<option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"
+							th:selected="${category.id} == ${word.id}">
 						</option>
-	                </select>
+					</select>
 					<span th:errors="*{categoryId}"></span>
-					<p>または新しいカテゴリーをつくる<input type="text" th:field="*{categoryName}" th:value="${#fields.hasErrors('*') or wordForm.categoryName != null ? wordForm.categoryName : ''}"></p>
+					<p>または新しいカテゴリーをつくる<input type="text" th:field="*{categoryName}"
+							th:value="${#fields.hasErrors('*') or wordForm.categoryName != null ? wordForm.categoryName : ''}">
+					</p>
 					<span th:errors="*{categoryNotNull}"></span>
-	            </td>
-	        </tr>               
-	    </table>
-	    <button type="submit">編集する</button>	
+				</td>
+			</tr>
+		</table>
+		<button type="submit">編集する</button>
 	</form>
-	<a th:href="@{/wordDetail/{id}(id=${word.id})}">wordDetailへ戻る</a>
+	<form th:if="${fromRegistConfirm}" th:action="@{/registConfirm}" method="post" th:object="${wordForm}">
+		<input type="hidden" th:field="*{wordName}">
+		<input type="hidden" th:field="*{content}">
+		<input type="hidden" th:field="*{categoryId}">
+		<button>登録確認に戻る</button>
+	</form>
+	<form th:unless="${fromRegistConfirm}" th:action="@{/wordDetail/{id}(id=${word.id})}">
+		<button>wordDetailへ戻る</button>		
+	</form>
 </body>
 </html>

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.entity.Category;
@@ -60,8 +61,9 @@ public class WordDetailController {
 	
 	//word編集画面
 	@GetMapping("/{id}/editForm")
-	public String editWordForm(
+	public String showEditForm(
 			@PathVariable("id") Integer id,
+			@RequestParam(name = "fromRegistConfirm", required = false) String fromRegistConfirm,
 			Model model){
 		Optional<Word> wordOpt =  wordService.findById(id);
 		if(wordOpt.isEmpty()) {
@@ -73,11 +75,14 @@ public class WordDetailController {
 		wordForm.setWordName(word.getWordName());
 		wordForm.setContent(word.getContent());
 		wordForm.setCategoryId(word.getCategory().getId());
+		
 		model.addAttribute("wordForm", wordForm);
-		//category選択肢一覧をセット
 		model.addAttribute("categories", categoryService.findAll());
-		//編集用にwordもセット
-		model.addAttribute("word", word);	
+		model.addAttribute("word", word);
+		//regist_confirmから遷移した場合 戻るボタンを切り替えるためのフラグを用意
+		if(fromRegistConfirm != null) {
+			model.addAttribute("fromRegistConfirm", true);	
+		}
 		return "edit_word";	
 	}
 	//word編集
