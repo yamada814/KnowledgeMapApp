@@ -34,7 +34,8 @@
 					<a th:href="@{/registCancel}">登録をキャンセルする</a>
 				</li>
 				<li>
-					<form th:action="@{/wordDetail/{id}/editForm(id=${word.id})}" style="display:inline;">
+					<form th:action="@{/wordDetail/{id}/editForm(id=${word.id})}">
+						<input type="hidden" th:name="fromRegistConfirm">
 						<button type="submit">既存の登録内容を編集する</button>
 					</form>
 				</li>
@@ -70,7 +71,7 @@
 					</form>
 				</li>
 				<li>
-					<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}" style="display:inline;">
+					<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}">
 						<input type="hidden" th:field="*{wordName}">
 						<input type="hidden" th:field="*{content}">
 						<input type="hidden" th:field="*{categoryId}">
