@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Entity
@@ -23,7 +25,7 @@ public class Category {
 
     @Column(nullable = false, length = 100)
     private String name;
-
+    @JsonIgnore 
     @OneToMany(mappedBy = "category")
     private List<Word> words;
 }

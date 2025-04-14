@@ -29,6 +29,7 @@ public class WordController {
 	@GetMapping("/wordList")
 	public String showWordList(Model model) {
 		model.addAttribute("wordList", wordService.findAll());
+		model.addAttribute("categories", categoryService.findAll());
 		return "word_list";
 	}
 	//	@GetMapping("/wordDetail/{name}")

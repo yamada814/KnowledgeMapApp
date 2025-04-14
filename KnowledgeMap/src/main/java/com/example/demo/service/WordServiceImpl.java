@@ -62,4 +62,8 @@ public class WordServiceImpl implements WordService{
 		word.setCategory(categoryOpt.get());
 		wordRepository.save(word);
 	}
+	@Override
+	public List<Word> findByCategoryId(Integer id) {
+		return wordRepository.findByCategoryId(id);
+	}
 }
