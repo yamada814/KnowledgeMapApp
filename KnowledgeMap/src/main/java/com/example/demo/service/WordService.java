@@ -14,5 +14,6 @@ public interface WordService {
     public void delete(Word word);
     public void deleteById(Integer id);
     public void updateWord(Integer id, WordForm wordForm);
+    public List<Word> findByCategoryId(Integer id);
     
 }
