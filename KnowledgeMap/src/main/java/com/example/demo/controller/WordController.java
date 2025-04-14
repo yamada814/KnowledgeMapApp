@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -44,6 +45,7 @@ public class WordController {
 	@GetMapping("/showWordForm")
 	public String showWordForm(Model model) {
 		model.addAttribute("wordForm", new WordForm());
+		model.addAttribute("wordList", wordService.findAll());
 		model.addAttribute("categories", categoryService.findAll());
 		return "regist_form";
 	}
@@ -51,6 +53,7 @@ public class WordController {
 	// 登録画面へ戻るとき
 	@PostMapping("showWordForm")
 	public String backToWordForm(@ModelAttribute("wordForm") WordForm wordForm, Model model) {
+		model.addAttribute("wordList", wordService.findAll());
 		model.addAttribute("categories", categoryService.findAll());
 		return "regist_form";
 	}
@@ -83,6 +86,14 @@ public class WordController {
 			return "regist_error";
 		}
 		wordForm.setCategoryName(categoryOpt.get().getName());
+		
+		List<Integer> relatedWordIds = wordForm.getRelatedWordIds();
+		List<String> relatedWordNames = relatedWordIds.stream()
+				.map(id -> wordService.findById(id))
+				.filter(wordOpt -> wordOpt.isPresent())
+				.map(wordOpt -> wordOpt.get().getWordName())
+				.toList();
+		model.addAttribute("relatedWordNames",relatedWordNames);
 		//登録しようとしてるwordがすでに存在しているか確認
 		Optional<Word> wordOpt = wordService.findByWordName(wordForm.getWordName());
 		if (wordOpt.isPresent()) {

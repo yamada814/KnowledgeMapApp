@@ -24,6 +24,14 @@
 				<th>category</th>
 				<td th:text="*{category.name}"></td>
 			</tr>
+			<tr>
+				<th>related_words</th>
+				<td>
+					<ul>
+						<li th:each="relatedWord : *{relatedWords}" th:text="${relatedWord.wordName}"></li>
+					</ul>
+				</td>
+			</tr>
 		</table>
 
 		<!-- 登録済み内容の選択肢 -->
@@ -56,6 +64,15 @@
 				<th>category</th>
 				<td th:text="*{categoryName}"></td>
 			</tr>
+			<tr>
+				<th>related_words</th>
+				<td>
+					<ul>
+						<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
+					</ul>
+				</td>
+			</tr>
+
 		</table>
 
 		<!-- 入力内容の選択肢 -->
@@ -67,6 +84,7 @@
 						<input type="hidden" th:field="*{wordName}">
 						<input type="hidden" th:field="*{content}">
 						<input type="hidden" th:field="*{categoryId}">
+						<input type="hidden" th:field="*{relatedWordIds}">
 						<button type="submit">既存のwordをこの内容で上書きする</button>
 					</form>
 				</li>
@@ -75,6 +93,7 @@
 						<input type="hidden" th:field="*{wordName}">
 						<input type="hidden" th:field="*{content}">
 						<input type="hidden" th:field="*{categoryId}">
+						<input type="hidden" th:field="*{relatedWordIds}">
 						<button type="submit">入力画面に戻って修正する</button>
 					</form>
 				</li>
@@ -108,6 +127,14 @@
 						<input type="hidden" th:field="*{categoryId}">
 					</td>
 				</tr>
+				<tr>
+					<th>related_words</th>
+					<td>
+						<ul>
+							<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
+						</ul>
+					</td>
+				</tr>
 			</table>
 			<button type="submit">登録する</button>
 		</form>
@@ -115,6 +142,7 @@
 			<input type="hidden" th:field="*{wordName}">
 			<input type="hidden" th:field="*{content}">
 			<input type="hidden" th:field="*{categoryId}">
+			<input type="hidden" th:field="*{relatedWordIds}">
 			<button type="submit">入力画面に戻って修正する</button>
 		</form>
 	</div>
