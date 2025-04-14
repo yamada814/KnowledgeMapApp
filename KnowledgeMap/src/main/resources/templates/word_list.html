@@ -18,11 +18,11 @@
 	<ul id="categoryTabs">
 		<li th:each="category : ${categories}" th:object="${category}">
 			<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
-			<button class="deleteBtnHidden" th:text="削除" th:attr="data-id=*{id}"></button>
 		</li>
 	</ul>
 	<p>word一覧</p>
 	<ul id="wordList">
 	</ul>
+	<button class="deleteBtnHidden" th:text="このカテゴリを削除"></button>
 </body>
 </html>
