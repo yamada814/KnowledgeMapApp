@@ -1,10 +1,10 @@
-<!--<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>単語一覧</title>
-<link rel="stylesheet" href="/css/word_list.css">
-<script src="/js/word_list.js" defer></script>
+<link rel="stylesheet" th:href="@{/css/word_list.css}">
+<script th:src="@{/js/word_list.js}" defer></script>
 </head>
 <body>
 	<a th:href="@{/showWordForm}">word新規登録画面へ</a>
@@ -18,32 +18,11 @@
 	<ul id="categoryTabs">
 		<li th:each="category : ${categories}" th:object="${category}">
 			<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
-			<button class="deleteBtn" th:text="削除" th:attr="data-id=*{id}"></button>
+			<button class="deleteBtnHidden" th:text="削除" th:attr="data-id=*{id}"></button>
 		</li>
 	</ul>
 	<p>word一覧</p>
 	<ul id="wordList">
 	</ul>
-</body>
-</html> -->
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>単語一覧</title>
-</head>
-<body>
-	<a th:href="@{/showWordForm}">word新規登録画面へ</a>
-    <h1>word一覧</h1>
-	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
-	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
-	<div th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
-	<div th:if="${regist_cancel} != null" th:text="${regist_cancel}"></div>
-    <ul>
-        <li th:each="word : ${wordList}">
-			<a th:href="@{/wordDetail/{id}(id=${word.id})}" 
-			   th:text="${word.wordName}"></a>
-		</li>
-    </ul>
 </body>
 </html>

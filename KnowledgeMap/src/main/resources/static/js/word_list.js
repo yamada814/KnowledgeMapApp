@@ -1,6 +1,5 @@
 const categoryBtns = document.querySelectorAll(".categoryBtn");
 const wordList = document.getElementById("wordList");
-console.log(categoryBtns);
 
 categoryBtns.forEach(categoryBtn => {
 	categoryBtn.addEventListener("click", async () => {
@@ -13,11 +12,14 @@ categoryBtns.forEach(categoryBtn => {
 				if (words.length === 0) {
 					const msg = document.createElement("p");
 					msg.textContent = "単語がありません";
-					const deleteBtn = document.querySelectorAll(".deleteBtn");
+					wordList.appendChild(msg);
 				}
 				for (const word of words) {
 					const li = document.createElement("li");
-					li.textContent = word.wordName;
+					const a = document.createElement("a");
+					a.textContent = word.wordName;
+					a.href = `/wordDetail/${word.id}`; // ← ここでクエリパラメータ付与
+					li.appendChild(a);
 					wordList.appendChild(li);
 				}
 			}
