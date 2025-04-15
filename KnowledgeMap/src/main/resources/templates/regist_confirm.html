@@ -133,6 +133,7 @@
 						<ul>
 							<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
 						</ul>
+						<input type="hidden" th:field="*{relatedWordIds}">
 					</td>
 				</tr>
 			</table>

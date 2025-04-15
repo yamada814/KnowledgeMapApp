@@ -61,21 +61,25 @@ public class WordDetailControllerTest {
 		word1.setId(1);
 		word1.setWordName("word1");
 		word1.setCategory(category1);
+		word1.setRelatedWords(List.of());
 		Word word2 = new Word();
 		word2.setId(2);
 		word2.setWordName("word2");
 		word2.setCategory(category1);
+		word2.setRelatedWords(new ArrayList<Word>(List.of(word1)));
 		List<Word> list = new ArrayList<>(List.of(word1, word2));
 
 		Word newWord1 = new Word();
 		newWord1.setId(3);
 		newWord1.setWordName("newWordName1");
 		newWord1.setCategory(category1);//既存カテゴリ -> addCategory()は呼ばれない
+		newWord1.setRelatedWords(List.of());
 
 		Word newWord2 = new Word();
 		newWord2.setId(4);
 		newWord2.setWordName("newWordName2");
 		newWord2.setCategory(newCategory);//未登録カテゴリ -> addCategory()が呼ばれる
+		newWord2.setRelatedWords(List.of());
 
 		doReturn(list).when(wordService).findAll();
 		doReturn(Optional.of(word1)).when(wordService).findById(1);
@@ -132,8 +136,8 @@ public class WordDetailControllerTest {
 	@Test
 	//編集実行 バリデーションエラー発生
 	void testEditWord() throws Exception {
-		mockMvc.perform(post("/wordDetail/{id}/edit", 1)
-				.param("id", "1")
+		mockMvc.perform(post("/wordDetail/{id}/edit", 2)
+				.param("id", "2")
 				.param("wordName", "")
 				.param("content", "")
 				.param("categoryId", "")
