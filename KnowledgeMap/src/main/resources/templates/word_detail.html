@@ -19,6 +19,12 @@
             <h2>content</h2>
             <p th:text="*{content}"></p>
         </section>
+		<section>
+			<h2>related_words</h2>
+			<ul>
+			  <li th:each="related : ${word.relatedWords}" th:text="${related.wordName}"></li>
+			</ul>
+		</section>
         <form th:action="@{/wordDetail/{id}/delete(id=${word.id})}" method="post">
             <button type="submit">削除</button>
         </form>

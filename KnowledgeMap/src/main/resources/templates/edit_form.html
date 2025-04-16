@@ -3,13 +3,13 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Insert title here</title>
+	<title>word編集</title>
 </head>
 
 <body>
 	<h1>word編集</h1>
 	<p th:if="${word_duplicate} != null" th:text="${word_duplicate}"></p>
-	<form th:action="@{/wordDetail/{id}/edit(id=${word.id})}" method="post">
+	<form th:action="@{/wordDetail/{id}/editConfirm(id=${word.id})}" method="post">
 		<table th:object="${wordForm}">
 			<tr>
 				<th>word</th>
@@ -30,24 +30,36 @@
 				<td>
 					<select th:field="*{categoryId}" required>
 						<option value="">カテゴリを選択</option>
-						<option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"
-							th:selected="${category.id} == ${word.id}">
+						<option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
 						</option>
 					</select>
 					<span th:errors="*{categoryId}"></span>
-					<p>または新しいカテゴリーをつくる<input type="text" th:field="*{categoryName}"
-							th:value="${#fields.hasErrors('*') or wordForm.categoryName != null ? wordForm.categoryName : ''}">
-					</p>
+					<span>または新しいカテゴリーをつくる<input type="text" th:field="*{categoryName}"></span>
 					<span th:errors="*{categoryNotNull}"></span>
 				</td>
 			</tr>
+			<tr>
+				<th>related_words</th>
+				<td>
+					<ul>
+						<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
+					</ul>
+					<select multiple th:field="*{relatedWordIds}">
+					    <option th:each="word : ${wordList}" 
+					            th:value="${word.id}" 
+					            th:text="${word.wordName}">
+					    </option>
+					</select>
+				</td>
+			</tr>
 		</table>
-		<button type="submit">編集する</button>
+		<button type="submit">編集内容確認</button>
 	</form>
 	<form th:if="${fromRegistConfirm}" th:action="@{/registConfirm}" method="post" th:object="${wordForm}">
 		<input type="hidden" th:field="*{wordName}">
 		<input type="hidden" th:field="*{content}">
 		<input type="hidden" th:field="*{categoryId}">
+		<input type="hidden" th:field="*{relatedWordIds}">
 		<button>登録確認に戻る</button>
 	</form>
 	<form th:unless="${fromRegistConfirm}" th:action="@{/wordDetail/{id}(id=${word.id})}">
