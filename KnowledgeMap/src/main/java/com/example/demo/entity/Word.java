@@ -13,6 +13,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 /*
@@ -38,6 +40,7 @@ public class Word {
     private Category category;
 
     @ManyToMany
+    @JsonIgnore
     @JoinTable(
         name = "word_relation",
         joinColumns = @JoinColumn(name = "word_id"),
