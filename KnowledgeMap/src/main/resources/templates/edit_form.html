@@ -9,7 +9,7 @@
 <body>
 	<h1>word編集</h1>
 	<p th:if="${word_duplicate} != null" th:text="${word_duplicate}"></p>
-	<form th:action="@{/wordDetail/{id}/edit(id=${word.id})}" method="post">
+	<form th:action="@{/wordDetail/{id}/editConfirm(id=${word.id})}" method="post">
 		<table th:object="${wordForm}">
 			<tr>
 				<th>word</th>
@@ -53,7 +53,7 @@
 				</td>
 			</tr>
 		</table>
-		<button type="submit">編集する</button>
+		<button type="submit">編集内容確認</button>
 	</form>
 	<form th:if="${fromRegistConfirm}" th:action="@{/registConfirm}" method="post" th:object="${wordForm}">
 		<input type="hidden" th:field="*{wordName}">

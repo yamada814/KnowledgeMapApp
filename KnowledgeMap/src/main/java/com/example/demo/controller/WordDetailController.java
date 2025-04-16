@@ -106,12 +106,12 @@ public class WordDetailController {
 		if (fromRegistConfirm != null) {
 			model.addAttribute("fromRegistConfirm", true);
 		}
-		return "edit_word";
+		return "edit_form";
 	}
 
-	//word編集
-	@PostMapping("/{id}/edit")
-	public String editWord(
+	//word編集確認
+	@PostMapping("/{id}/editConfirm")
+	public String editConfirm(
 			@Validated WordForm wordForm,
 			BindingResult result,
 			RedirectAttributes redirectAttribute,
@@ -128,7 +128,7 @@ public class WordDetailController {
 			model.addAttribute("wordList",wordService.findAll());
 			model.addAttribute("word", word);
 			model.addAttribute("categories", categoryService.findAll());
-			return "edit_word";
+			return "edit_form";
 		}
 		//wordNameがカブっていたら 入力情報をモデルに格納して 入力フォーム画面へ返す
 		Optional<Word> existingWordOpt = wordService.findByWordName(wordForm.getWordName());
@@ -139,7 +139,7 @@ public class WordDetailController {
 			model.addAttribute("categories", categoryService.findAll());
 			
 			model.addAttribute("word_duplicate", existingWordOpt.get().getWordName() + "は既に登録済です");
-			return "edit_word";
+			return "edit_form";
 		}
 		//categoryNameに入力があれば そのcategoryNameで登録済みかチェックし なければ新規登録
 		String newCategoryName = wordForm.getCategoryName();
@@ -154,7 +154,15 @@ public class WordDetailController {
 				wordForm.setCategoryId(categoryOpt.get().getId());
 			}
 		}
-		//		System.out.println("■ ■ ■ ■ ■ wordForm.categoryId:" + wordForm.getCategoryId());	
+		//		System.out.println("■ ■ ■ ■ ■ wordForm.categoryId:" + wordForm.getCategoryId());
+		model.addAttribute("relatedWordNames",getRelatedWordNames(wordForm));
+		model.addAttribute("word", word);
+		return "edit_confirm";
+	}
+	@PostMapping("/{id}/edit")
+	public String edit(WordForm wordForm,
+			@PathVariable("id") Integer id,
+			RedirectAttributes redirectAttribute) {
 		wordService.updateWord(id, wordForm);
 		redirectAttribute.addFlashAttribute("edit_ok", "編集が完了しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());

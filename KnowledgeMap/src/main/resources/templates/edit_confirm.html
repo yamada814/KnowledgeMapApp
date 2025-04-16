@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>edit_confirm</title>
+</head>
+<body>
+	<h1>edit_confirm</h1>
+	<h2>以下の内容で編集します</h2>
+	<form th:action="@{/wordDetail/{id}/edit(id=${word.id})}" method="post" th:object="${wordForm}">
+		<table>
+			<tr>
+				<th>word</th>
+				<td>
+					<span th:text="*{wordName}"></span>
+					<input type="hidden" th:field="*{wordName}">
+				</td>
+			</tr>
+			<tr>
+				<th>content</th>
+				<td>
+					<span th:text="*{content}"></span>
+					<input type="hidden" th:field="*{content}">
+				</td>
+			</tr>
+			<tr>
+				<th>category</th>
+				<td>
+					<span th:text="*{categoryName}"></span>
+					<input type="hidden" th:field="*{categoryId}">
+				</td>
+			</tr>
+			<tr>
+				<th>related_words</th>
+				<td>
+					<ul>
+						<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
+					</ul>
+					<input type="hidden" th:field="*{relatedWordIds}">
+				</td>
+			</tr>
+		</table>
+		<button type="submit">登録する</button>
+	</form>
+	<form th:action="@{/wordDetail/{id}/editForm(id=${word.id})}" th:object="${wordForm}"
+		style="display:inline;">
+		<input type="hidden" th:field="*{wordName}">
+		<input type="hidden" th:field="*{content}">
+		<input type="hidden" th:field="*{categoryId}">
+		<input type="hidden" th:field="*{relatedWordIds}">
+		<input type="hidden" th:field="*{categoryName}">
+		<button type="submit">編集画面に戻って修正する</button>
+	</form>
+	</div>
+</body>
+
+</html>
