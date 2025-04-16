@@ -45,9 +45,10 @@
 						<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
 					</ul>
 					<select multiple th:field="*{relatedWordIds}">
-					    <option th:each="word : ${wordList}" 
-					            th:value="${word.id}" 
-					            th:text="${word.wordName}">
+					    <option th:each="relatedWord : ${wordList}" 
+								th:if="${relatedWord.id} != ${word.id}"
+					            th:value="${relatedWord.id}" 
+					            th:text="${relatedWord.wordName}">
 					    </option>
 					</select>
 				</td>
