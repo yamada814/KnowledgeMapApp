@@ -12,7 +12,7 @@ public interface WordService {
     public List<Word> findAll();
     public Optional<Word> findById(Integer id);
     public void delete(Word word);
-    public void deleteById(Integer id);
+    public boolean deleteById(Integer id);
     public void updateWord(Integer id, WordForm wordForm);
     public List<Word> findByCategoryId(Integer id);
     

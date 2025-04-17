@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,5 +36,21 @@ public class WordApiController {
 	    categoryService.deleteByCategoryId(id);
 	    return ResponseEntity.ok().build();
 	}
-
+	@GetMapping("/words/{id}")
+	public ResponseEntity<Object> getDetail(@PathVariable("id") Integer id,Model model) {
+		Optional<Word> wordOpt = wordService.findById(id);
+		if(wordOpt.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(wordOpt.get());
+	}
+	@DeleteMapping("/words/{id}")
+	public ResponseEntity<Void> deleteWord(@PathVariable("id") Integer id) {
+	    boolean deleted = wordService.deleteById(id);
+	    if (deleted) {
+	        return ResponseEntity.ok().build();
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	}
 }
