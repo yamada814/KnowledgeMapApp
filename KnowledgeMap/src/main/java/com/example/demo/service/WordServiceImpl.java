@@ -6,11 +6,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
 import com.example.demo.repository.CategoryRepository;
+import com.example.demo.repository.WordRelationRepository;
 import com.example.demo.repository.WordRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class WordServiceImpl implements WordService {
 	private final WordRepository wordRepository;
 	private final CategoryRepository categoryRepository;
+	private final WordRelationRepository wordRelationRepository;
 	
 	//WordForm型からWord型への変換を行うユーティリティメソッド
 	public Word transferWordFormToWord(Word word,WordForm wordForm) {
@@ -70,10 +73,13 @@ public class WordServiceImpl implements WordService {
 	}
 
 	@Override
+	@Transactional
 	public boolean deleteById(Integer id) {
 		if(wordRepository.findById(id).isEmpty()) {
 			return false;
 		}
+		wordRelationRepository.deleteByWordId(id);
+		wordRelationRepository.deleteByRelatedWordId(id);
 		wordRepository.deleteById(id);
 		return true;
 	}
