@@ -1,28 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>単語一覧</title>
-<link rel="stylesheet" th:href="@{/css/word_list.css}">
-<script th:src="@{/js/word_list.js}" defer></script>
+	<meta charset="UTF-8">
+	<title>単語一覧</title>
+	<link rel="stylesheet" th:href="@{/css/word_list.css}">
+	<script th:src="@{/js/word_list.js}" defer></script>
 </head>
+
 <body>
 	<a th:href="@{/showWordForm}">word新規登録画面へ</a>
-    <h1>word一覧</h1>
+	<h1>word一覧</h1>
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
 	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
 	<div th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
 	<div th:if="${regist_cancel} != null" th:text="${regist_cancel}"></div>
 
-	<p>カテゴリ一覧</p>
+	<h3>カテゴリ一覧</h3>
 	<ul id="categoryTabs">
 		<li th:each="category : ${categories}" th:object="${category}">
 			<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
 		</li>
 	</ul>
-	<p>word一覧</p>
-	<ul id="wordList">
-	</ul>
-	<button class="deleteBtnHidden" th:text="このカテゴリを削除"></button>
+	<h3>word一覧</h3>
+	<div id="wordContainer">
+	</div>
+	<h3>wordDetail</h3>
+	<div class="wordDetail">
+		<p>wordName:<span id="detail-wordName"></span></p>
+		<p>content:<span id="detail-content"></span></p>
+		<p>category:<span id="detail-category"></span></p>
+		<p>relatedWords:
+			<span id="detail-relatedWords">
+				<ul id="relatedWordList"></ul>
+			</span>
+		</p>
+	</div>
 </body>
+
 </html>

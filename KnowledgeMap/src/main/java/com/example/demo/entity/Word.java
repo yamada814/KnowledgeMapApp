@@ -13,7 +13,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.Data;
 
@@ -26,6 +27,10 @@ import lombok.Data;
 @Entity
 @Table(name="word")
 @Data
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id"
+		)
 public class Word {
 	@Id
 	@Column(name="id")
@@ -40,7 +45,6 @@ public class Word {
     private Category category;
 
     @ManyToMany
-    @JsonIgnore
     @JoinTable(
         name = "word_relation",
         joinColumns = @JoinColumn(name = "word_id"),

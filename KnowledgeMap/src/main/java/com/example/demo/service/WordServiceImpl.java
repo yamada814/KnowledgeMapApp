@@ -67,12 +67,15 @@ public class WordServiceImpl implements WordService {
 
 	@Override
 	public void delete(Word word) {
-		wordRepository.delete(word);
 	}
 
 	@Override
-	public void deleteById(Integer id) {
+	public boolean deleteById(Integer id) {
+		if(wordRepository.findById(id).isEmpty()) {
+			return false;
+		}
 		wordRepository.deleteById(id);
+		return true;
 	}
 
 	@Override
