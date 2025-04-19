@@ -24,8 +24,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 
 public class WordApiController {
+	
 	private final WordService wordService;
 	private final CategoryService categoryService;
+	
 	@GetMapping("/words")
 	public List<Word> getWordsByCategoryId(@RequestParam("categoryId") Integer categoryId){
 		return wordService.findByCategoryId(categoryId);
