@@ -44,7 +44,8 @@
 					            th:value="${word.id}" 
 					            th:text="${word.wordName}">
 					    </option>
-					</select>			
+					</select>	
+					<span th:errors="*{relatedWordIds}"></span>
 				</td>
 			</tr>
 		</table>
