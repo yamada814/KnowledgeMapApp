@@ -7,7 +7,7 @@
 <body>
 	<h1>edit_confirm</h1>
 	<h2>以下の内容で編集します</h2>
-	<form th:action="@{/wordDetail/{id}/edit(id=${word.id})}" method="post" th:object="${wordForm}">
+	<form th:action="@{/words/{id}/edit(id=${word.id})}" method="post" th:object="${wordForm}">
 		<table>
 			<tr>
 				<th>word</th>
@@ -42,13 +42,14 @@
 		</table>
 		<button type="submit">登録する</button>
 	</form>
-	<form th:action="@{/wordDetail/{id}/editForm(id=${word.id})}" th:object="${wordForm}"
+	<form th:action="@{/words/{id}/editForm(id=${word.id})}" th:object="${wordForm}"
 		style="display:inline;">
 		<input type="hidden" th:field="*{wordName}">
 		<input type="hidden" th:field="*{content}">
 		<input type="hidden" th:field="*{categoryId}">
 		<input type="hidden" th:field="*{relatedWordIds}">
 		<input type="hidden" th:field="*{categoryName}">
+		<input th:if="${fromRegist}" type="hidden" name="fromRegist" value="${fromRegist}">
 		<button type="submit">編集画面に戻って修正する</button>
 	</form>
 	</div>

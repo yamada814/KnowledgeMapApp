@@ -108,6 +108,8 @@ public class WordController {
 	public String registCancel(Model model) {
 		model.addAttribute("regist_cancel", "登録がキャンセルされました");
 		model.addAttribute("wordList", wordService.findAll());
+		model.addAttribute("categories", categoryService.findAll());
+
 		return "word_list";
 	}
 

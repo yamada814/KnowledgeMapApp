@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("wordDetail")
+@RequestMapping("words")
 public class WordDetailController {
 	private final WordService wordService;
 	private final CategoryService categoryService;
@@ -77,12 +77,16 @@ public class WordDetailController {
 	public String showEditForm(
 			@PathVariable("id") Integer id,
 			//新規登録の確認画面からの遷移であるフラグ
-			@RequestParam(name = "fromRegistConfirm", required = false) String fromRegistConfirm,
+			@RequestParam(name = "fromRegist", required = false) String fromRegist,
 			@ModelAttribute WordForm wordForm,
 			Model model) {
 		Optional<Word> wordOpt = wordService.findById(id);
 		if (wordOpt.isEmpty()) {
 			return "edit_error";
+		}
+		//新規登録から遷移した場合 戻るボタンの種類を切り替えるためのフラグを用意
+		if (fromRegist != null) {
+			model.addAttribute("fromRegist", fromRegist);
 		}
 		Word word = wordOpt.get();
 		// 編集用wordFormに、DBから検索したwordの値をセット
@@ -102,10 +106,6 @@ public class WordDetailController {
 		model.addAttribute("wordList",wordService.findAll());//関連語選択用
 		model.addAttribute("word", word);
 		
-		//regist_confirmから遷移した場合 戻るボタンの種類を切り替えるためのフラグを用意
-		if (fromRegistConfirm != null) {
-			model.addAttribute("fromRegistConfirm", true);
-		}
 		return "edit_form";
 	}
 
@@ -116,7 +116,12 @@ public class WordDetailController {
 			BindingResult result,
 			RedirectAttributes redirectAttribute,
 			Model model,
-			@PathVariable("id") Integer id) {
+			@PathVariable("id") Integer id,
+			@RequestParam(name = "fromRegist", required = false) String fromRegist) {
+		//新規登録から遷移した場合 戻るボタンの種類を切り替えるためのフラグを用意
+		if (fromRegist != null) {
+			model.addAttribute("fromRegist", "fromRegist");
+		}
 		Optional<Word> wordOpt = wordService.findById(id);
 		if (wordOpt.isEmpty()) {
 			return "word_detail_error";
@@ -141,8 +146,8 @@ public class WordDetailController {
 			model.addAttribute("word_duplicate", existingWordOpt.get().getWordName() + "は既に登録済です");
 			return "edit_form";
 		}
-		//categoryNameに入力があれば そのcategoryNameで登録済みかチェックし なければ新規登録
 		String newCategoryName = wordForm.getCategoryName();
+		//categoryNameに入力があり -> そのcategoryNameで登録済みかチェックし なければ新規登録
 		if (newCategoryName != null && !newCategoryName.isBlank()) {
 			Optional<Category> categoryOpt = categoryService.searchByName(newCategoryName);
 			// catgoryNameが未登録 -> category新規登録
@@ -153,10 +158,15 @@ public class WordDetailController {
 			} else { 
 				wordForm.setCategoryId(categoryOpt.get().getId());
 			}
+		// categoryName が空 -> categoryIdからcategoryを検索し、categoryNameをフォームにセット
+		} else {
+			Optional<Category> selectedCategoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
+			selectedCategoryOpt.ifPresent(c -> wordForm.setCategoryName(c.getName())); 
 		}
 		//		System.out.println("■ ■ ■ ■ ■ wordForm.categoryId:" + wordForm.getCategoryId());
 		model.addAttribute("relatedWordNames",getRelatedWordNames(wordForm));
 		model.addAttribute("word", word);
+
 		return "edit_confirm";
 	}
 	@PostMapping("/{id}/edit")
