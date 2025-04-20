@@ -26,14 +26,16 @@ public class WordFormValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		WordForm wordForm = (WordForm) target;
-		List<String> relatedWordNames = wordForm.getRelatedWordIds().stream()
-				.map(relatedWordId -> wordService.findById(relatedWordId))
-				.filter(opt -> opt.isPresent())
-				.map(opt -> opt.get().getWordName())
-				.toList();
-		// 関連語に自身のwordを選択していないか
-		if (relatedWordNames.contains(wordForm.getWordName())) {
-			errors.rejectValue("relatedWordIds", null, "自身のwordは関連語として登録できません");
+		if (wordForm.getRelatedWordIds() != null) {
+			List<String> relatedWordNames = wordForm.getRelatedWordIds().stream()
+					.map(relatedWordId -> wordService.findById(relatedWordId))
+					.filter(opt -> opt.isPresent())
+					.map(opt -> opt.get().getWordName())
+					.toList();
+			// 関連語に自身のwordを選択していないか
+			if (relatedWordNames.contains(wordForm.getWordName())) {
+				errors.rejectValue("relatedWordIds", null, "自身のwordは関連語として登録できません");
+			}
 		}
 		// 既存wordNameかどうか
 		Optional<Word> existingWordOpt = wordService.findByWordName(wordForm.getWordName());

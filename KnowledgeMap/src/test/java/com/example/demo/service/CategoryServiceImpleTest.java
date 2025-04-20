@@ -59,7 +59,7 @@ public class CategoryServiceImpleTest {
 		
 		doReturn(Optional.of(category1)).when(categoryRepository).findByName("category1");
 		
-		Optional<Category> categoryOpt = categoryServiceImpl.searchByName("category1");
+		Optional<Category> categoryOpt = categoryServiceImpl.findByName("category1");
 		Category category = categoryOpt.get();
 		assertThat(category.getId()).isEqualTo(1);	
 	}

@@ -87,8 +87,8 @@ public class WordDetailControllerTest {
 		doReturn(Optional.empty()).when(wordService).findByWordName("NotExistingWordName");//word重複なし
 		doReturn(Optional.of(newWord1)).when(wordService).findByWordName("ExistingWordName");//word重複あり
 
-		doReturn(Optional.of(category1)).when(categoryService).searchByName("category1");
-		doReturn(Optional.empty()).when(categoryService).searchByName("newCategoryName");
+		doReturn(Optional.of(category1)).when(categoryService).findByName("category1");
+		doReturn(Optional.empty()).when(categoryService).findByName("newCategoryName");
 		doReturn(newCategory).when(categoryService).addCategory("newCategoryName");
 	}
 
