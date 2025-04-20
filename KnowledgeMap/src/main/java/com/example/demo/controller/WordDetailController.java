@@ -33,52 +33,10 @@ public class WordDetailController {
 	private final WordService wordService;
 	private final CategoryService categoryService;
 	private final WordFormValidator wordFormValidator;
-	
+
 	@InitBinder("wordForm")
 	public void initBinder(WebDataBinder webDataBinder) {
 		webDataBinder.addValidators(wordFormValidator);
-	}
-	
-	//wordFormのrelatedWordIds(List<Integer>)からrelatedWordNames(List<String>)へ変換するメソッド
-	public List<String> getRelatedWordNames(WordForm wordForm){
-		if (wordForm.getRelatedWordIds() == null) return List.of();
-		return wordForm.getRelatedWordIds().stream()
-				.map(relatedWordId -> wordService.findById(relatedWordId))
-				.filter(opt -> opt.isPresent())
-				.map(opt -> opt.get().getWordName())
-				.toList();
-	}
-
-	//word詳細画面へ
-	@GetMapping("/{id}")
-	public String showDetail(
-			@PathVariable("id") Integer id,
-			Model model) {
-		Optional<Word> wordOpt = wordService.findById(id);
-		if (wordOpt.isEmpty()) {
-			return "word_detail_error";
-		}
-		//		System.out.println("■ ■ ■ ■ ■ ■ ");
-		//		System.out.println(wordOpt.get().getName());
-		model.addAttribute("word", wordOpt.get());
-		return "word_detail";
-	}
-
-	//word削除
-	@PostMapping("/{id}/delete")
-	public String deleteWord(
-			@PathVariable("id") Integer id,
-			RedirectAttributes redirectAttributes) {
-		Optional<Word> wordOpt = wordService.findById(id);
-		if (wordOpt.isEmpty()) {
-			redirectAttributes.addFlashAttribute("delete_error", "指定されたwordは存在しません");
-			redirectAttributes.addFlashAttribute("wordList", wordService.findAll());
-			return "redirect:/wordList";
-		}
-		wordService.deleteById(id);
-		redirectAttributes.addFlashAttribute("wordList", wordService.findAll());
-		redirectAttributes.addFlashAttribute("delete_ok", "wordを削除しました");
-		return "redirect:/wordList";
 	}
 
 	//word編集画面
@@ -99,7 +57,6 @@ public class WordDetailController {
 		}
 		Word word = wordOpt.get();
 		// 編集用wordFormに、DBから検索したwordの値をセット
-		wordForm.setId(word.getId()); 
 		wordForm.setWordName(word.getWordName());
 		wordForm.setContent(word.getContent());
 		wordForm.setCategoryId(word.getCategory().getId());
@@ -107,15 +64,11 @@ public class WordDetailController {
 				.map(relatedWord -> relatedWord.getId())
 				.toList();
 		wordForm.setRelatedWordIds(relatedWordIds);
-		//関連語のWordNameリストをモデル格納
-		List<String> relatedWordNames = word.getRelatedWords().stream()
-				.map(relatedWord -> relatedWord.getWordName())
-				.toList();
-		model.addAttribute("relatedWordNames", relatedWordNames);		
-		model.addAttribute("categories", categoryService.findAll());//カテゴリ選択用
-		model.addAttribute("wordList",wordService.findAll());//関連語選択用
+		model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));
+		model.addAttribute("categories", categoryService.findAll());
+		model.addAttribute("wordList", wordService.findAll());
 		model.addAttribute("word", word);
-		
+
 		return "edit_form";
 	}
 
@@ -124,7 +77,6 @@ public class WordDetailController {
 	public String editConfirm(
 			@Validated WordForm wordForm,
 			BindingResult result,
-			RedirectAttributes redirectAttribute,
 			Model model,
 			@PathVariable("id") Integer id,
 			@RequestParam(name = "fromRegist", required = false) String fromRegist) {
@@ -134,40 +86,40 @@ public class WordDetailController {
 		}
 		Optional<Word> wordOpt = wordService.findById(id);
 		if (wordOpt.isEmpty()) {
-			return "word_detail_error";
+			return "edit_error";
 		}
 		Word word = wordOpt.get();
 		//バリデーションチェック
 		if (result.hasErrors()) {
-			model.addAttribute("relatedWordNames",getRelatedWordNames(wordForm));//relatedWordIdsをrelatedWordNamesに変換したリスト
-			model.addAttribute("wordList",wordService.findAll());
-			model.addAttribute("word", word);
 			model.addAttribute("categories", categoryService.findAll());
+			model.addAttribute("wordList", wordService.findAll());
+			model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));
+			model.addAttribute("word", word);
 			return "edit_form";
 		}
 		String newCategoryName = wordForm.getCategoryName();
-		//categoryNameに入力があり -> そのcategoryNameで登録済みかチェックし なければ新規登録
+		// categoryNameに入力があった場合
 		if (newCategoryName != null && !newCategoryName.isBlank()) {
-			Optional<Category> categoryOpt = categoryService.searchByName(newCategoryName);
-			// catgoryNameが未登録 -> category新規登録
-			if (categoryOpt.isEmpty()) {
+			Optional<Category> categoryOpt = categoryService.findByName(newCategoryName);
+			if (categoryOpt.isEmpty()) { // 入力されたcategoryNameが未登録 -> categoryテーブルへ新規登録
 				Category newCategory = categoryService.addCategory(newCategoryName);
 				wordForm.setCategoryId(newCategory.getId());
-			// categoryNameが登録済み -> 登録済みのcategoryNameからcategoryIdを取得してフォームにセット
-			} else { 
+			} else { // 登録済 -> 登録済のcategoryNameからcategoryIdを取得してフォームにセット
 				wordForm.setCategoryId(categoryOpt.get().getId());
 			}
-		// categoryName が空 -> categoryIdからcategoryを検索し、categoryNameをフォームにセット
-		} else {
-			Optional<Category> selectedCategoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
-			selectedCategoryOpt.ifPresent(c -> wordForm.setCategoryName(c.getName())); 
 		}
-		//		System.out.println("■ ■ ■ ■ ■ wordForm.categoryId:" + wordForm.getCategoryId());
-		model.addAttribute("relatedWordNames",getRelatedWordNames(wordForm));
+		// categoryIdからcategoryNameをセット
+		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
+		if (categoryOpt.isEmpty()) {
+			return "edit_error";
+		}
+		wordForm.setCategoryName(categoryOpt.get().getName());
+		model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));
 		model.addAttribute("word", word);
 
 		return "edit_confirm";
 	}
+
 	@PostMapping("/{id}/edit")
 	public String edit(WordForm wordForm,
 			@PathVariable("id") Integer id,

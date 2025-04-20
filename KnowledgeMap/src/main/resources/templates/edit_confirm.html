@@ -40,7 +40,7 @@
 				</td>
 			</tr>
 		</table>
-		<button type="submit">登録する</button>
+		<button type="submit">編集する</button>
 	</form>
 	<form th:action="@{/words/{id}/editForm(id=${word.id})}" th:object="${wordForm}"
 		style="display:inline;">
@@ -50,7 +50,7 @@
 		<input type="hidden" th:field="*{relatedWordIds}">
 		<input type="hidden" th:field="*{categoryName}">
 		<input th:if="${fromRegist}" type="hidden" name="fromRegist" value="${fromRegist}">
-		<button type="submit">編集画面に戻って修正する</button>
+		<button type="submit">入力画面に戻る</button>
 	</form>
 	</div>
 </body>

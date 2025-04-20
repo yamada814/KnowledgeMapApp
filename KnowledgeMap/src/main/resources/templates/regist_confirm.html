@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
 	<meta charset="UTF-8">
 	<title>登録確認</title>
 </head>
+
 <body>
 	<h1>登録確認</h1>
 	<h2>以下の内容で登録します</h2>
@@ -34,7 +36,8 @@
 				<th>related_words</th>
 				<td>
 					<ul>
-						<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
+						<li th:each="relatedWordName : ${relatedWordNames}" 
+							th:text="${relatedWordName}"></li>
 					</ul>
 					<input type="hidden" th:field="*{relatedWordIds}">
 				</td>
@@ -42,14 +45,13 @@
 		</table>
 		<button type="submit">登録する</button>
 	</form>
-	<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}" style="display:inline;">
+	<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}">
 		<input type="hidden" th:field="*{wordName}">
 		<input type="hidden" th:field="*{content}">
 		<input type="hidden" th:field="*{categoryId}">
 		<input type="hidden" th:field="*{relatedWordIds}">
-		<button type="submit">入力画面に戻って修正する</button>
+		<button type="submit">入力画面に戻る</button>
 	</form>
-	</div>
 </body>
 
 </html>

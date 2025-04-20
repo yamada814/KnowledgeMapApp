@@ -9,6 +9,6 @@ public interface CategoryService {
 	public List<Category> findAll();
 	public Optional<Category> findByCategoryId(Integer categoryId);
 	public Category addCategory(String categoryName);
-	public Optional<Category> searchByName(String categoryName);
+	public Optional<Category> findByName(String categoryName);
 	public void deleteByCategoryId(Integer categoryId);
 }
