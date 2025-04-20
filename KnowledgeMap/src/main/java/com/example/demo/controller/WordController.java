@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -40,14 +39,7 @@ public class WordController {
 		model.addAttribute("categories", categoryService.findAll());
 		return "word_list";
 	}
-	//	@GetMapping("/wordDetail/{name}")
-	//	public @ResponseBody String showDetail(
-	//			@PathVariable String name,
-	//			@RequestParam int id,
-	//			Model model){
-	//		return "リクエストを正常に受け付けました" + name + id;
-	//	}
-
+	
 	//新規登録画面
 	@GetMapping("/showWordForm")
 	public String showWordForm(Model model) {
@@ -84,7 +76,7 @@ public class WordController {
 		// categoryNameに入力があった場合
 		String newCategoryName = wordForm.getCategoryName();
 		if (newCategoryName != null && !newCategoryName.isBlank()) {
-			Optional<Category> categoryOpt =  categoryService.searchByName(newCategoryName);
+			Optional<Category> categoryOpt =  categoryService.findByName(newCategoryName);
 			if (categoryOpt.isEmpty()) { // 入力されたcategoryNameが未登録 -> categoryテーブルへ新規登録
 				Category newCategory = categoryService.addCategory(newCategoryName);
 				wordForm.setCategoryId(newCategory.getId());
@@ -98,28 +90,13 @@ public class WordController {
 			return "regist_error";
 		}
 		wordForm.setCategoryName(categoryOpt.get().getName());
-		List<Integer> relatedWordIds = wordForm.getRelatedWordIds();
-		List<String> relatedWordNames = relatedWordIds.stream()
-				.map(id -> wordService.findById(id))
-				.filter(wordOpt -> wordOpt.isPresent())
-				.map(wordOpt -> wordOpt.get().getWordName())
-				.toList();
-		model.addAttribute("relatedWordNames",relatedWordNames);
-
+		model.addAttribute("relatedWordNames",wordService.getRelatedWordNames(wordForm));
 		return "regist_confirm";
 	}
-//	@GetMapping("/registCancel")
-//	public String registCancel(Model model) {
-//		model.addAttribute("regist_cancel", "登録がキャンセルされました");
-//		model.addAttribute("wordList", wordService.findAll());
-//		model.addAttribute("categories", categoryService.findAll());
-//
-//		return "word_list";
-//	}
 	//DB新規登録
 	@PostMapping("/regist")
 	public String regist(WordForm wordForm,RedirectAttributes redirectAttribute) {
-		//categoryのチェック
+		 // 存在しないカテゴリの場合エラー 
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";

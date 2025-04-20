@@ -30,11 +30,15 @@
 				<td>
 					<select th:field="*{categoryId}" required>
 						<option value="">カテゴリを選択</option>
-						<option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
+						<option th:each="category : ${categories}" 
+								th:value="${category.id}" 
+								th:text="${category.name}">
 						</option>
 					</select>
 					<span th:errors="*{categoryId}"></span>
-					<span>または新しいカテゴリーをつくる<input type="text" th:field="*{categoryName}"></span>
+					<span>または新しいカテゴリーをつくる
+						<input type="text" th:field="*{categoryName}">
+					</span>
 					<span th:errors="*{categoryNotNull}"></span>
 				</td>
 			</tr>
@@ -55,7 +59,7 @@
 			</tr>
 		</table>
 		<input th:if="${fromRegist}" type="hidden" name="fromRegist" value="${fromRegist}">
-		<button type="submit">編集内容確認</button>
+		<button type="submit">入力内容の確認</button>
 	</form>
 	<!-- 新規登録からの遷移の場合、戻るボタンは 登録画面へ -->
 	<form th:if="${fromRegist}" th:action="@{/registConfirm}" method="post" th:object="${wordForm}">

@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
+	
 	private final CategoryRepository categoryRepository;
+	
 	@Override
 	public List<Category> findAll() {
 		return categoryRepository.findAll();
@@ -22,11 +24,11 @@ public class CategoryServiceImpl implements CategoryService {
 		Optional<Category>  categoryOpt = categoryRepository.findById(categoryId);
 		return categoryOpt;
 	}
-	//nameで検索
 	@Override
-	public Optional<Category> searchByName(String categoryName) {
+	public Optional<Category> findByName(String categoryName) {
 		return categoryRepository.findByName(categoryName);
 	}
+	
 	//nameで登録してそのidを返す
 	@Override
 	public Category addCategory(String categoryName) {
@@ -35,6 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
 		Category savedCategory = categoryRepository.save(category);
 		return savedCategory;
 	}
+	
 	@Override
 	public void deleteByCategoryId(Integer categoryId) {
 		categoryRepository.deleteById(categoryId);
