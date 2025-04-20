@@ -162,130 +162,103 @@ public class WordControllerTest {
 				.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("category1"))));
 		verify(categoryService, never()).addCategory("category1");
 	}
-	
+
 	@Test
-	//登録確認 (categoryName と categoryId の両方に入力あり -> 矛盾なし )
-	void testRegistConfirm_InputCategoryNameAndId_NotContradict() throws Exception {
+	//登録確認 (categoryName と categoryId の両方に入力あり -> バリデーションエラー)
+	void testRegistConfirm_InputCategoryNameAndId() throws Exception {
 		mockMvc.perform(post("/registConfirm")
 				.param("wordName", "newWordName")
 				.param("content", "newContent")
 				.param("categoryId", "1")//catgoryNameに矛盾しないcategoryIdを入力
 				.param("categoryName", "category1")//既存categoryNameを入力
 				.param("relatedWordIds", ""))
-		.andExpect(view().name("regist_confirm"))
-		.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))))
-		.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("category1"))));
+				.andExpect(view().name("regist_form"))
+				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))))
+				.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("category1"))));
 		verify(categoryService, never()).addCategory("category1");
-	}
-	@Test
-	//登録確認 (categoryName と categoryId の両方に入力あり -> 矛盾あり )
-	void testRegistConfirm_InputCategoryNameAndId_Contradict() throws Exception {
-		mockMvc.perform(post("/registConfirm")
-				.param("wordName", "newWordName")
-				.param("content", "newContent")
-				.param("categoryId", "2")//catgoryNameに矛盾するcategoryIdを入力
-				.param("categoryName", "category1")//既存categoryNameを入力
-				.param("relatedWordIds", ""))
-		.andExpect(view().name("regist_confirm"))
-		.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))))
-		.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("category1"))));
-		verify(categoryService, never()).addCategory("category1");
-	}
-	@Test
-	//登録確認 (categoryName と categoryId の両方に入力あり ->  categoryNameは未登録で categoryIdは既存)
-	void testRegistConfirm_InputNewCategoryName_And_InputExinstingCategoryId() throws Exception {
-		mockMvc.perform(post("/registConfirm")
-				.param("wordName", "newWordName")
-				.param("content", "newContent")
-				.param("categoryId", "2")//既存categoryIdを入力
-				.param("categoryName", "newCategoryName")//未登録categoryNameを入力
-				.param("relatedWordIds", ""))
-		.andExpect(view().name("regist_confirm"))
-		.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(3))))
-		.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("newCategoryName"))));
-		verify(categoryService, atLeastOnce()).addCategory("newCategoryName");
 	}
 
-		@Test
-		//登録確認 ( categoryIdに入力あり -> そのidで未登録 -> エラー画面 )
-		void testRegistConfirm_InputCategoryId_NotExistCategory() throws Exception {
-			int categoryId = 99;
-			doReturn(Optional.empty()).when(categoryService).findByCategoryId(categoryId);
-			mockMvc.perform(post("/registConfirm")
-					.param("wordName", "newWordName")
-					.param("content", "newContent")
-					.param("categoryId", Integer.toString(categoryId))
-					.param("categoryName", "")
-					.param("relatedWordIds", ""))
-					.andExpect(view().name("regist_error"));
-		}
-		
-		@Test
-		//登録確認 ( wordNameによる検索 -> そのwordで未登録 -> 受け付けたwordFormの情報を表示 )
-		void testRegistConfirm_NotExistword() throws Exception {
-			mockMvc.perform(post("/registConfirm")
-					.param("wordName", "newWordName")
-					.param("content", "content")
-					.param("categoryId", "1")
-					.param("categoryName", "")
-					.param("relatedWordIds", "1", "2"))
-					.andExpect(view().name("regist_confirm"))
-					.andExpect(model().attribute("wordForm", hasProperty("wordName", is("newWordName"))))
-					.andExpect(model().attribute("wordForm", hasProperty("content", is("content"))))
-					.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))))
-					.andExpect(model().attribute("relatedWordNames",containsInAnyOrder("word1","word2")));
-		}
-	
-		@Test
-		// 登録 ( カテゴリ既存 -> word新規登録 -> wordListへリダイレクト )
-		void testRegist_ExistCategory() throws Exception {
-			WordForm wordform = new WordForm();
-			wordform.setWordName("newWordName");
-			wordform.setContent("content");
-			wordform.setCategoryId(1);
-	
-			mockMvc.perform(post("/regist")
-					.param("wordName", wordform.getWordName())
-					.param("content", wordform.getContent())
-					.param("categoryId", String.valueOf(wordform.getCategoryId())))
-					.andExpect(status().is3xxRedirection())
-					.andExpect(redirectedUrl("/wordList"))
-					.andExpect(flash().attributeExists("regist_ok"));
-		}
-	
-		@Test
-		// 登録 ( 関連語入力 ->カテゴリ既存 -> word新規登録 -> wordListへリダイレクト )
-		void testRegist_ExistCategory_relatedWords() throws Exception {
-			WordForm wordform = new WordForm();
-			wordform.setWordName("newWordName");
-			wordform.setContent("content");
-			wordform.setCategoryId(1);
-	
-			mockMvc.perform(post("/regist")
-					.param("wordName", wordform.getWordName())
-					.param("content", wordform.getContent())
-					.param("categoryId", String.valueOf(wordform.getCategoryId()))
-					.param("relatedWordIds", "1", "2"))
-					.andExpect(status().is3xxRedirection())
-					.andExpect(redirectedUrl("/wordList"))
-					.andExpect(flash().attributeExists("regist_ok"));
-		}
-	
-		@Test
-		// 登録 ( カテゴリ未登録 -> エラー )
-		void testRegist_NotExistCategory() throws Exception {
-			int categoryId = 99;
-			doReturn(Optional.empty()).when(categoryService).findByCategoryId(categoryId);
-			WordForm wordform = new WordForm();
-			wordform.setWordName("newWordName");
-			wordform.setContent("content");
-			wordform.setCategoryId(categoryId);
-	
-			mockMvc.perform(post("/regist")
-					.param("wordName", wordform.getWordName())
-					.param("content", wordform.getContent())
-					.param("categoryId", String.valueOf(wordform.getCategoryId())))
-					.andExpect(status().isOk())
-					.andExpect(view().name("regist_error"));
-		}
+
+	@Test
+	//登録確認 ( categoryIdに入力あり -> そのidで未登録 -> エラー画面 )
+	void testRegistConfirm_InputCategoryId_NotExistCategory() throws Exception {
+		int categoryId = 99;
+		doReturn(Optional.empty()).when(categoryService).findByCategoryId(categoryId);
+		mockMvc.perform(post("/registConfirm")
+				.param("wordName", "newWordName")
+				.param("content", "newContent")
+				.param("categoryId", Integer.toString(categoryId))
+				.param("categoryName", "")
+				.param("relatedWordIds", ""))
+				.andExpect(view().name("regist_error"));
+	}
+
+	@Test
+	//登録確認 ( wordNameによる検索 -> そのwordで未登録 -> 受け付けたwordFormの情報を表示 )
+	void testRegistConfirm_NotExistword() throws Exception {
+		mockMvc.perform(post("/registConfirm")
+				.param("wordName", "newWordName")
+				.param("content", "content")
+				.param("categoryId", "1")
+				.param("categoryName", "")
+				.param("relatedWordIds", "1", "2"))
+				.andExpect(view().name("regist_confirm"))
+				.andExpect(model().attribute("wordForm", hasProperty("wordName", is("newWordName"))))
+				.andExpect(model().attribute("wordForm", hasProperty("content", is("content"))))
+				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))))
+				.andExpect(model().attribute("relatedWordNames", containsInAnyOrder("word1", "word2")));
+	}
+
+	@Test
+	// 登録 ( カテゴリ既存 -> word新規登録 -> wordListへリダイレクト )
+	void testRegist_ExistCategory() throws Exception {
+		WordForm wordform = new WordForm();
+		wordform.setWordName("newWordName");
+		wordform.setContent("content");
+		wordform.setCategoryId(1);
+
+		mockMvc.perform(post("/regist")
+				.param("wordName", wordform.getWordName())
+				.param("content", wordform.getContent())
+				.param("categoryId", String.valueOf(wordform.getCategoryId())))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/wordList"))
+				.andExpect(flash().attributeExists("regist_ok"));
+	}
+
+	@Test
+	// 登録 ( 関連語入力 ->カテゴリ既存 -> word新規登録 -> wordListへリダイレクト )
+	void testRegist_ExistCategory_relatedWords() throws Exception {
+		WordForm wordform = new WordForm();
+		wordform.setWordName("newWordName");
+		wordform.setContent("content");
+		wordform.setCategoryId(1);
+
+		mockMvc.perform(post("/regist")
+				.param("wordName", wordform.getWordName())
+				.param("content", wordform.getContent())
+				.param("categoryId", String.valueOf(wordform.getCategoryId()))
+				.param("relatedWordIds", "1", "2"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/wordList"))
+				.andExpect(flash().attributeExists("regist_ok"));
+	}
+
+	@Test
+	// 登録 ( カテゴリ未登録 -> エラー )
+	void testRegist_NotExistCategory() throws Exception {
+		int categoryId = 99;
+		doReturn(Optional.empty()).when(categoryService).findByCategoryId(categoryId);
+		WordForm wordform = new WordForm();
+		wordform.setWordName("newWordName");
+		wordform.setContent("content");
+		wordform.setCategoryId(categoryId);
+
+		mockMvc.perform(post("/regist")
+				.param("wordName", wordform.getWordName())
+				.param("content", wordform.getContent())
+				.param("categoryId", String.valueOf(wordform.getCategoryId())))
+				.andExpect(status().isOk())
+				.andExpect(view().name("regist_error"));
+	}
 }

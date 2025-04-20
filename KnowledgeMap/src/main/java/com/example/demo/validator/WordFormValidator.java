@@ -26,18 +26,18 @@ public class WordFormValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		WordForm wordForm = (WordForm) target;
+		// 関連語に自身のwordを選択するとエラー
 		if (wordForm.getRelatedWordIds() != null) {
 			List<String> relatedWordNames = wordForm.getRelatedWordIds().stream()
 					.map(relatedWordId -> wordService.findById(relatedWordId))
 					.filter(opt -> opt.isPresent())
 					.map(opt -> opt.get().getWordName())
 					.toList();
-			// 関連語に自身のwordを選択していないか
 			if (relatedWordNames.contains(wordForm.getWordName())) {
 				errors.rejectValue("relatedWordIds", null, "自身のwordは関連語として登録できません");
 			}
 		}
-		// 既存wordNameかどうか
+		// 既存wordNameならエラー
 		Optional<Word> existingWordOpt = wordService.findByWordName(wordForm.getWordName());
 		if (existingWordOpt.isPresent()) {
 			Word existingWord = existingWordOpt.get();
@@ -48,6 +48,10 @@ public class WordFormValidator implements Validator {
 			if (wordForm.getId() == null || !wordForm.getId().equals(existingWord.getId())) {
 				errors.rejectValue("wordName", null, wordForm.getWordName() + "はすでに登録されています");
 			}
+		}
+		//categoryIdとcategoryNameの両方に入力があればエラー
+		if(wordForm.getCategoryId() != null && wordForm.getCategoryName() != null && !wordForm.getCategoryName().isBlank()) {
+			errors.rejectValue("categoryId", null,"新規カテゴリを入力した場合は、カテゴリを選択できません");
 		}
 	}
 }
