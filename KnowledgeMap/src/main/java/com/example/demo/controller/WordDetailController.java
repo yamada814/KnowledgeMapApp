@@ -7,7 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +22,7 @@ import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.WordService;
+import com.example.demo.validator.WordFormValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +32,12 @@ import lombok.RequiredArgsConstructor;
 public class WordDetailController {
 	private final WordService wordService;
 	private final CategoryService categoryService;
+	private final WordFormValidator wordFormValidator;
+	
+	@InitBinder("wordForm")
+	public void initBinder(WebDataBinder webDataBinder) {
+		webDataBinder.addValidators(wordFormValidator);
+	}
 	
 	//wordFormのrelatedWordIds(List<Integer>)からrelatedWordNames(List<String>)へ変換するメソッド
 	public List<String> getRelatedWordNames(WordForm wordForm){
@@ -90,6 +99,7 @@ public class WordDetailController {
 		}
 		Word word = wordOpt.get();
 		// 編集用wordFormに、DBから検索したwordの値をセット
+		wordForm.setId(word.getId()); 
 		wordForm.setWordName(word.getWordName());
 		wordForm.setContent(word.getContent());
 		wordForm.setCategoryId(word.getCategory().getId());
@@ -133,17 +143,6 @@ public class WordDetailController {
 			model.addAttribute("wordList",wordService.findAll());
 			model.addAttribute("word", word);
 			model.addAttribute("categories", categoryService.findAll());
-			return "edit_form";
-		}
-		//wordNameがカブっていたら 入力情報をモデルに格納して 入力フォーム画面へ返す
-		Optional<Word> existingWordOpt = wordService.findByWordName(wordForm.getWordName());
-		if (existingWordOpt.isPresent() && !existingWordOpt.get().getId().equals(id)) {
-			model.addAttribute("relatedWordNames",getRelatedWordNames(wordForm));
-			model.addAttribute("wordList",wordService.findAll());
-			model.addAttribute("word", word);
-			model.addAttribute("categories", categoryService.findAll());
-			
-			model.addAttribute("word_duplicate", existingWordOpt.get().getWordName() + "は既に登録済です");
 			return "edit_form";
 		}
 		String newCategoryName = wordForm.getCategoryName();

@@ -9,6 +9,7 @@ import lombok.Data;
 
 @Data
 public class WordForm {
+	private Integer id;
 	@NotBlank(message="wordが空です")
     private String wordName;
 	@NotBlank(message="contentが空です")
