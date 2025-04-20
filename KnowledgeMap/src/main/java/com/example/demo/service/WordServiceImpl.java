@@ -26,6 +26,7 @@ public class WordServiceImpl implements WordService {
 	
 	//WordForm型からWord型への変換を行うユーティリティメソッド
 	public Word transferWordFormToWord(Word word,WordForm wordForm) {
+		word.setId(wordForm.getId());
 		word.setWordName(wordForm.getWordName());
 		word.setContent(wordForm.getContent());
 		// wordForm型の categoryId から Category型に変換して Word型にセット

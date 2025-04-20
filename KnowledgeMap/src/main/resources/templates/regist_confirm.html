@@ -6,63 +6,29 @@
 </head>
 <body>
 	<h1>登録確認</h1>
-	<!-- wordが既存だった場合 -->
-	<div th:if="${exists}">
-		<!-- 登録済みの内容 -->
-		<h2><span th:text="${word.wordName}"></span> はすでに登録されています。</h2>
-		<h3>【登録済みの内容】</h3>
-		<table th:object="${word}" border="1">
+	<h2>以下の内容で登録します</h2>
+	<form th:action="@{/regist}" method="post" th:object="${wordForm}">
+		<table>
 			<tr>
 				<th>word</th>
-				<td th:text="*{wordName}"></td>
-			</tr>
-			<tr>
-				<th>content</th>
-				<td th:text="*{content}"></td>
-			</tr>
-			<tr>
-				<th>category</th>
-				<td th:text="*{category.name}"></td>
-			</tr>
-			<tr>
-				<th>related_words</th>
 				<td>
-					<ul>
-						<li th:each="relatedWord : *{relatedWords}" th:text="${relatedWord.wordName}"></li>
-					</ul>
+					<span th:text="*{wordName}"></span>
+					<input type="hidden" th:field="*{wordName}">
 				</td>
 			</tr>
-		</table>
-
-		<!-- 登録済み内容の選択肢 -->
-		<div>
-			<h4>この登録済みの内容に対して：</h4>
-			<ul>
-				<li>
-					<a th:href="@{/registCancel}">登録をキャンセルする</a>
-				</li>
-				<li>
-					<form th:action="@{/words/{id}/editForm(id=${word.id})}">
-						<input type="hidden" name="fromRegist" value="fromRegist">
-						<button type="submit">既存の登録内容を編集する</button>
-					</form>
-				</li>
-			</ul>
-		</div>
-		<!-- 入力された内容 -->
-		<h3>【あなたが入力した内容】</h3>
-		<table th:object="${wordForm}" border="1">
-			<tr>
-				<th>word</th>
-				<td th:text="*{wordName}"></td>
-			</tr>
 			<tr>
 				<th>content</th>
-				<td th:text="*{content}"></td>
+				<td>
+					<span th:text="*{content}"></span>
+					<input type="hidden" th:field="*{content}">
+				</td>
 			</tr>
 			<tr>
 				<th>category</th>
-				<td th:text="*{categoryName}"></td>
+				<td>
+					<span th:text="*{categoryName}"></span>
+					<input type="hidden" th:field="*{categoryId}">
+				</td>
 			</tr>
 			<tr>
 				<th>related_words</th>
@@ -70,82 +36,20 @@
 					<ul>
 						<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
 					</ul>
+					<input type="hidden" th:field="*{relatedWordIds}">
 				</td>
 			</tr>
-
 		</table>
-
-		<!-- 入力内容の選択肢 -->
-		<div>
-			<h4>この入力内容に対して：</h4>
-			<ul>
-				<li>
-					<form th:action="@{words/{id}/edit(id=${word.id})}" method="post" th:object="${wordForm}">
-						<input type="hidden" th:field="*{wordName}">
-						<input type="hidden" th:field="*{content}">
-						<input type="hidden" th:field="*{categoryId}">
-						<input type="hidden" th:field="*{relatedWordIds}">
-						<button type="submit">既存のwordをこの内容で上書きする</button>
-					</form>
-				</li>
-				<li>
-					<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}">
-						<input type="hidden" th:field="*{wordName}">
-						<input type="hidden" th:field="*{content}">
-						<input type="hidden" th:field="*{categoryId}">
-						<input type="hidden" th:field="*{relatedWordIds}">
-						<button type="submit">入力画面に戻って修正する</button>
-					</form>
-				</li>
-			</ul>
-		</div>
-	</div>
-
-	<!-- wordが未登録の場合 -->
-	<div th:unless="${exists}">
-		<h2>以下の内容で登録します</h2>
-		<form th:action="@{/regist}" method="post" th:object="${wordForm}">
-			<table>
-				<tr>
-					<th>word</th>
-					<td>
-						<span th:text="*{wordName}"></span>
-						<input type="hidden" th:field="*{wordName}">
-					</td>
-				</tr>
-				<tr>
-					<th>content</th>
-					<td>
-						<span th:text="*{content}"></span>
-						<input type="hidden" th:field="*{content}">
-					</td>
-				</tr>
-				<tr>
-					<th>category</th>
-					<td>
-						<span th:text="*{categoryName}"></span>
-						<input type="hidden" th:field="*{categoryId}">
-					</td>
-				</tr>
-				<tr>
-					<th>related_words</th>
-					<td>
-						<ul>
-							<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
-						</ul>
-						<input type="hidden" th:field="*{relatedWordIds}">
-					</td>
-				</tr>
-			</table>
-			<button type="submit">登録する</button>
-		</form>
-		<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}" style="display:inline;">
-			<input type="hidden" th:field="*{wordName}">
-			<input type="hidden" th:field="*{content}">
-			<input type="hidden" th:field="*{categoryId}">
-			<input type="hidden" th:field="*{relatedWordIds}">
-			<button type="submit">入力画面に戻って修正する</button>
-		</form>
+		<button type="submit">登録する</button>
+	</form>
+	<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}" style="display:inline;">
+		<input type="hidden" th:field="*{wordName}">
+		<input type="hidden" th:field="*{content}">
+		<input type="hidden" th:field="*{categoryId}">
+		<input type="hidden" th:field="*{relatedWordIds}">
+		<button type="submit">入力画面に戻って修正する</button>
+	</form>
 	</div>
 </body>
+
 </html>

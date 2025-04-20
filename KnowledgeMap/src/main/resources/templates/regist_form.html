@@ -10,6 +10,7 @@
 	<h1>新規登録</h1>
 	<form th:action="@{/registConfirm}" method="post">
 		<table th:object="${wordForm}" border="1">
+		<input type="hidden" th:field="*{id}">
 			<tr>
 				<th>word</th>
 				<td>
@@ -32,7 +33,7 @@
 						<option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
 						</option>
 					</select>
-					<p>または新しいカテゴリーをつくる<input type="text" th:field="*{categoryName}"></p>
+					<span>または新しいカテゴリーをつくる<input type="text" th:field="*{categoryName}"></span>
 					<span th:errors="*{categoryNotNull}"></span>
 				</td>
 			</tr>
@@ -40,11 +41,9 @@
 				<th>relatedWords</th>
 				<td>
 					<select multiple th:field="*{relatedWordIds}">
-					    <option th:each="word : ${wordList}" 
-					            th:value="${word.id}" 
-					            th:text="${word.wordName}">
-					    </option>
-					</select>	
+						<option th:each="word : ${wordList}" th:value="${word.id}" th:text="${word.wordName}">
+						</option>
+					</select>
 					<span th:errors="*{relatedWordIds}"></span>
 				</td>
 			</tr>
@@ -52,6 +51,36 @@
 		<button>登録内容の確認</button>
 	</form>
 	<a th:href="@{/wordList}">一覧へ戻る</a>
+
+	<div th:if="${existingWord} != null">
+		<h3>【登録済みの内容】</h3>
+		<table th:object="${existingWord}" border="1">
+			<tr>
+				<th>word</th>
+				<td th:text="*{wordName}"></td>
+			</tr>
+			<tr>
+				<th>content</th>
+				<td th:text="*{content}"></td>
+			</tr>
+			<tr>
+				<th>category</th>
+				<td th:text="*{category.name}"></td>
+			</tr>
+			<tr>
+				<th>related_words</th>
+				<td>
+					<ul>
+						<li th:each="relatedWord : *{relatedWords}" th:text="${relatedWord.wordName}"></li>
+					</ul>
+				</td>
+			</tr>
+		</table>
+		<form th:action="@{/words/{id}/editForm(id=${existingWord.id})}">
+			<input type="hidden" name="fromRegist" value="fromRegist">
+			<button type="submit">既存の登録内容を編集する</button>
+		</form>
+	</div>
 </body>
 
 </html>
