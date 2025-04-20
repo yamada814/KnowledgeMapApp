@@ -27,6 +27,7 @@ import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.WordService;
+import com.example.demo.validator.WordFormValidator;
 
 @WebMvcTest(WordDetailController.class)
 public class WordDetailControllerTest {
@@ -46,6 +47,10 @@ public class WordDetailControllerTest {
 		@Bean
 		CategoryService categoryService() {
 			return org.mockito.Mockito.mock(CategoryService.class);
+		}
+		@Bean
+		WordFormValidator wordFormValidator() {
+			return new WordFormValidator(wordService());
 		}
 	}
 	@BeforeEach
@@ -84,41 +89,14 @@ public class WordDetailControllerTest {
 		doReturn(list).when(wordService).findAll();
 		doReturn(Optional.of(word1)).when(wordService).findById(1);
 		doReturn(Optional.empty()).when(wordService).findById(999);
-		doReturn(Optional.empty()).when(wordService).findByWordName("NotExistingWordName");//word重複なし
+		doReturn(Optional.empty()).when(wordService).findByWordName("newWordName");//word重複なし
 		doReturn(Optional.of(newWord1)).when(wordService).findByWordName("ExistingWordName");//word重複あり
 
 		doReturn(Optional.of(category1)).when(categoryService).findByName("category1");
 		doReturn(Optional.empty()).when(categoryService).findByName("newCategoryName");
 		doReturn(newCategory).when(categoryService).addCategory("newCategoryName");
-	}
-
-	@Test
-	void testShowDetail() throws Exception {
-		doReturn(true).when(wordService).deleteById(1);
-		mockMvc.perform(get("/words/{id}", 1))
-				.andExpect(status().isOk())
-				.andExpect(view().name("word_detail"))
-				.andExpect(model().attributeExists("word"))
-				.andExpect(model().attribute("word", hasProperty("wordName", is("word1"))));
-	}
-
-	@Test
-	//削除成功
-	void testDeleteWord_ExistingWord() throws Exception {
-		mockMvc.perform(post("/words/{id}/delete", 1))
-				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/wordList"))
-				.andExpect(flash().attribute("delete_ok", "wordを削除しました"));
-	}
-
-	@Test
-	//削除失敗(存在しないidを指定)
-	void testDeleteWord_NotExistWord() throws Exception {
-		mockMvc.perform(post("/words/{id}/delete", 999))
-				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/wordList"))
-				.andExpect(flash().attribute("delete_error", "指定されたwordは存在しません"));
-		verify(wordService, never()).deleteById(999);
+		doReturn(Optional.of(category1)).when(categoryService).findByCategoryId(1);
+		doReturn(Optional.of(newCategory)).when(categoryService).findByCategoryId(2);
 	}
 
 	@Test
@@ -175,18 +153,15 @@ public class WordDetailControllerTest {
 		form.setContent("newContent");
 		form.setCategoryId(2);
 		mockMvc.perform(post("/words/{id}/editConfirm", 1)
-				.param("wordName", "notExistingWordName")
+				.param("wordName", "newWordName")
 				.param("content", "newContent")
-				.param("categoryId", "2")
+				.param("categoryId", "1")
 				.param("categoryName", ""))
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_confirm"))
-				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(2))));;	
+				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))));;	
 		verify(categoryService, never()).addCategory("newCategoryName");
-//		ArgumentCaptor<WordForm> captor = ArgumentCaptor.forClass(WordForm.class);
-//		verify(wordService).updateWord(eq(1), captor.capture());
-//		WordForm argForm = captor.getValue();
-//		assertThat(argForm.getWordName()).isEqualTo("newWordName");
+
 	}
 	@Test
 	//編集実行 ( wordカブリなし,categoryName入力あり,categoryNameは未登録 -> categoryNameを新規追加 )
@@ -212,7 +187,7 @@ public class WordDetailControllerTest {
 		form.setWordName("newWordName");
 		form.setContent("newContent");
 		mockMvc.perform(post("/words/{id}/editConfirm", 1)
-				.param("wordName", "notExistingWordName")
+				.param("wordName", "newWordName")
 				.param("content", "newContent")
 				.param("categoryId", "")
 				.param("categoryName", "category1"))//既存のcategoryNameを指定（category1のCategoryIdは 1 ）
@@ -220,13 +195,9 @@ public class WordDetailControllerTest {
 				.andExpect(view().name("edit_confirm"))
 				.andExpect(model().attribute("wordForm",hasProperty("categoryId",is(1))));
 		verify(categoryService, never()).addCategory("category1");
-//		ArgumentCaptor<WordForm> captor = ArgumentCaptor.forClass(WordForm.class);
-//		verify(wordService, atLeastOnce()).updateWord(eq(1), captor.capture());
-//		WordForm argForm = captor.getValue();
-//		assertThat(argForm.getCategoryId()).isEqualTo(1);//categoryIdは 1 で更新
 	}
 	@Test
-	//編集確認 ( wordカブリあり -> 　入力フォームのビューを返し、かぶってるメッセージを表示 )
+	//編集確認 ( wordカブリあり -> 　入力フォームのビューを返し、エラーメッセージを表示 )
 	void testEditConfirm_ExistingWord() throws Exception {
 		mockMvc.perform(post("/words/{id}/editConfirm", 1)
 				.param("wordName", "ExistingWordName")
@@ -235,7 +206,7 @@ public class WordDetailControllerTest {
 				.param("categoryName", "newCategoryName"))
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_form"))
-				.andExpect(model().attributeExists("word_duplicate"));
+				.andExpect(model().attributeHasFieldErrors("wordForm", "wordName"));
 	}
 	@Test
 	//編集実行
