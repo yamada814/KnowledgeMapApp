@@ -87,14 +87,19 @@ public class WordControllerTest {
 		existingWord.setId(4);
 		existingWord.setWordName("existingWordName");
 		existingWord.setCategory(category1);
+		//新規登録したword
+		Word registedWord = new Word();
+		registedWord.setId(5);
+		registedWord.setWordName("newWordName");
+		registedWord.setContent("content");
+		registedWord.setCategory(category1);	
+		doReturn(registedWord).when(wordService).addWord(any());
 
 		doReturn(list).when(wordService).findAll();
-		//	doReturn(Optional.empty()).when(wordService).findByWordName(any());
 		doReturn(Optional.of(existingWord)).when(wordService).findByWordName("existingWordName");//wordが既存
 		doReturn(Optional.empty()).when(wordService).findByWordName("newWordName");//wordが未登録
 		doReturn(Optional.of(word2)).when(wordService).findById(2);
 		doReturn(Optional.of(newWord)).when(wordService).findById(3);
-		//		doReturn(Optional.empty()).when(wordService).findById(3);
 		List<String> relatedWordNames = new ArrayList<>(List.of(word1.getWordName(), word2.getWordName()));
 		doReturn(relatedWordNames).when(wordService).getRelatedWordNames(any());
 
@@ -216,13 +221,13 @@ public class WordControllerTest {
 		wordform.setWordName("newWordName");
 		wordform.setContent("content");
 		wordform.setCategoryId(1);
-
+		
 		mockMvc.perform(post("/regist")
 				.param("wordName", wordform.getWordName())
 				.param("content", wordform.getContent())
 				.param("categoryId", String.valueOf(wordform.getCategoryId())))
 				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/wordList"))
+				.andExpect(redirectedUrl("/wordList?categoryId=1&id=5"))
 				.andExpect(flash().attributeExists("regist_ok"));
 	}
 
@@ -240,7 +245,7 @@ public class WordControllerTest {
 				.param("categoryId", String.valueOf(wordform.getCategoryId()))
 				.param("relatedWordIds", "1", "2"))
 				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/wordList"))
+				.andExpect(redirectedUrl("/wordList?categoryId=1&id=5"))
 				.andExpect(flash().attributeExists("regist_ok"));
 	}
 

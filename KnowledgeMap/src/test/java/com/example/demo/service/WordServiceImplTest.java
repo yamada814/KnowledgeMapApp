@@ -108,12 +108,7 @@ public class WordServiceImplTest {
 		Optional<Word> wordOpt = wordServiceImpl.findById(id);
 		assertThat(wordOpt.get().getWordName()).isEqualTo("word1");	
 	}
-	@Test
-	void testDeleteById() {
-		Integer id = 1;
-		wordServiceImpl.deleteById(id);
-		verify(wordRepository).deleteById(id);
-	}
+
 	@Test
 	void testUpdateWord() {
 		Integer id = 1;

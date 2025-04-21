@@ -58,6 +58,8 @@ async function showWordList(categoryId) {
 				categoryDeleteBtn.textContent = "このカテゴリを削除";
 				categoryDeleteBtn.addEventListener("click", () => deleteCategory(selectedCategoryId));
 				wordList.appendChild(categoryDeleteBtn);
+				
+				return;
 			}
 			//wordがある場合
 			const ul = document.createElement("ul");

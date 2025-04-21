@@ -28,18 +28,19 @@ public class WordController {
 	private final WordService wordService;
 	private final CategoryService categoryService;
 	private final WordFormValidator wordFormValidator;
-	
+
 	@InitBinder("wordForm")
 	public void initBinder(WebDataBinder webDataBinder) {
 		webDataBinder.addValidators(wordFormValidator);
 	}
+
 	// word一覧表示
 	@GetMapping("/wordList")
 	public String showWordList(Model model) {
 		model.addAttribute("categories", categoryService.findAll());
 		return "word_list";
 	}
-	
+
 	//新規登録画面
 	@GetMapping("/showWordForm")
 	public String showWordForm(Model model) {
@@ -76,7 +77,7 @@ public class WordController {
 		// categoryNameに入力があった場合
 		String newCategoryName = wordForm.getCategoryName();
 		if (newCategoryName != null && !newCategoryName.isBlank()) {
-			Optional<Category> categoryOpt =  categoryService.findByName(newCategoryName);
+			Optional<Category> categoryOpt = categoryService.findByName(newCategoryName);
 			if (categoryOpt.isEmpty()) { // 入力されたcategoryNameが未登録 -> categoryテーブルへ新規登録
 				Category newCategory = categoryService.addCategory(newCategoryName);
 				wordForm.setCategoryId(newCategory.getId());
@@ -90,13 +91,17 @@ public class WordController {
 			return "regist_error";
 		}
 		wordForm.setCategoryName(categoryOpt.get().getName());
-		model.addAttribute("relatedWordNames",wordService.getRelatedWordNames(wordForm));
+		//relatedWordNames
+		if (wordForm.getRelatedWordIds() != null) {
+			model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));
+		}
 		return "regist_confirm";
 	}
+
 	//DB新規登録
 	@PostMapping("/regist")
-	public String regist(WordForm wordForm,RedirectAttributes redirectAttribute) {
-		 // 存在しないカテゴリの場合エラー 
+	public String regist(WordForm wordForm, RedirectAttributes redirectAttribute) {
+		// 存在しないカテゴリの場合エラー 
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
@@ -104,6 +109,7 @@ public class WordController {
 		Word registedWord = wordService.addWord(wordForm);
 		redirectAttribute.addFlashAttribute("regist_ok", "登録完了しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
-		return String.format("redirect:/wordList?categoryId=%d&id=%d", registedWord.getCategory().getId(),registedWord.getId());
+		return String.format("redirect:/wordList?categoryId=%d&id=%d", registedWord.getCategory().getId(),
+				registedWord.getId());
 	}
 }
