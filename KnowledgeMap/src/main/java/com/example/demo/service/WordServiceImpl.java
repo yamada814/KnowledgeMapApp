@@ -84,17 +84,17 @@ public class WordServiceImpl implements WordService {
 	}
 
 	@Override
-	public void addWord(WordForm wordForm) {
+	public Word addWord(WordForm wordForm) {
 		Word word = new Word();
 		transferWordFormToWord(word, wordForm);//WordForm型 -> Word型　の変換
-		wordRepository.save(word);
+		return wordRepository.save(word);
 	}
 
 	@Override
-	public void updateWord(Integer id, WordForm wordForm) {
+	public Word updateWord(Integer id, WordForm wordForm) {
 		Optional<Word> wordOpt = wordRepository.findById(id);
 		Word word = wordOpt.get();
 		transferWordFormToWord(word, wordForm);//WordForm型 -> Word型　の変換
-		wordRepository.save(word);
+		return  wordRepository.save(word);
 	}
 }

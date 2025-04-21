@@ -5,3 +5,9 @@
 .deleteBtnVisible{
     display: inline;
 }
+.wordDetailHidden{
+	display: none;
+}
+.wordDetailVisible{
+	display: inline;
+}

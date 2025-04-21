@@ -124,9 +124,9 @@ public class WordDetailController {
 	public String edit(WordForm wordForm,
 			@PathVariable("id") Integer id,
 			RedirectAttributes redirectAttribute) {
-		wordService.updateWord(id, wordForm);
+		Word updatedWord = wordService.updateWord(id, wordForm);
 		redirectAttribute.addFlashAttribute("edit_ok", "編集が完了しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
-		return "redirect:/wordList";
+		return String.format("redirect:/wordList?categoryId=%d&id=%d", updatedWord.getCategory().getId(),updatedWord.getId());
 	}
 }
