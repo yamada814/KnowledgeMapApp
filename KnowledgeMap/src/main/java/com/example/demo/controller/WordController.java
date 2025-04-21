@@ -101,9 +101,9 @@ public class WordController {
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
-		wordService.addWord(wordForm);
+		Word registedWord = wordService.addWord(wordForm);
 		redirectAttribute.addFlashAttribute("regist_ok", "登録完了しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
-		return "redirect:/wordList";
+		return String.format("redirect:/wordList?categoryId=%d&id=%d", registedWord.getCategory().getId(),registedWord.getId());
 	}
 }
