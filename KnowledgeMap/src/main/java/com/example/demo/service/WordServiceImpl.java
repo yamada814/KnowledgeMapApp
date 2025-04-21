@@ -32,7 +32,8 @@ public class WordServiceImpl implements WordService {
 		// wordForm型の categoryId から Category型に変換して Word型にセット
 		Optional<Category> categoryOpt = categoryRepository.findById(wordForm.getCategoryId());
 		word.setCategory(categoryOpt.get());
-		//wordFormのidのリストから Wordのリスト に変換して wordにセット
+		if(wordForm.getRelatedWordIds() != null) {
+			
 		//@ManyToManyのついてるフィールドは、Hibernateが内部で clear()やadd()を行う可能性があるので mutable である必要がある
 		// .toList()はimmutableとなり、clear()が呼ばれたときにjava.lang.UnsupportedOperationExceptionが発生する
 		List<Word> relatedWords = wordForm.getRelatedWordIds().stream()
@@ -41,6 +42,7 @@ public class WordServiceImpl implements WordService {
 				.map(opt -> opt.get())
 				.collect(Collectors.toCollection(ArrayList::new));
 		word.setRelatedWords(relatedWords);
+		}
 		return word;
 	}
 
