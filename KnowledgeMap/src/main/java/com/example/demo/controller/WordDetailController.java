@@ -57,6 +57,7 @@ public class WordDetailController {
 		}
 		Word word = wordOpt.get();
 		// 編集用wordFormに、DBから検索したwordの値をセット
+		wordForm.setId(word.getId());
 		wordForm.setWordName(word.getWordName());
 		wordForm.setContent(word.getContent());
 		wordForm.setCategoryId(word.getCategory().getId());
@@ -121,7 +122,7 @@ public class WordDetailController {
 	}
 
 	@PostMapping("/{id}/edit")
-	public String edit(WordForm wordForm,
+	public String edit(@ModelAttribute WordForm wordForm,
 			@PathVariable("id") Integer id,
 			RedirectAttributes redirectAttribute) {
 		Word updatedWord = wordService.updateWord(id, wordForm);

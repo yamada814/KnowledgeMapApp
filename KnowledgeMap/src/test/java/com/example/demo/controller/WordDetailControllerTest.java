@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -15,7 +15,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -44,15 +43,18 @@ public class WordDetailControllerTest {
 		WordService wordService() {
 			return org.mockito.Mockito.mock(WordService.class);
 		}
+
 		@Bean
 		CategoryService categoryService() {
 			return org.mockito.Mockito.mock(CategoryService.class);
 		}
+
 		@Bean
 		WordFormValidator wordFormValidator() {
 			return new WordFormValidator(wordService());
 		}
 	}
+
 	@BeforeEach
 	void setupMockMvc() {
 		Category category1 = new Category();
@@ -85,6 +87,14 @@ public class WordDetailControllerTest {
 		newWord2.setWordName("newWordName2");
 		newWord2.setCategory(newCategory);//未登録カテゴリ -> addCategory()が呼ばれる
 		newWord2.setRelatedWords(List.of());
+		// 編集したword
+		Word updatedWord = new Word();
+		updatedWord.setId(1);
+		updatedWord.setWordName("updatedWordName");
+		updatedWord.setContent("updatedcontent");
+		updatedWord.setCategory(category1);
+		updatedWord.setRelatedWords(list);
+		doReturn(updatedWord).when(wordService).updateWord(eq(1), any());
 
 		doReturn(list).when(wordService).findAll();
 		doReturn(Optional.of(word1)).when(wordService).findById(1);
@@ -116,6 +126,7 @@ public class WordDetailControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_error"));
 	}
+
 	@Test
 	//編集画面表示 ( 遷移元がword_detail )
 	void testShowEditForm_FromWordDetail() throws Exception {
@@ -125,6 +136,7 @@ public class WordDetailControllerTest {
 				.andExpect(model().attributeDoesNotExist("fromRegistConfirm"))
 				.andExpect(content().string(containsString("word1")));
 	}
+
 	//編集画面表示 ( 遷移元がregist_confirm )
 	void testShowEditForm_FromRegistConfirm() throws Exception {
 		mockMvc.perform(get("/words/{id}/editForm", 1)
@@ -134,6 +146,7 @@ public class WordDetailControllerTest {
 				.andExpect(model().attributeExists("fromRegistConfirm"))
 				.andExpect(content().string(containsString("word1")));
 	}
+
 	@Test
 	//編集確認 バリデーションエラー発生
 	void testEditConfirm() throws Exception {
@@ -145,6 +158,7 @@ public class WordDetailControllerTest {
 				.param("categoryName", ""))
 				.andExpect(model().attributeHasFieldErrors("wordForm", "wordName", "content", "categoryNotNull"));
 	}
+
 	@Test
 	//編集実行 ( wordカブリなし,categoryName入力なし -> 入力されたwordFormの情報のまま更新 )
 	void testEditConfirm_NotExistWord() throws Exception {
@@ -159,10 +173,12 @@ public class WordDetailControllerTest {
 				.param("categoryName", ""))
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_confirm"))
-				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))));;	
+				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))));
+		;
 		verify(categoryService, never()).addCategory("newCategoryName");
 
 	}
+
 	@Test
 	//編集実行 ( wordカブリなし,categoryName入力あり,categoryNameは未登録 -> categoryNameを新規追加 )
 	void testEditConfirm_NotExistWord_InputCategoryName_NotExistsCategoryName() throws Exception {
@@ -176,10 +192,11 @@ public class WordDetailControllerTest {
 				.param("categoryName", "newCategoryName"))
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_confirm"))
-				.andExpect(model().attribute("wordForm",hasProperty("categoryName",is("newCategoryName"))));
+				.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("newCategoryName"))));
 		verify(categoryService, atLeastOnce()).addCategory("newCategoryName");
 
 	}
+
 	@Test
 	//編集実行 ( wordカブリなし,categoryName入力あり,categoryNameは既存 -> 既存のcategoryIdで更新 )
 	void testEditConfirm_NotExistWord_InputCategoryName_ExistingCategoryName() throws Exception {
@@ -193,9 +210,10 @@ public class WordDetailControllerTest {
 				.param("categoryName", "category1"))//既存のcategoryNameを指定（category1のCategoryIdは 1 ）
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_confirm"))
-				.andExpect(model().attribute("wordForm",hasProperty("categoryId",is(1))));
+				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))));
 		verify(categoryService, never()).addCategory("category1");
 	}
+
 	@Test
 	//編集確認 ( wordカブリあり -> 　入力フォームのビューを返し、エラーメッセージを表示 )
 	void testEditConfirm_ExistingWord() throws Exception {
@@ -208,20 +226,18 @@ public class WordDetailControllerTest {
 				.andExpect(view().name("edit_form"))
 				.andExpect(model().attributeHasFieldErrors("wordForm", "wordName"));
 	}
+
 	@Test
 	//編集実行
-	void testEdit() throws Exception{
-		mockMvc.perform(post("/words/{id}/edit",1)
-		.param("wordName", "NotExistingWordName")
-		.param("content", "newContent")
-		.param("categoryId", "2")
-		.param("categoryName", ""))
-		.andExpect(status().is3xxRedirection())
-		.andExpect(redirectedUrl("/wordList"))
-		.andExpect(flash().attributeExists("edit_ok"));
-		ArgumentCaptor<WordForm> captor = ArgumentCaptor.forClass(WordForm.class);
-		verify(wordService, atLeastOnce()).updateWord(eq(1), captor.capture());
-		WordForm argForm = captor.getValue();
-		assertThat(argForm.getCategoryId()).isEqualTo(2);
+	void testEdit() throws Exception {
+		mockMvc.perform(post("/words/{id}/edit", 1)
+				.param("id", "1")
+				.param("wordName", "updatedWordName")
+				.param("content", "updatedContent")
+				.param("categoryId", "1")
+				.param("categoryName", ""))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/wordList?categoryId=1&id=1"))
+				.andExpect(flash().attributeExists("edit_ok"));	
 	}
 }

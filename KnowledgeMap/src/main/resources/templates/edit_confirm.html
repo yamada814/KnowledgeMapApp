@@ -8,6 +8,7 @@
 	<h1>edit_confirm</h1>
 	<h2>以下の内容で編集します</h2>
 	<form th:action="@{/words/{id}/edit(id=${word.id})}" method="post" th:object="${wordForm}">
+	<input type="hidden" th:field="*{id}" />
 		<table>
 			<tr>
 				<th>word</th>
@@ -52,7 +53,6 @@
 		<input th:if="${fromRegist}" type="hidden" name="fromRegist" value="${fromRegist}">
 		<button type="submit">入力画面に戻る</button>
 	</form>
-	</div>
 </body>
 
 </html>

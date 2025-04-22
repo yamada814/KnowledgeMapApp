@@ -13,6 +13,7 @@
 	<p th:if="${word_duplicate} != null" th:text="${word_duplicate}"></p>
 	<form th:action="@{/words/{id}/editConfirm(id=${word.id})}" method="post">
 		<table th:object="${wordForm}">
+			<input type="hidden" th:field="*{id}" />
 			<tr>
 				<th>word</th>
 				<td>
