@@ -1,13 +1,85 @@
 @charset "utf-8";
-.deleteBtnHidden{
-    display: none;
-}
-.deleteBtnVisible{
-    display: inline;
-}
-.wordDetailHidden{
+
+.deleteBtnHidden {
 	display: none;
 }
-.wordDetailVisible{
+
+.deleteBtnVisible {
 	display: inline;
+}
+
+.wordDetailHidden {
+	display: none;
+}
+
+.wordDetailVisible {
+	display: inline;
+}
+
+body {
+	margin: 0;
+	padding: 5%;
+	background-color: aliceblue;
+	box-sizing: border-box;
+}
+.mainContainer {
+	display: flex;
+}
+.categoryContainer,
+.wordListContainer,
+.wordDetailContainer{
+	margin:0%;
+	background-color: white;
+}
+
+
+.categoryContainer {
+	width: 15%;
+}
+
+.wordListContainer {
+	width: 20%;
+}
+
+.wordDetailContainer {
+	width: 60%;
+}
+
+.categoryContainer ul li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	height: 40px;
+}
+
+.categoryContainer ul {
+	padding: 0%;
+}
+
+.categoryContainer ul li button {
+	display: block;
+	width: 100%;
+	height:100%;
+	padding: 10px;
+	text-align: left;
+	background-color: white;
+	border: none;
+	border-radius: 0%;
+	cursor: pointer;
+	font-size: 16px;
+}
+#wordList ul li:hover,
+.categoryBtn:hover {
+	background-color: #c0c0ff;
+}
+#wordList ul{
+	padding: 0%;
+}
+#wordList ul li{
+	list-style: none;
+	background-color: white;
+	padding: 0%;
+	cursor: pointer;
+	font-size: 16px;
+	height: 40px;
 }

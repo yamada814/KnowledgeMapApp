@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
@@ -10,32 +11,46 @@
 
 <body>
 	<a th:href="@{/showWordForm}">word新規登録画面へ</a>
+
 	<h1>word一覧</h1>
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
 	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
 	<div th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
 	<div th:if="${regist_cancel} != null" th:text="${regist_cancel}"></div>
 
-	<h3>カテゴリ一覧</h3>
-	<ul id="categoryList">
-		<li th:each="category : ${categories}" th:object="${category}">
-			<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
-		</li>
-	</ul>
-	<h3>word一覧</h3>
-	<div id="wordList">
-	</div>
-	<h3>wordDetail</h3>
-	<div class="wordDetailHidden">
-		<p>wordName:<span id="detail-wordName"></span></p>
-		<p>content:<span id="detail-content"></span></p>
-		<p>category:<span id="detail-category"></span></p>
-		<p>relatedWords:
-			<span id="detail-relatedWords">
-				<ul id="relatedWords"></ul>
-			</span>
-		</p>
-		<div id="editBtnContainer"></div>
+	<div class="mainContainer">
+		<!-- categoryList -->
+		<div class="categoryContainer">
+			<h3>カテゴリ一覧</h3>
+			<ul id="categoryList">
+				<li th:each="category : ${categories}" th:object="${category}">
+					<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
+				</li>
+			</ul>
+		</div>
+
+		<!-- wordList -->
+		<div class="wordListContainer">
+			<h3>word一覧</h3>
+			<div id="wordList">
+			</div>
+		</div>
+		
+		<!-- wordDetail -->
+		<div class="wordListContainer">
+			<h3>wordDetail</h3>
+			<div class="wordDetailHidden">
+				<p>wordName:<span id="detail-wordName"></span></p>
+				<p>content:<span id="detail-content"></span></p>
+				<p>category:<span id="detail-category"></span></p>
+				<p>relatedWords:
+					<span id="detail-relatedWords">
+						<ul id="relatedWords"></ul>
+					</span>
+				</p>
+				<div id="editBtnContainer"></div>
+			</div>
+		</div>
 	</div>
 </body>
 
