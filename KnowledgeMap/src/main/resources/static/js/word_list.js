@@ -1,5 +1,6 @@
 
 let selectedCategoryId = null;//現在表示されているカテゴリのidを保持する用
+const wordListContainer = document.querySelector(".wordListContainer");
 const wordList = document.getElementById("wordList");
 const categoryBtns = document.querySelectorAll(".categoryBtn");
 const wordName = document.getElementById("detail-wordName");
@@ -24,7 +25,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 	const params = new URLSearchParams(window.location.search);
 	const categoryId = params.get("categoryId");
 	const wordId = params.get("id");
-	console.log(categoryId,wordId);
+	console.log(categoryId, wordId);
 	if (categoryId) {
 		await showWordList(categoryId);
 	}
@@ -39,7 +40,7 @@ function clearWordDetail() {
 	category.innerHTML = "";
 	relatedWords.innerHTML = "";
 	editBtnContainer.innerHTML = "";
-	wordDetailContainer.classList.replace("wordDetailVisible","wordDetailHidden");
+	wordDetailContainer.classList.replace("wordDetailVisible", "wordDetailHidden");
 
 }
 //カテゴリに属するword一覧を表示する
@@ -52,36 +53,38 @@ async function showWordList(categoryId) {
 			if (words.length === 0) {
 				const msg = document.createElement("p");
 				msg.textContent = "単語がありません";
-				wordList.appendChild(msg);
+				wordListContainer.appendChild(msg);
 				//カテゴリ削除ボタンを生成
 				const categoryDeleteBtn = document.createElement("button");
 				categoryDeleteBtn.textContent = "このカテゴリを削除";
 				categoryDeleteBtn.addEventListener("click", () => deleteCategory(selectedCategoryId));
-				wordList.appendChild(categoryDeleteBtn);
-				
+				wordListContainer.appendChild(categoryDeleteBtn);
+
 				return;
 			}
 			//wordがある場合
-			const ul = document.createElement("ul");
 			for (const word of words) {
 				const li = document.createElement("li");
-				li.textContent = word.wordName;
+				const wordButton = document.createElement("button");
+				wordButton.textContent = word.wordName;
+				wordButton.classList.add("wordBtn");
+				li.appendChild(wordButton);
 				//word削除ボタンの作成
 				const wordDeleteBtn = document.createElement("button");
 				wordDeleteBtn.textContent = "削除";
+				wordDeleteBtn.classList.add("wordDeleteBtn");
 				wordDeleteBtn.addEventListener("click", (e) => deleteWord(e, word.id, li))
 				li.appendChild(wordDeleteBtn);
 				//詳細表示
 				li.addEventListener("click", () => showWordDetail(word.id));
-				ul.appendChild(li);
+				wordList.appendChild(li);
 			}
-			wordList.appendChild(ul);
 		}
 	} catch (error) {
 		console.error(error);
 		const msg = document.createElement("p");
 		msg.textContent = "取得に失敗しました";
-		wordList.appendChild(msg);
+		wordListContainer.appendChild(msg);
 	}
 }
 //カテゴリを削除する(カテゴリをクリックしてwordがなかった時)
@@ -122,7 +125,7 @@ async function showWordDetail(id) {
 			});
 			editBtnContainer.appendChild(editBtn);
 		}
-		wordDetailContainer.classList.replace("wordDetailHidden","wordDetailVisible");
+		wordDetailContainer.classList.replace("wordDetailHidden", "wordDetailVisible");
 	} catch (error) {
 		console.error(error);
 		alert("詳細情報の取得に失敗しました" + id);
