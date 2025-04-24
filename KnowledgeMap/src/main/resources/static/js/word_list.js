@@ -7,7 +7,9 @@ const categoryBtns = document.querySelectorAll(".categoryBtn");
 const wordName = document.getElementById("detail-wordName");
 const content = document.getElementById("detail-content");
 const category = document.getElementById("detail-category");
-const relatedWords = document.getElementById("relatedWords");
+const relatedWords = document.getElementById("detail-relatedWords");
+const reference = document.querySelector(".reference");
+const relatedWordList = document.getElementById("relatedWordList");
 const editBtnContainer = document.getElementById("editBtnContainer");
 const wordDetailContainer = document.querySelector(".wordDetailHidden");
 
@@ -15,17 +17,17 @@ const wordDetailContainer = document.querySelector(".wordDetailHidden");
 categoryBtns.forEach(categoryBtn => {
 	categoryBtn.addEventListener("click", async () => {
 		//もろもろクリアする
+		document.querySelectorAll(".categoryDeleteBtn").forEach(btn => btn.remove());
 		document.querySelectorAll(".categoryBtnSelected").forEach(btn => btn.classList.remove("categoryBtnSelected"));
 		wordList.innerHTML = "";
 		wordListNullMsg.innerHTML = "";
-		
 		clearWordDetail();
 		//現在選択中のcategoryIdを記憶
 		const categoryId = categoryBtn.getAttribute("data-id");
 		selectedCategoryId = categoryId;
 		categoryBtn.classList.add("categoryBtnSelected");
 		//wordList表示
-		showWordList(categoryId);
+		showWordList(categoryId, categoryBtn);
 	})
 });
 
@@ -34,12 +36,15 @@ function clearWordDetail() {
 	wordName.innerHTML = "";
 	content.innerHTML = "";
 	category.innerHTML = "";
-	relatedWords.innerHTML = "";
+	relatedWordList.innerHTML = "";
 	editBtnContainer.innerHTML = "";
 	wordDetailContainer.classList.replace("wordDetailVisible", "wordDetailHidden");
+	if (reference) {
+		reference.classList.replace("referenceVisible", "referenceHidden");
+	}
 }
 //wordListの表示
-async function showWordList(categoryId) {
+async function showWordList(categoryId, categoryBtn) {
 	try {
 		const res = await fetch(`/api/words?categoryId=${categoryId}`);
 		if (res.ok) {
@@ -51,9 +56,12 @@ async function showWordList(categoryId) {
 				wordListNullMsg.appendChild(msg);
 				//カテゴリ削除ボタンを生成
 				const categoryDeleteBtn = document.createElement("button");
-				categoryDeleteBtn.textContent = "このカテゴリを削除";
+				categoryDeleteBtn.classList.add("categoryDeleteBtn");
+				const span = document.createElement("span");
+				span.classList.add("bi", "bi-trash3-fill");
+				categoryDeleteBtn.appendChild(span);
 				categoryDeleteBtn.addEventListener("click", () => deleteCategory(selectedCategoryId));
-				wordListNullMsg.appendChild(categoryDeleteBtn);
+				categoryBtn.after(categoryDeleteBtn);
 
 				return;
 			}
@@ -69,14 +77,17 @@ async function showWordList(categoryId) {
 					//削除ボタンをいったん全削除
 					document.querySelectorAll(".wordDeleteBtn").forEach(btn => btn.remove());
 					document.querySelectorAll(".wordBtnSelected").forEach(btn => btn.classList.remove("wordBtnSelected"));
+
 					wordButton.classList.add("wordBtnSelected");
 					//word削除ボタンの作成
 					const currentWordDeleteBtn = document.createElement("button");
-					currentWordDeleteBtn.textContent = "削除";
+					const span = document.createElement("span");
+					span.classList.add("bi", "bi-trash3-fill");
+					currentWordDeleteBtn.appendChild(span);
 					currentWordDeleteBtn.classList.add("wordDeleteBtn");
 					currentWordDeleteBtn.addEventListener("click", (e) => deleteWord(e, word.id, li))
 					li.appendChild(currentWordDeleteBtn);
-					
+
 					//wordDetail表示
 					showWordDetail(word.id)
 				});
@@ -115,14 +126,22 @@ async function showWordDetail(id) {
 			content.textContent = wordDetail.content;
 			category.textContent = wordDetail.category.name;
 
-			for (const relatedWord of wordDetail.relatedWords) {
-				const li = document.createElement("li");
-				li.textContent = relatedWord.wordName;
-				relatedWords.appendChild(li);
+			if (wordDetail.relatedWords && wordDetail.relatedWords.length > 0) {
+				if (reference) {
+					reference.classList.replace("referenceHidden", "referenceVisible");
+				}
+				for (const relatedWord of wordDetail.relatedWords) {
+					const li = document.createElement("li");
+					li.textContent = relatedWord.wordName;
+					relatedWordList.appendChild(li);
+				}
 			}
 			// 編集ボタンを作成
 			const editBtn = document.createElement("button");
 			editBtn.textContent = "編集";
+			const span = document.createElement("span");
+			span.classList.add("bi", "bi-pencil-square");
+			editBtn.appendChild(span);
 			editBtn.addEventListener("click", () => {
 				location.href = `/words/${wordDetail.id}/editForm`;
 			});

@@ -2,8 +2,9 @@
 body {
 	margin: 0;
 	padding: 5%;
-	background-color: aliceblue;
+	background-color: #e5e5ee;
 	box-sizing: border-box;
+	color:#304755;
 }
 .deleteBtnHidden {
 	display: none;
@@ -17,6 +18,12 @@ body {
 .wordDetailVisible {
 	display: inline;
 }
+.referenceHidden{
+	display: none;
+}
+.referenceVisible{
+	display: inline;
+}
 
 .mainContainer {
 	display: flex;
@@ -24,27 +31,30 @@ body {
 .categoryContainer,
 .wordListContainer,
 .wordDetailContainer{
-	margin:0%;
+	margin:1px;
 	background-color: white;
 }
 .categoryContainer {
-	width: 15%;
+	width: 25%;
 }
 .wordListContainer {
 	width: 25%;
+
 }
 .wordDetailContainer {
-	width: 60%;
+	width: 50%;
+	padding: 3%;
 }
 #wordList,
 #categoryList {
 	padding: 0%;
+	border:1px solid white;
+
 }
 #wordList li,
 #categoryList li {
 	list-style: none;
 	background-color: white;
-	cursor: pointer;
 	margin: 0;
 	padding: 0;
 	height: 40px;
@@ -56,23 +66,53 @@ body {
 	padding: 10px;
 	text-align: left;
 	background-color: white;
+	color:#304755;
 	border: none;
 	border-radius: 0%;
 	cursor: pointer;
 	font-size: 16px;
 }
+#categoryList li,
 #wordList li{
 	display: flex;
 }
 
 .wordBtn:hover,
-.categoryBtn:hover {
-	background-color: #c0c0ff;
-}
-
+.categoryBtn:hover,
 .wordBtnSelected,
 .categoryBtnSelected {
-	background-color: #c0c0ff;
+	background-color: #777499;
+	color: white;
+	border:1px solid #768994;
+
+}
+.categoryDeleteBtn,
+.wordDeleteBtn{
+	background-color: white;
+	border: none;
+	color:#777499;
+	border:5px solid #777499;
+	font-size: 16px;
+	cursor: pointer;
+}
+.categoryDeleteBtn:hover,
+.wordDeleteBtn:hover{
+	background-color: #e5e5ee;
+	color:#474466;
+	border:5px solid #777499;
 }
 
-
+#detail-content,
+#detailReference,
+#editBtnContainer{
+	margin:3%;
+}
+#detail-wordName{
+	font-size: 28px;
+}
+#categoryContainer{
+	font-size: 14px;
+}
+#relatedWords{
+	display:inline-block;
+}

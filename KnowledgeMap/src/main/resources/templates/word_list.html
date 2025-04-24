@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
@@ -7,12 +6,13 @@
 	<title>単語一覧</title>
 	<link rel="stylesheet" th:href="@{/css/word_list.css}">
 	<script th:src="@{/js/word_list.js}" defer></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
 <body>
 	<a th:href="@{/showWordForm}">word新規登録画面へ</a>
 
-	<h1>word一覧</h1>
+	<h1>単語帳</h1>
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
 	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
 	<div th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
@@ -21,7 +21,7 @@
 	<div class="mainContainer">
 		<!-- categoryList -->
 		<div class="categoryContainer">
-			<h3>カテゴリ一覧</h3>
+			<h3>カテゴリ</h3>
 			<ul id="categoryList">
 				<li th:each="category : ${categories}" th:object="${category}">
 					<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
@@ -31,27 +31,29 @@
 
 		<!-- wordList -->
 		<div class="wordListContainer">
-			<h3>word一覧</h3>
+			<h3>単語</h3>
 			<ul id="wordList">
 			</ul>
 			<div id="wordListNullMsg"></div>
 		</div>
-		
+
 		<!-- wordDetail -->
 		<div class="wordDetailContainer">
-			<h3>wordDetail</h3>
 			<div class="wordDetailHidden">
-				<p>wordName:<span id="detail-wordName"></span></p>
-				<p>content:<span id="detail-content"></span></p>
-				<p>category:<span id="detail-category"></span></p>
-				<p>relatedWords:
-					<span id="detail-relatedWords">
-						<ul id="relatedWords"></ul>
-					</span>
-				</p>
-				<div id="editBtnContainer"></div>
+				<div id="detail-wordName"></div>
+				<div id="categoryContainer">
+					<span>カテゴリ:</span>
+					<span id="detail-category"></span>
+				</div>
 			</div>
+			<div id="detail-content"></div>
+			<div id="detail-relatedWords">
+				<span class="reference referenceHidden">参照：</span>
+				<ul id="relatedWordList"></ul>
+			</div>
+			<div id="editBtnContainer"></div>
 		</div>
+	</div>
 	</div>
 </body>
 
