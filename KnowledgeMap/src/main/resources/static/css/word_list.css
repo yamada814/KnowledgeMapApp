@@ -1,71 +1,72 @@
 @charset "utf-8";
-body {
-	margin: 0;
-	padding: 5%;
-	background-color: #e5e5ee;
+:root {
+	--main-bg-color: #f4f4fa;
+	--main-text-color: #201f30;
+	--container-bg-color:white;
+	--line-color: #b0aec8;
+	--hover-bg-color: #201f30;
+	--hover-text-color: white;
+}
+* {
 	box-sizing: border-box;
-	color:#304755;
+	margin: 0;
+	padding: 0;
 }
-.deleteBtnHidden {
-	display: none;
+body {
+	background-color: var(--main-bg-color);
+	color: var(--main-text-color);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
-.deleteBtnVisible {
-	display: inline;
-}
-.wordDetailHidden {
-	display: none;
-}
-.wordDetailVisible {
-	display: inline;
-}
-.referenceHidden{
-	display: none;
-}
-.referenceVisible{
-	display: inline;
-}
-
+/* containers */
 .mainContainer {
 	display: flex;
+	background-color: var(--main-bg-color);
+	width: 95%;
+	max-width: 1100px;
+	margin:2%;
 }
-.categoryContainer,
-.wordListContainer,
-.wordDetailContainer{
-	margin:1px;
-	background-color: white;
+h4{
+	text-align: center;
+	border-bottom: 1px solid var(--main-bg-color);
 }
-.categoryContainer {
+#categoryOuter,
+#wordListOuter,
+#wordDetailOuter{
+	background-color: var(--container-bg-color);
+}
+#categoryOuter {
 	width: 25%;
 }
-.wordListContainer {
+#wordListOuter {
 	width: 25%;
-
 }
-.wordDetailContainer {
+#wordDetailOuter {
 	width: 50%;
+}
+.wordDetailContainer{
 	padding: 3%;
 }
-#wordList,
-#categoryList {
+/* categoryList, wordList */
+#categoryList, 
+.wordList{
 	padding: 0%;
-	border:1px solid white;
-
 }
-#wordList li,
-#categoryList li {
+#categoryList li,
+.wordList li{
 	list-style: none;
-	background-color: white;
 	margin: 0;
 	padding: 0;
 	height: 40px;
 }
-.wordBtn,
-.categoryBtn{
+.categoryBtn,
+.wordBtn{
 	width: 100%;
 	height:100%;
 	padding: 10px;
 	text-align: left;
-	background-color: white;
+	background-color:  var(--container-bg-color);
 	color:#304755;
 	border: none;
 	border-radius: 0%;
@@ -73,46 +74,141 @@ body {
 	font-size: 16px;
 }
 #categoryList li,
-#wordList li{
+.wordList li{
 	display: flex;
 }
-
 .wordBtn:hover,
 .categoryBtn:hover,
 .wordBtnSelected,
 .categoryBtnSelected {
-	background-color: #777499;
-	color: white;
-	border:1px solid #768994;
-
+	background-color: var(--hover-bg-color);
+	color:  var(--hover-text-color);
+	border:1px solid var(--hover-bg-color);
 }
 .categoryDeleteBtn,
 .wordDeleteBtn{
-	background-color: white;
+	width: 20%;
+	background-color:  var(--container-bg-color);
 	border: none;
 	color:#777499;
-	border:5px solid #777499;
+	border:2px solid var(--hover-bg-color);
 	font-size: 16px;
 	cursor: pointer;
 }
 .categoryDeleteBtn:hover,
 .wordDeleteBtn:hover{
 	background-color: #e5e5ee;
-	color:#474466;
-	border:5px solid #777499;
+	color:var(--main-text-color);
+	border:2px solid var(--hover-bg-color);
+}
+/* wordDetail */
+.wordDetailContainer div{
+	margin:0%;
+}
+.wordNameContainer{
+	display: flex;
+	justify-content: space-between;
 }
 
-#detail-content,
-#detailReference,
-#editBtnContainer{
-	margin:3%;
+.wordName{
+	font-size:32px;
 }
-#detail-wordName{
-	font-size: 28px;
+.content{
+	font-size: 16px;
+	border-top:2px solid var(--line-color);
+	border-bottom:2px solid var(--line-color);
+	padding:5%;
 }
-#categoryContainer{
+.category{
+	font-size: 12px;
+}
+.relatedWords{
 	font-size: 14px;
 }
-#relatedWords{
+.relatedWords ul{
 	display:inline-block;
+	list-style: none;
+	padding-left: 0;
+	
 }
+.relatedWords ul li{
+	display:inline-block;
+	padding-right:20px;
+}
+.editBtn:hover{
+	padding: 10px;
+	text-align: center;
+	background-color:var(--hover-bg-color);
+	border:2px solid var(--hover-bg-color);
+	color: var(--hover-text-color);
+	border-radius: 10%;
+	cursor: pointer;
+	font-size: 16px;
+}
+.editBtn{
+	padding: 10px;
+	text-align: center;
+	background-color:  var(--container-bg-color);
+	border:2px solid var(--hover-bg-color);
+	color:var(--hover-bg-color);
+	border-radius: 10%;
+	cursor: pointer;
+	font-size: 16px;
+}
+/* 新規登録 */
+
+#regist{
+	width:20%;
+	margin: 10px;
+}
+#regist a{
+	text-decoration: none;
+	background-color:var(--hover-bg-color);
+	color: var(--container-bg-color);
+	display: block;
+	padding:10px;
+	text-align: center;
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
