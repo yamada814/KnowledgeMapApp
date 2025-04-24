@@ -6,37 +6,47 @@
 	<title>単語一覧</title>
 	<link rel="stylesheet" th:href="@{/css/word_list.css}">
 	<script th:src="@{/js/word_list.js}" defer></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
 <body>
-	<a th:href="@{/showWordForm}">word新規登録画面へ</a>
-	<h1>word一覧</h1>
+	<h1>単語帳</h1>
+
+	<div id="regist">
+		<a th:href="@{/showWordForm}"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
+	</div>
+
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
 	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
 	<div th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
 	<div th:if="${regist_cancel} != null" th:text="${regist_cancel}"></div>
 
-	<h3>カテゴリ一覧</h3>
-	<ul id="categoryList">
-		<li th:each="category : ${categories}" th:object="${category}">
-			<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
-		</li>
-	</ul>
-	<h3>word一覧</h3>
-	<div id="wordList">
-	</div>
-	<h3>wordDetail</h3>
-	<div class="wordDetailHidden">
-		<p>wordName:<span id="detail-wordName"></span></p>
-		<p>content:<span id="detail-content"></span></p>
-		<p>category:<span id="detail-category"></span></p>
-		<p>relatedWords:
-			<span id="detail-relatedWords">
-				<ul id="relatedWords"></ul>
-			</span>
-		</p>
-		<div id="editBtnContainer"></div>
-	</div>
+	<div class="mainContainer">
+		<!-- categoryList -->
+		<div id="categoryOuter">
+			<h4>カテゴリ</h4>
+			<div class="categoryContainer">
+				<ul id="categoryList">
+					<li th:each="category : ${categories}" th:object="${category}">
+						<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<!-- wordList -->
+		<div id="wordListOuter">
+			<h4>単語</h4>
+			<div class="wordListContainer">
+			</div>
+		</div>
+
+		<!-- wordDetail -->
+		<div id="wordDetailOuter">
+			<h4>内容</h4>
+			<div class="wordDetailContainer">
+			</div>
+		</div>
 </body>
 
 </html>

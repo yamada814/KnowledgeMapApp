@@ -1,93 +1,187 @@
-
-let selectedCategoryId = null;//現在表示されているカテゴリのidを保持する用
-const wordList = document.getElementById("wordList");
-const categoryBtns = document.querySelectorAll(".categoryBtn");
-const wordName = document.getElementById("detail-wordName");
-const content = document.getElementById("detail-content");
-const category = document.getElementById("detail-category");
-const relatedWords = document.getElementById("relatedWords");
-const editBtnContainer = document.getElementById("editBtnContainer");
-const wordDetailContainer = document.querySelector(".wordDetailHidden");
-
-//カテゴリ名をクリック -> そのカテゴリに属するword一覧を表示
-categoryBtns.forEach(categoryBtn => {
-	categoryBtn.addEventListener("click", async () => {
-		wordList.innerHTML = "";//word一覧をクリア
-		clearWordDetail();//wordDetailの内容をクリア
-		const categoryId = categoryBtn.getAttribute("data-id");
-		selectedCategoryId = categoryId;
-		showWordList(categoryId);
-	})
-});
-//編集画面から戻ってきた時に前画面の内容を表示させる
+//新規登録や編集を実行後、対象wordのカテゴリとwordNameが選択された状態にする(色がつく)
 window.addEventListener("DOMContentLoaded", async () => {
 	const params = new URLSearchParams(window.location.search);
 	const categoryId = params.get("categoryId");
 	const wordId = params.get("id");
-	console.log(categoryId,wordId);
 	if (categoryId) {
+		setCategorySelection(categoryId);
 		await showWordList(categoryId);
 	}
 	if (wordId) {
+		setWordSelection(wordId)
 		await showWordDetail(wordId);
 	}
-});
-//wordDetailの項目をクリアする
-function clearWordDetail() {
-	wordName.innerHTML = "";
-	content.innerHTML = "";
-	category.innerHTML = "";
-	relatedWords.innerHTML = "";
-	editBtnContainer.innerHTML = "";
-	wordDetailContainer.classList.replace("wordDetailVisible","wordDetailHidden");
+})
+// 各コンテナ
+const mainConteiner = document.querySelector(".mainContainer");
+const categoryContainer = document.querySelector(".categoryContainer");
+const wordListContainer = document.querySelector(".wordListContainer");
+const wordDetailContainer = document.querySelector(".wordDetailContainer");
+// カテゴリ
+let currentCategoryId = null;
+const categoryList = document.querySelector(".categoryList");
+const categoryBtns = document.querySelectorAll(".categoryBtn");
 
+categoryBtns.forEach(categoryBtn => {
+	categoryBtn.addEventListener("click", async () => {
+		//選択中カテゴリの設定
+		clearCategorySelection();
+		currentCategoryId = categoryBtn.getAttribute("data-id");
+		categoryBtn.classList.add("categoryBtnSelected");
+		//単語一覧を表示
+		wordListContainer.innerHTML = "";
+		showWordList(currentCategoryId);
+	})
+})
+// カテゴリ選択をクリア
+function clearCategorySelection() {
+	document.querySelectorAll(".categoryDeleteBtn").forEach(btn => btn.remove());
+	document.querySelectorAll(".categoryBtnSelected").forEach(btn => btn.classList.remove("categoryBtnSelected"));
 }
-//カテゴリに属するword一覧を表示する
+// 選択中カテゴリの色変更
+function setCategorySelection(categoryId) {
+	[...categoryBtns].find(btn => btn.getAttribute("data-id") === categoryId).classList.add("categoryBtnSelected");
+}
+// 選択中wordの色変更
+function setWordSelection(wordId) {
+	const wordBtns = document.querySelectorAll(".wordBtn");
+	[...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") === wordId)
+		.classList.add("wordBtnSelected");
+}
+
+// wordList表示
 async function showWordList(categoryId) {
 	try {
 		const res = await fetch(`/api/words?categoryId=${categoryId}`);
 		if (res.ok) {
 			const words = await res.json();
-			//wordがない場合
+			// 単語なしの場合
 			if (words.length === 0) {
-				const msg = document.createElement("p");
+				// 「単語なし」メーセージ
+				const msg = document.createElement("span");
 				msg.textContent = "単語がありません";
-				wordList.appendChild(msg);
-				//カテゴリ削除ボタンを生成
+				wordListContainer.appendChild(msg);
+				// カテゴリ削除ボタン
 				const categoryDeleteBtn = document.createElement("button");
-				categoryDeleteBtn.textContent = "このカテゴリを削除";
-				categoryDeleteBtn.addEventListener("click", () => deleteCategory(selectedCategoryId));
-				wordList.appendChild(categoryDeleteBtn);
-				
-				return;
+				categoryDeleteBtn.classList.add("categoryDeleteBtn");
+				const span = document.createElement("span");
+				span.classList.add("bi-trash3-fill");
+				categoryDeleteBtn.appendChild(span);
+				//カテゴリボタンの横にカテゴリ削除ボタンを追加
+				[...categoryBtns].find(btn => btn.getAttribute("data-id") === categoryId).after(categoryDeleteBtn);
+				categoryDeleteBtn.addEventListener("click", (event) => deleteCategory(event, categoryId))
+
+				// 単語ありの場合
+			} else {
+				const wordList = document.createElement("ul");
+				wordList.classList.add("wordList");
+				for (const word of words) {
+					const li = document.createElement("li");
+					// 単語ボタン
+					const wordBtn = document.createElement("button");
+					wordBtn.setAttribute("data-id", word.id);
+					wordBtn.textContent = word.wordName;
+					wordBtn.classList.add("wordBtn");
+					li.appendChild(wordBtn);
+					// 単語削除ボタン <button class="categoryDeleteBtn"><span class="bi-trash3-fill"></span></button>
+					const wordDeleteBtn = document.createElement("button");
+					wordDeleteBtn.classList.add("wordDeleteBtn");
+					const span = document.createElement("span");
+					span.classList.add("bi-trash3-fill");
+					wordDeleteBtn.appendChild(span);
+
+					wordDeleteBtn.addEventListener("click", (event) => {
+						wordDetailContainer.innerHTML = "";
+						deleteWord(event, word.id, li)
+					});
+
+					wordBtn.addEventListener("click", () => {
+						wordDetailContainer.innerHTML = "";
+						document.querySelectorAll(".wordBtnSelected").forEach(btn => btn.classList.remove("wordBtnSelected"))
+						document.querySelectorAll(".wordDeleteBtn").forEach(btn => btn.remove());
+						wordBtn.classList.add("wordBtnSelected");
+						li.appendChild(wordDeleteBtn);
+
+						showWordDetail(word.id);
+					})
+					li.appendChild(wordBtn);
+					wordList.appendChild(li);
+				}
+				wordListContainer.appendChild(wordList);
 			}
-			//wordがある場合
-			const ul = document.createElement("ul");
-			for (const word of words) {
-				const li = document.createElement("li");
-				li.textContent = word.wordName;
-				//word削除ボタンの作成
-				const wordDeleteBtn = document.createElement("button");
-				wordDeleteBtn.textContent = "削除";
-				wordDeleteBtn.addEventListener("click", (e) => deleteWord(e, word.id, li))
-				li.appendChild(wordDeleteBtn);
-				//詳細表示
-				li.addEventListener("click", () => showWordDetail(word.id));
-				ul.appendChild(li);
-			}
-			wordList.appendChild(ul);
 		}
 	} catch (error) {
-		console.error(error);
+		console.log(error);
 		const msg = document.createElement("p");
 		msg.textContent = "取得に失敗しました";
-		wordList.appendChild(msg);
+		wordListContainer.appendChild(msg);
 	}
 }
-//カテゴリを削除する(カテゴリをクリックしてwordがなかった時)
-async function deleteCategory(id) {
+//wordDetail表示
+async function showWordDetail(wordId) {
 	try {
-		const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
+		const res = await fetch(`/api/words/${wordId}`);
+		if (res.ok) {
+			const wordDetail = await res.json();
+
+			const wordNameContainer = document.createElement("div");
+			wordNameContainer.classList.add("wordNameContainer");
+			//単語名
+			const wordName = document.createElement("div");
+			wordName.classList.add("wordName");
+			wordName.textContent = wordDetail.wordName;
+			
+			//編集ボタン
+			const editBtn = document.createElement("button");
+			editBtn.classList.add("editBtn");
+			const span = document.createElement("span");
+			span.classList.add("bi-pencil-square");
+			editBtn.append(span);
+			editBtn.addEventListener("click", () => {
+				location.href = `/words/${wordId}/editForm`;
+			})
+			wordNameContainer.append(wordName,editBtn);
+			//カテゴリ
+			const categoryContainer = document.createElement("div");
+			categoryContainer.classList.add("category");
+
+			const categoryLabel = document.createElement("span");
+			categoryLabel.textContent = "カテゴリ：";
+			const category = document.createElement("span");
+			category.textContent = wordDetail.category.name;
+
+			categoryContainer.append(categoryLabel, category);
+			//説明文
+			const content = document.createElement("div");
+			content.classList.add("content");
+			content.textContent = wordDetail.content;
+			
+			wordDetailContainer.append(wordNameContainer,categoryContainer,content);
+			//関連語
+			if (wordDetail.relatedWords && wordDetail.relatedWords.length > 0) {
+				const relatedWordsContainer = document.createElement("div");
+				relatedWordsContainer.classList.add("relatedWords")
+				const reference = document.createElement("span");
+				reference.textContent = "参照：";
+				const relatedWords = document.createElement("ul");
+				for (const word of wordDetail.relatedWords) {
+					const li = document.createElement("li");
+					li.textContent = word.wordName;
+					relatedWords.appendChild(li);
+				}
+				relatedWordsContainer.append(reference, relatedWords);
+				wordDetailContainer.appendChild(relatedWordsContainer);
+			}
+		}
+	} catch (error) {
+		console.log(error)
+	}
+}
+//category削除
+async function deleteCategory(event, categoryId) {
+	event.stopPropagation();
+	try {
+		const res = await fetch(`/api/categories/${categoryId}`, { method: "DELETE" });
 		if (res.ok) {
 			location.reload();
 		} else {
@@ -98,41 +192,11 @@ async function deleteCategory(id) {
 		alert("通信エラーが発生しました");
 	}
 }
-//word詳細を表示する関数
-async function showWordDetail(id) {
-	clearWordDetail();
+//word削除
+async function deleteWord(event, wordId, li) {
+	event.stopPropagation();
 	try {
-		const res = await fetch(`/api/words/${id}`);
-		if (res.ok) {
-			const wordDetail = await res.json();
-			wordName.textContent = wordDetail.wordName;
-			content.textContent = wordDetail.content;
-			category.textContent = wordDetail.category.name;
-
-			for (const relatedWord of wordDetail.relatedWords) {
-				const li = document.createElement("li");
-				li.textContent = relatedWord.wordName;
-				relatedWords.appendChild(li);
-			}
-			// 編集ボタンを作成
-			const editBtn = document.createElement("button");
-			editBtn.textContent = "編集";
-			editBtn.addEventListener("click", () => {
-				location.href = `/words/${wordDetail.id}/editForm`;
-			});
-			editBtnContainer.appendChild(editBtn);
-		}
-		wordDetailContainer.classList.replace("wordDetailHidden","wordDetailVisible");
-	} catch (error) {
-		console.error(error);
-		alert("詳細情報の取得に失敗しました" + id);
-	}
-}
-//word削除する関数
-async function deleteWord(e, id, li) {
-	e.stopPropagation();
-	try {
-		const res = await fetch(`/api/words/${id}`, { method: "DELETE" });
+		const res = await fetch(`/api/words/${wordId}`, { method: "DELETE" });
 		if (res.ok) {
 			li.remove();
 			clearWordDetail()
@@ -143,6 +207,36 @@ async function deleteWord(e, id, li) {
 		console.log(error);
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
