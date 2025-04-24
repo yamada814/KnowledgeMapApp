@@ -10,9 +10,12 @@
 </head>
 
 <body>
-	<a th:href="@{/showWordForm}">word新規登録画面へ</a>
-
 	<h1>単語帳</h1>
+
+	<div id="regist">
+		<a th:href="@{/showWordForm}"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
+	</div>
+
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
 	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
 	<div th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
@@ -20,41 +23,30 @@
 
 	<div class="mainContainer">
 		<!-- categoryList -->
-		<div class="categoryContainer">
-			<h3>カテゴリ</h3>
-			<ul id="categoryList">
-				<li th:each="category : ${categories}" th:object="${category}">
-					<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
-				</li>
-			</ul>
+		<div id="categoryOuter">
+			<h4>カテゴリ</h4>
+			<div class="categoryContainer">
+				<ul id="categoryList">
+					<li th:each="category : ${categories}" th:object="${category}">
+						<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
+					</li>
+				</ul>
+			</div>
 		</div>
 
 		<!-- wordList -->
-		<div class="wordListContainer">
-			<h3>単語</h3>
-			<ul id="wordList">
-			</ul>
-			<div id="wordListNullMsg"></div>
+		<div id="wordListOuter">
+			<h4>単語</h4>
+			<div class="wordListContainer">
+			</div>
 		</div>
 
 		<!-- wordDetail -->
-		<div class="wordDetailContainer">
-			<div class="wordDetailHidden">
-				<div id="detail-wordName"></div>
-				<div id="categoryContainer">
-					<span>カテゴリ:</span>
-					<span id="detail-category"></span>
-				</div>
+		<div id="wordDetailOuter">
+			<h4>内容</h4>
+			<div class="wordDetailContainer">
 			</div>
-			<div id="detail-content"></div>
-			<div id="detail-relatedWords">
-				<span class="reference referenceHidden">参照：</span>
-				<ul id="relatedWordList"></ul>
-			</div>
-			<div id="editBtnContainer"></div>
 		</div>
-	</div>
-	</div>
 </body>
 
 </html>
