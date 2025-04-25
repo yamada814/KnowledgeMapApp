@@ -4,92 +4,117 @@
 <head>
 	<meta charset="UTF-8">
 	<title>単語の登録</title>
-	<script th:src="@{/js/form.js}" defer></script>
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+	<link rel="stylesheet" th:href="@{/css/regist_form.css}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+	<script th:src="@{/js/regist_form.js}" defer></script>
 </head>
 
 <body>
 	<h1>新規登録</h1>
-	<form th:action="@{/registConfirm}" method="post">
-		<table th:object="${wordForm}" border="1">
+	<form class="registForm" th:action="@{/registConfirm}" method="post" th:object="${wordForm}">
 		<input type="hidden" th:field="*{id}">
-			<tr>
-				<th>word</th>
-				<td>
-					<input type="text" th:field="*{wordName}">
-					<span th:errors="*{wordName}"></span>
-				</td>
-			</tr>
-			<tr>
-				<th>content</th>
-				<td>
-					<textarea th:field="*{content}"></textarea>
-					<span th:errors="*{content}"></span>
-				</td>
-			</tr>
-			<tr>
-				<th>category</th>
-				<td>
-					<select th:field="*{categoryId}">
-						<option value="">カテゴリを選択</option>
-						<option th:each="category : ${categories}" 
-								th:value="${category.id}" 
+
+		<div class="row">
+			<label for="wordName">単語</label>
+			<div class="inputContainer">
+				<input type="text" th:field="*{wordName}" autofocus>
+				<div class="error">
+					<div th:if="${#fields.hasErrors('wordName')}">
+						<div>
+							<span class="bi bi-exclamation-circle-fill"></span>
+							<a href="#" id="existingWordLink">
+								<span th:text="${existingWord.wordName}"></span>
+								<span class="bi bi-caret-down-fill switcher"></span>
+							</a>
+							<span th:errors="*{wordName}"></span>
+						</div>
+
+					</div>
+					<!-- 既存wordの詳細（ここに埋め込む） -->
+					<div th:if="${existingWord != null}" class="existingWordDetail" th:object="${existingWord}">
+						<div class="wordNameContainer">
+							<div class="wordName" th:text="*{wordName}"></div>
+							<a th:href="@{/words/{id}/editForm(id=${existingWord.id},fromRegist='fromRegist')}"
+								class="editBtn">
+								<span class="bi bi-pencil-square"></span>
+							</a>
+						</div>
+						<div class="category">
+							<span>カテゴリ：</span><span th:text="*{category.name}"></span>
+						</div>
+						<div class="content" th:text="*{content}"></div>
+						<div class="relatedWords">
+							<span>参照：</span>
+							<ul>
+								<li th:each="relatedWord : *{relatedWords}" th:text="${relatedWord.wordName}"></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row">
+			<label for="categoryId">カテゴリ</label>
+			<div class="inputContainer">
+				<div id="categoryInputContainer">
+					<div>
+						<div><label for="categoryId">カテゴリ一覧から選ぶ</label></div>
+						<select th:field="*{categoryId}">
+							<option value="">カテゴリを選択</option>
+							<option th:each="category : ${categories}" th:value="${category.id}"
 								th:text="${category.name}">
-						</option>
-					</select>
-					<span>または新しいカテゴリーをつくる
+							</option>
+						</select>
+					</div>
+					<div>
+						<div><label for="categoryName">または新規作成<span class="bi bi-plus-circle-fill"></span></label>
+						</div>
 						<input type="text" th:field="*{categoryName}">
-					</span>
+					</div>
+				</div>
+				<div class="error">
+					<span th:if="${#fields.hasErrors('categoryNotNull')}" class="bi bi-exclamation-circle-fill"></span>
 					<span th:errors="*{categoryNotNull}"></span>
-				</td>
-			</tr>
-			<tr>
-				<th>relatedWords</th>
-				<td>
-					<select multiple th:field="*{relatedWordIds}">
-						<option th:each="word : ${wordList}" 
-								th:value="${word.id}" 
-								th:text="${word.wordName}">
-						</option>
-					</select>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<label for="content">内容</label>
+			<div class="inputContainer">
+				<textarea th:field="*{content}"></textarea>
+				<div class="error">
+					<span th:if="${#fields.hasErrors('content')}" class="bi bi-exclamation-circle-fill"></span>
+					<span th:errors="*{content}"></span>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<label for="relatedWordIds">参照</label>
+			<div class="inputContainer">
+				<select multiple th:field="*{relatedWordIds}">
+					<option value="">カテゴリを選択</option>
+					<option th:each="word : ${wordList}" th:value="${word.id}" th:text="${word.wordName}">
+					</option>
+				</select>
+				<div class="error">
+					<span th:if="${#fields.hasErrors('relatedWordIds')}" class="bi bi-exclamation-circle-fill"></span>
 					<span th:errors="*{relatedWordIds}"></span>
-				</td>
-			</tr>
-		</table>
-		<button>入力内容の確認</button>
+				</div>
+			</div>
+		</div>
+
+		<button id="registConfirmBtn">入力内容の確認</button>
+
 	</form>
+
 	<a th:href="@{/wordList}">一覧へ戻る</a>
 
-	<div th:if="${existingWord} != null">
-		<h3>【登録済みの内容】</h3>
-		<table th:object="${existingWord}" border="1">
-			<tr>
-				<th>word</th>
-				<td th:text="*{wordName}"></td>
-			</tr>
-			<tr>
-				<th>content</th>
-				<td th:text="*{content}"></td>
-			</tr>
-			<tr>
-				<th>category</th>
-				<td th:text="*{category.name}"></td>
-			</tr>
-			<tr>
-				<th>related_words</th>
-				<td>
-					<ul>
-						<li th:each="relatedWord : *{relatedWords}" 
-							th:text="${relatedWord.wordName}">
-						</li>
-					</ul>
-				</td>
-			</tr>
-		</table>
-		<form th:action="@{/words/{id}/editForm(id=${existingWord.id})}">
-			<input type="hidden" name="fromRegist" value="fromRegist">
-			<button type="submit">既存の登録内容を編集する</button>
-		</form>
-	</div>
 </body>
 
 </html>

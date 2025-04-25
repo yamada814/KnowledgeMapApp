@@ -1,0 +1,187 @@
+@charset "UTF-8";
+:root {
+	--main-bg-color: #f4f4fa;
+	--main-text-color: #201f30; 
+	--container-bg-color: #ffffff;
+	--line-color: #b0aec8; 
+	--hover-bg-color: #201f30;
+	--hover-text-color: white;
+	font-size: 16px;
+}
+
+h1{
+	font-size: 2rem;
+}
+/* form全体 */
+.registForm{
+	width: 80%;
+	max-width: 1100px;
+	min-width: 600px;
+	background-color: var(--container-bg-color);
+	border: 1px solid var(--line-color);
+	border-radius: 10px;
+	padding: 1%;
+}
+/* formの1行分 */
+.row{
+	display:grid;
+	grid-template-columns: 20% 1fr;
+	padding: 1% 0%;
+	align-items: start;
+}
+/* formの1行の右側 */
+.row label{
+	font-weight: bold;
+	font-size: 1rem;
+	color: var(--main-text-color);
+	text-align: right;
+}
+/* formの1行の左側 */
+.inputContainer{
+	padding:0px 5px;
+}
+/* error */
+.error {
+	margin-top: 4px;
+	color: red;
+	font-size: 0.9em;
+	min-height: 1.2em;
+}
+.error span:empty::after {
+	content: " ";
+	display: inline-block;
+	visibility: hidden;
+}
+#existingWordLink {
+	color: red;
+	cursor: pointer;
+	transition: color 0.2s;
+	text-decoration: none;
+}
+
+#existingWordLink:hover {
+	color: rgb(145, 32, 22);
+}
+.existingWordDetail{
+	display: none;
+	
+	margin-top: 10px;
+	padding: 16px;
+	border: 1px solid var(--line-color);
+	border-radius: 12px;
+	background-color: var(--main-bg-color);
+	width: 80%;
+	box-sizing: border-box;
+}
+.existingWordDetailVisible{
+	display:block;
+}
+/* category */
+#categoryInputContainer{
+	display:grid;
+	grid-template-columns: 1fr 1fr;
+	column-gap: 20px;
+	width: 80%;
+}
+#categoryId,
+#categoryName{
+	padding: 2px;
+	border: 1px solid var(--line-color);
+	border-radius: 4px;
+	font-size: 0.9rem;
+	width: 100%;
+}
+#categoryInputContainer label{
+	font-size: 0.8rem;
+	font-weight: normal;
+}
+/* category以外 */
+#wordName,
+#content,
+#relatedWordIds {
+	padding: 2px;
+	border: 1px solid var(--line-color);
+	border-radius: 4px;
+	font-size: 0.9rem;
+	width: 80%;
+}
+#content {
+	min-height: 200px;
+	resize: vertical;
+}
+/* 登録確認ボタン */
+#registConfirmBtn {
+	width: 300px;
+	background-color: var(--hover-bg-color);
+	color: var(--hover-text-color);
+	border: none;
+	padding: 10px 24px;
+	border-radius: 6px;
+	display: block;
+	margin:  0 auto;
+}
+
+#registConfirmBtn:hover {
+	background-color: #000;
+}
+
+/* 重複wordの表示 */
+.wordDetailContainer{
+	padding: 3%;
+	background-color: var(--container-bg-color);
+}
+.wordDetailContainer div{
+	margin:0%;
+}
+.wordNameContainer{
+	display: flex;
+	justify-content: space-between;
+}
+
+.wordName{
+	font-size: 2rem;
+}
+.content{
+	font-size: 1rem;
+	border-top: 2px solid var(--line-color);
+	border-bottom: 2px solid var(--line-color);
+	padding: 20px;
+}
+.category{
+	font-size: 0.7rem;
+}
+.relatedWords{
+	font-size: 0.7rem;
+}
+.relatedWords ul{
+	display:inline-block;
+	list-style: none;
+	padding-left: 0;
+}
+.relatedWords ul li{
+	display:inline-block;
+	padding-right: 20px;
+}
+.editBtn:hover{
+	padding: 10px;
+	text-align: center;
+	background-color:var(--hover-bg-color);
+	border:2px solid var(--hover-bg-color);
+	color: var(--hover-text-color);
+	border-radius: 10%;
+	cursor: pointer;
+	font-size: 1rem;
+}
+.editBtn{
+	padding: 10px;
+	text-align: center;
+	background-color:  var(--line-color);
+	border:2px solid var(--line-color);
+	color:var(--container-bg-color);
+	border-radius: 10%;
+	cursor: pointer;
+	font-size: 1rem;
+}
+
+
+

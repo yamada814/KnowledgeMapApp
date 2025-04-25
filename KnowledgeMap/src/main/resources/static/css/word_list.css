@@ -6,6 +6,7 @@
 	--line-color: #b0aec8;
 	--hover-bg-color: #201f30;
 	--hover-text-color: white;
+	font-size: 16px;
 }
 * {
 	box-sizing: border-box;
@@ -73,7 +74,7 @@ h4{
 	border: none;
 	border-radius: 0%;
 	cursor: pointer;
-	font-size: 16px;
+	font-size: 1rem;
 }
 #categoryList li,
 .wordList li{
@@ -94,7 +95,7 @@ h4{
 	border: none;
 	color:#777499;
 	border:2px solid var(--hover-bg-color);
-	font-size: 16px;
+	font-size: 1rem;
 	cursor: pointer;
 }
 .categoryDeleteBtn:hover,
@@ -113,7 +114,7 @@ h4{
 }
 
 .wordName{
-	font-size:32px;
+	font-size: 2rem;
 }
 .content{
 	font-size: 16px;
@@ -122,10 +123,10 @@ h4{
 	padding:5%;
 }
 .category{
-	font-size: 12px;
+	font-size: 0.8rem;
 }
 .relatedWords{
-	font-size: 14px;
+	font-size: 0.8rem;
 }
 .relatedWords ul{
 	display:inline-block;
@@ -145,7 +146,7 @@ h4{
 	color: var(--hover-text-color);
 	border-radius: 10%;
 	cursor: pointer;
-	font-size: 16px;
+	font-size: 1rem;
 }
 .editBtn{
 	padding: 10px;
@@ -155,13 +156,14 @@ h4{
 	color:var(--container-bg-color);
 	border-radius: 10%;
 	cursor: pointer;
-	font-size: 16px;
+	font-size: 1rem;
 }
 /* 新規登録 */
 
 #regist{
 	width:20%;
 	margin: 10px;
+	
 }
 #regist a{
 	text-decoration: none;
