@@ -199,7 +199,8 @@ async function deleteWord(event, wordId, li) {
 		const res = await fetch(`/api/words/${wordId}`, { method: "DELETE" });
 		if (res.ok) {
 			li.remove();
-			clearWordDetail()
+			clearWordDetail();
+			document.querySelector(".deleteMsg").textContent = "削除しました";
 		} else {
 			alert("削除に失敗しました");
 		}

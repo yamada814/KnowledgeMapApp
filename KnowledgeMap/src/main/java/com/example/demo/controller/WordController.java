@@ -112,7 +112,7 @@ public class WordController {
 		Word registedWord = wordService.addWord(wordForm);
 		System.out.println("■ ■ ■ ■ ■ ■ ■ " +registedWord.getWordName());
 		System.out.println("■ ■ ■ ■ ■ ■ ■ " +registedWord.getCategory().getId());
-		redirectAttribute.addFlashAttribute("regist_ok", "登録完了しました");
+		redirectAttribute.addFlashAttribute("regist_ok", "登録しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
 		return String.format("redirect:/wordList?categoryId=%d&id=%d", registedWord.getCategory().getId(),
 				registedWord.getId());

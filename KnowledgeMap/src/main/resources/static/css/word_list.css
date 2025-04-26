@@ -32,6 +32,9 @@ h4{
 .wordDetailContainer{
 	padding: 1.2rem;
 }
+.wordDetailContainer .message{
+	color: red;
+}
 /* categoryList, wordList */
 #categoryList, 
 .wordList{
