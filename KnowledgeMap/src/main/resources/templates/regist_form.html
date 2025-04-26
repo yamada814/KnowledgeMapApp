@@ -4,6 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>単語の登録</title>
+	
 	<link rel="stylesheet" th:href="@{/css/common.css}">
 	<link rel="stylesheet" th:href="@{/css/regist_form.css}">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -24,7 +25,7 @@
 					<div th:if="${#fields.hasErrors('wordName')}">
 						<div>
 							<span class="bi bi-exclamation-circle-fill"></span>
-							<a href="#" id="existingWordLink">
+							<a th:if="${existingWord} != null" href="#" id="existingWordLink">
 								<span th:text="${existingWord.wordName}"></span>
 								<span class="bi bi-caret-down-fill switcher"></span>
 							</a>
@@ -32,13 +33,13 @@
 						</div>
 
 					</div>
-					<!-- 既存wordの詳細（ここに埋め込む） -->
+					<!-- 既存wordの詳細（クリックイベントで表示させる） -->
 					<div th:if="${existingWord != null}" class="existingWordDetail" th:object="${existingWord}">
 						<div class="wordNameContainer">
 							<div class="wordName" th:text="*{wordName}"></div>
-							<a th:href="@{/words/{id}/editForm(id=${existingWord.id},fromRegist='fromRegist')}"
-								class="editBtn">
-								<span class="bi bi-pencil-square"></span>
+							<a  th:href="@{/words/{id}/editForm(id=${existingWord.id},fromRegist='fromRegist')}"
+								class="button editBtn">
+								<span class="bi bi-pencil-fill"></span>
 							</a>
 						</div>
 						<div class="category">
@@ -55,7 +56,6 @@
 				</div>
 			</div>
 		</div>
-
 
 		<div class="row">
 			<label for="categoryId">カテゴリ</label>
@@ -95,10 +95,10 @@
 		</div>
 
 		<div class="row">
-			<label for="relatedWordIds">参照</label>
+			<label for="relatedWordIds">関連語</label>
 			<div class="inputContainer">
 				<select multiple th:field="*{relatedWordIds}">
-					<option value="">カテゴリを選択</option>
+					<option value="">関連語を選択</option>
 					<option th:each="word : ${wordList}" th:value="${word.id}" th:text="${word.wordName}">
 					</option>
 				</select>
@@ -113,7 +113,7 @@
 
 	</form>
 
-	<a th:href="@{/wordList}">一覧へ戻る</a>
+	<a id="return" class="button" th:href="@{/wordList}">一覧へ戻る</a>
 
 </body>
 

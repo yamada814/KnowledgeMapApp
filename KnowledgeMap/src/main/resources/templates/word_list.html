@@ -14,7 +14,7 @@
 	<h1>単語帳</h1>
 
 	<div id="regist">
-		<a th:href="@{/showWordForm}"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
+		<a th:href="@{/showWordForm}" class="button"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
 	</div>
 
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
