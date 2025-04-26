@@ -5,6 +5,7 @@
 	<meta charset="UTF-8">
 	<title>単語一覧</title>
 	<link rel="stylesheet" th:href="@{/css/word_list.css}">
+	<link rel="stylesheet" th:href="@{/css/common.css}">
 	<script th:src="@{/js/word_list.js}" defer></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
@@ -13,7 +14,7 @@
 	<h1>単語帳</h1>
 
 	<div id="regist">
-		<a th:href="@{/showWordForm}"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
+		<a th:href="@{/showWordForm}" class="button"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
 	</div>
 
 	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
@@ -24,7 +25,7 @@
 	<div class="mainContainer">
 		<!-- categoryList -->
 		<div id="categoryOuter">
-			<h4>カテゴリ</h4>
+			<h4>Category</h4>
 			<div class="categoryContainer">
 				<ul id="categoryList">
 					<li th:each="category : ${categories}" th:object="${category}">
@@ -36,14 +37,14 @@
 
 		<!-- wordList -->
 		<div id="wordListOuter">
-			<h4>単語</h4>
+			<h4>Word</h4>
 			<div class="wordListContainer">
 			</div>
 		</div>
 
 		<!-- wordDetail -->
 		<div id="wordDetailOuter">
-			<h4>内容</h4>
+			<h4>Detail</h4>
 			<div class="wordDetailContainer">
 			</div>
 		</div>

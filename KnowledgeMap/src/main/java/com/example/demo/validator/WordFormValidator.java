@@ -46,7 +46,8 @@ public class WordFormValidator implements Validator {
 			//   wordNameによる検索で既存だった  かつ  既存のwordを編集の時
 			//   ( 編集対象のwordは wordNameによる検索で見つかったword と同じidである必要がある)
 			if (wordForm.getId() == null || !wordForm.getId().equals(existingWord.getId())) {
-				errors.rejectValue("wordName", null, wordForm.getWordName() + "はすでに登録されています");
+//				errors.rejectValue("wordName", null, wordForm.getWordName() + "は既に登録されています");
+				errors.rejectValue("wordName", null, "はすでに登録されています");
 			}
 		}
 		//categoryIdとcategoryNameの両方に入力があればエラー

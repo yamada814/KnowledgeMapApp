@@ -135,7 +135,7 @@ async function showWordDetail(wordId) {
 			const editBtn = document.createElement("button");
 			editBtn.classList.add("editBtn");
 			const span = document.createElement("span");
-			span.classList.add("bi-pencil-square");
+			span.classList.add("bi-pencil-fill");
 			editBtn.append(span);
 			editBtn.addEventListener("click", () => {
 				location.href = `/words/${wordId}/editForm`;
