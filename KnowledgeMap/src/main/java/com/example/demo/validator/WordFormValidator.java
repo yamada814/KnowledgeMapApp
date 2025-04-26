@@ -34,7 +34,7 @@ public class WordFormValidator implements Validator {
 					.map(opt -> opt.get().getWordName())
 					.toList();
 			if (relatedWordNames.contains(wordForm.getWordName())) {
-				errors.rejectValue("relatedWordIds", null, "自身のwordは関連語として登録できません");
+				errors.rejectValue("relatedWordIds", null, "自身の単語は関連語として登録できません");
 			}
 		}
 		// 既存wordNameならエラー

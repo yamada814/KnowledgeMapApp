@@ -61,7 +61,7 @@ public class WordController {
 	//登録内容確認
 	@PostMapping("/registConfirm")
 	public String registConfirm(
-			@Validated WordForm wordForm,
+			@ModelAttribute("wordForm") @Validated WordForm wordForm,
 			BindingResult result,
 			Model model) {
 		if (result.hasErrors()) {
@@ -101,12 +101,17 @@ public class WordController {
 	//DB新規登録
 	@PostMapping("/regist")
 	public String regist(WordForm wordForm, RedirectAttributes redirectAttribute) {
+		
+		System.out.println("■ ■ ■ ■ ■ ■ ■ " +wordForm.getCategoryId());
 		// 存在しないカテゴリの場合エラー 
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
+		System.out.println("■ ■ ■ ■ ■ ■ ■ " +categoryOpt.isPresent());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
 		Word registedWord = wordService.addWord(wordForm);
+		System.out.println("■ ■ ■ ■ ■ ■ ■ " +registedWord.getWordName());
+		System.out.println("■ ■ ■ ■ ■ ■ ■ " +registedWord.getCategory().getId());
 		redirectAttribute.addFlashAttribute("regist_ok", "登録完了しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
 		return String.format("redirect:/wordList?categoryId=%d&id=%d", registedWord.getCategory().getId(),

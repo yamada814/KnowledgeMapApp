@@ -1,0 +1,15 @@
+@charset "UTF-8";
+button{
+	width: 30%;
+	padding: 0.6rem 1.5rem;
+	display: block;
+	margin:  0 auto;
+	font-size: 0.8rem;
+}
+.inputContainer{
+	border-bottom: 1px solid var(--line-color);
+}
+h4{
+	margin:1rem auto;
+	width:fit-content;
+}

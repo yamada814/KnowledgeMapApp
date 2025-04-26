@@ -14,7 +14,7 @@
 
 <body>
 	<h1>新規登録</h1>
-	<form class="registForm" th:action="@{/registConfirm}" method="post" th:object="${wordForm}">
+	<form class="commonForm" th:action="@{/registConfirm}" method="post" th:object="${wordForm}">
 		<input type="hidden" th:field="*{id}">
 
 		<div class="row">

@@ -1,5 +1,8 @@
 @charset "UTF-8";
-
+h1{
+	font-size: 2rem;
+	padding:2rem;
+}
 :root {
 	--main-bg-color: #f4f4fa;
 	--main-text-color: #201f30;
@@ -29,13 +32,68 @@ button,
 	color: var(--container-bg-color);
 	border-radius: 5px;
 	border: 1px solid var(--main-text-color);
-	
+			
 	text-decoration: none;
 	text-align: center;	
-
-
+}
+.commonForm button{
+	width: 30%;
+	padding: 0.6rem 1.5rem;
+	display: block;
+	margin:  0 auto;
+	font-size: 0.8rem;
 }
 button:hover,
 .button:hover{
 	background-color: var(--hover-bg-color)
+}
+/* 戻るボタン */
+#return{
+	display:block;
+	width: 10rem;
+	margin:2rem;
+	padding: 0.6rem 1.5rem;	
+	font-size: 0.8rem;
+	background-color: var(--container-bg-color);
+	color: var(--main-text-color);
+	border:1px solid var(--main-text-color);
+}
+#return:hover{
+	background-color: var(--hover-bg-color);
+	color:var(--container-bg-color);
+	border: 1px solid var(--container-bg-color);
+}
+/* form */
+.commonForm{
+	width: 80%;
+	max-width: 800px;
+	min-width: 500px;
+	background-color: var(--container-bg-color);
+	border: 1px solid var(--line-color);
+	border-radius: 10px;
+	padding: 2rem;
+}
+/* formの1行分 */
+.row{
+	display:grid;
+	grid-template-columns: 15% 1fr;
+	padding: 0.2rem 0;
+	align-items: start;
+	column-gap: 2rem;
+}
+/* formの1行の右側 */
+.row label{
+	font-weight: bold;
+	font-size: 1rem;
+	color: var(--main-text-color);
+	text-align: right;
+}
+/* formの1行の左側 */
+.inputContainer{
+	padding:0 0.3rem;
+	width:100%;
+	min-height: 2.5rem; 
+}
+ul{
+	list-style: none;
 }

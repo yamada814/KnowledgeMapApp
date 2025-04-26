@@ -25,13 +25,15 @@ public class WordServiceImpl implements WordService {
 	private final WordRelationRepository wordRelationRepository;
 
 	// WordForm型からWord型への変換を行うユーティリティメソッド
-	public Word transferWordFormToWord(Word word, WordForm wordForm) {
-		word.setId(wordForm.getId());
+	public void transferWordFormToWord(Word word, WordForm wordForm) {
+//		word.setId(wordForm.getId());
 		word.setWordName(wordForm.getWordName());
 		word.setContent(wordForm.getContent());
 		// wordForm型の categoryId から Category型に変換して Word型にセット
 		Optional<Category> categoryOpt = categoryRepository.findById(wordForm.getCategoryId());
-		word.setCategory(categoryOpt.get());
+		if(categoryOpt.isPresent()) {
+			word.setCategory(categoryOpt.get());			
+		}
 		if(wordForm.getRelatedWordIds() != null) {
 			
 		//@ManyToManyのついてるフィールドは、Hibernateが内部で clear()やadd()を行う可能性があるので mutable である必要がある
@@ -43,7 +45,7 @@ public class WordServiceImpl implements WordService {
 				.collect(Collectors.toCollection(ArrayList::new));
 		word.setRelatedWords(relatedWords);
 		}
-		return word;
+
 	}
 
 	// wordFormからrelatedWordNamesを取得
@@ -89,6 +91,7 @@ public class WordServiceImpl implements WordService {
 	public Word addWord(WordForm wordForm) {
 		Word word = new Word();
 		transferWordFormToWord(word, wordForm);//WordForm型 -> Word型　の変換
+		System.out.println("■ ■ ■ ■ ■ ■ ■ ■ ■ ■ "+word.getCategory().getId());
 		return wordRepository.save(word);
 	}
 

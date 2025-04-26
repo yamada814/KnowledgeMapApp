@@ -4,45 +4,48 @@
 <head>
 	<meta charset="UTF-8">
 	<title>登録確認</title>
+
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+	<link rel="stylesheet" th:href="@{/css/regist_confirm.css}">
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 </head>
 
 <body>
 	<h1>登録確認</h1>
-	<h2>以下の内容で登録します</h2>
-	<form th:action="@{/regist}" method="post" th:object="${wordForm}">
-		<table>
-			<tr>
-				<th>word</th>
-				<td>
-					<span th:text="*{wordName}"></span>
-					<input type="hidden" th:field="*{wordName}">
-				</td>
-			</tr>
-			<tr>
-				<th>content</th>
-				<td>
-					<span th:text="*{content}"></span>
-					<input type="hidden" th:field="*{content}">
-				</td>
-			</tr>
-			<tr>
-				<th>category</th>
-				<td>
-					<span th:text="*{categoryName}"></span>
-					<input type="hidden" th:field="*{categoryId}">
-				</td>
-			</tr>
-			<tr>
-				<th>related_words</th>
-				<td>
-					<ul>
-						<li th:each="relatedWordName : ${relatedWordNames}" 
-							th:text="${relatedWordName}"></li>
-					</ul>
-					<input type="hidden" th:field="*{relatedWordIds}">
-				</td>
-			</tr>
-		</table>
+	<form class="commonForm" th:action="@{/regist}" method="post" th:object="${wordForm}">
+	<h4>以下の内容で登録します。</h4>
+		
+				<input type="hidden" th:field="*{wordName}">
+				<input type="hidden" th:field="*{categoryId}">
+				<input type="hidden" th:field="*{content}">
+				<input type="hidden" th:field="*{relatedWordIds}">
+		
+		<div class="row">
+			<label for="wordName">単語</label>
+			<div class="inputContainer" id="wordName" th:text="*{wordName}"></div>
+		</div>		
+		
+		<div class="row">
+			<label for="category">カテゴリ</label>
+			<div class="inputContainer" id="category" th:text="*{categoryName}"></div>
+		</div>
+		
+		<div class="row">
+			<label for="content">内容</label>
+			<div class="inputContainer" id="content" th:text="*{content}"></div>
+		</div>
+
+		<div class="row">
+			<label  for="relatedWords">関連語</label>
+			<div class="inputContainer" id="relatedWords">
+				<ul>
+					<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
+				</ul>
+			</div>
+		</div>
+
 		<button type="submit">登録する</button>
 	</form>
 	<form th:action="@{/showWordForm}" method="post" th:object="${wordForm}">
@@ -50,7 +53,7 @@
 		<input type="hidden" th:field="*{content}">
 		<input type="hidden" th:field="*{categoryId}">
 		<input type="hidden" th:field="*{relatedWordIds}">
-		<button type="submit">入力画面に戻る</button>
+		<button  id="return"  type="submit">入力画面に戻る</button>
 	</form>
 </body>
 

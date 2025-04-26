@@ -6,6 +6,8 @@
 	background-color: var(--main-bg-color);
 	width: 95%;
 	max-width: 1100px;
+	min-width: 500px;
+
 	margin:2%;
 }
 h4{
