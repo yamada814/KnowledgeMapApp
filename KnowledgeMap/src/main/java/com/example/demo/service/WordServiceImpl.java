@@ -99,7 +99,7 @@ public class WordServiceImpl implements WordService {
 		Word word = new Word();
 		transferWordFormToWord(word,wordForm);
 		Word savedWord = wordRepository.save(word);
-		
+		//関連語にも新規作成した単語を関連づける
 		for(Word relatedWord : savedWord.getRelatedWords()) {
 			relatedWord.getRelatedWords().add(savedWord);
 			wordRepository.save(relatedWord);

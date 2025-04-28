@@ -13,6 +13,9 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import lombok.Data;
 
 /*
@@ -24,11 +27,12 @@ import lombok.Data;
 @Entity
 @Table(name="word")
 @Data
-// JSON変換時にword_relationを介した循環参照を防ぐ
-//@JsonIdentityInfo(
-//		generator = ObjectIdGenerators.PropertyGenerator.class,
-//		property = "id"
-//		)
+ //JSON変換時にword_relationを介した循環参照を防ぐ
+ //同じidのオブジェクトが2回目に出てきたら、idのみを参照する
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id"
+		)
 public class Word {
 	@Id
 	@Column(name="id")

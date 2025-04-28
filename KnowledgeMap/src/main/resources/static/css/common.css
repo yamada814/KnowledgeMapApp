@@ -34,6 +34,8 @@ button,
 			
 	text-decoration: none;
 	text-align: center;	
+	
+	cursor: pointer;
 }
 .commonForm button{
 	width: 30%;
