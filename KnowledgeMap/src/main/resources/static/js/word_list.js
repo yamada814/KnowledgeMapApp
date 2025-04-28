@@ -233,22 +233,25 @@ async function deleteWord(event, wordId, li) {
 }
 
 // 削除確認モーダルを表示させる
-// 押したボタンによって 削除実行する or 実行しない を切り替える
+// 「引数として真偽値を受け取り 削除実行のリクエストを送る or 何もしない」という関数オブジェクトを 引数として受け取る
 function showModal(event,func) {
-	// モーダルの表示位置
-	const rect = event.currentTarget.getBoundingClientRect();
-	console.log(rect);
-	const modalTop = rect.bottom + scrollY + 8; 
-	const modalRight = window.innerWidth - ( rect.x + rect.width ) + scrollX;
-	document.documentElement.style.setProperty('--modal-top', `${modalTop}px`);
-	document.documentElement.style.setProperty('--modal-right', `${modalRight}px`);
-
+	// モーダルの表示
 	deleteConfirmModal.classList.remove("modalHidden");
-
+	// モーダルの表示位置を設定
+	const rect = event.currentTarget.getBoundingClientRect();
+	
+	const modalTop = rect.bottom + scrollY + 8; 
+	const modalLeft = rect.right - deleteConfirmModal.offsetWidth;
+	
+	document.documentElement.style.setProperty('--modal-top', `${modalTop}px`);
+	document.documentElement.style.setProperty('--modal-left', `${modalLeft}px`);
+	
+	// OKボタンクリック -> func(true)を実行してモーダルを閉じる
 	deleteOk.onclick = () => {
 		func(true);
 		closeModal();
 	};
+	// NGボタンクリック -> func(false)を実行してモーダルを閉じる
 	deleteNg.onclick = () => {
 		func(false);
 		closeModal();

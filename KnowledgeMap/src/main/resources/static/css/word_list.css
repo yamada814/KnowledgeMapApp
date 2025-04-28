@@ -1,8 +1,5 @@
 @charset "utf-8";
-:root{
-	--modal-top:50%;
-	--modal-right:50%;
-}
+
 /* containers */
 .mainContainer {
 	display: flex;
@@ -139,18 +136,24 @@ h4{
 	display: block;
 	padding:10px;
 }
-/* 削除確認モーダル */
-
+/* 削除確認モーダル
+   表示位置はクリックしたボタン要素の下になるよう変数で定義
+ */
 .modalHidden{
 	display:none;
-
+}
+:root{
+	--modal-top:50%;
+	--modal-left:50%;
 }
 #deleteConfirmModal{
 	position: absolute;
 	top: var(--modal-top);
-	right: var(--modal-right);
+	left: var(--modal-left);
+	
 	padding:1.5rem;
 	text-align: center;	
+	
 	background-color: #f5dede;
 	color: var(--main-text-color);
 	border: 2px solid var(--main-text-color);
