@@ -179,9 +179,17 @@ async function showWordDetail(wordId) {
 				const reference = document.createElement("span");
 				reference.textContent = "参照：";
 				const relatedWords = document.createElement("ul");
-				for (const word of wordDetail.relatedWords) {
+				for (const relatedWord of wordDetail.relatedWords) {
 					const li = document.createElement("li");
-					li.textContent = word.wordName;
+					li.textContent = relatedWord.wordName;
+					li.dataset.id = relatedWord.id; 
+					li.addEventListener("click",async()=>{ 
+						clearCategorySelection();
+						setCategorySelection(relatedWord.category.id);
+						setWordSelection(relatedWord.id);
+						wordDetailContainer.innerHTML="";
+						showWordDetail(relatedWord.id)});
+						
 					relatedWords.appendChild(li);
 				}
 				relatedWordsContainer.append(reference, relatedWords);

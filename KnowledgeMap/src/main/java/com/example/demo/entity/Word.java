@@ -36,14 +36,18 @@ public class Word {
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	
 	@Column(name="word_name")
 	private String wordName;
+	
 	@Column(name="content")
 	private String content;
+	
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
+    
+    //word_relationテーブルとのマッピング
     @ManyToMany
     @JoinTable(
         name = "word_relation",

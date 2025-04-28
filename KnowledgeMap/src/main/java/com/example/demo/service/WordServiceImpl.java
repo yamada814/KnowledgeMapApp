@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.WordDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
@@ -70,9 +71,19 @@ public class WordServiceImpl implements WordService {
 		return wordRepository.findByWordName(name);
 	}
 	@Override
-	public List<Word> findByCategoryId(Integer id) {
-		return wordRepository.findByCategoryId(id);
+	public List<WordDto> findWordsByCategoryId(Integer categoryId) {
+	    return wordRepository.findByCategoryId(categoryId).stream()
+	        .map(word -> {
+	            WordDto dto = new WordDto();
+	            dto.setId(word.getId());
+	            dto.setWordName(word.getWordName());
+	            dto.setContent(word.getContent());
+	            dto.setCategoryId(word.getCategory().getId());
+	            return dto;
+	        })
+	        .toList();
 	}
+
 
 	@Override
 	@Transactional
