@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.demo.WordDto;
+import com.example.demo.dto.WordDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
@@ -46,7 +46,6 @@ public class WordServiceImpl implements WordService {
 				.collect(Collectors.toCollection(ArrayList::new));
 		word.setRelatedWords(relatedWords);
 		}
-
 	}
 
 	// wordFormからrelatedWordNamesを取得
@@ -83,8 +82,6 @@ public class WordServiceImpl implements WordService {
 	        })
 	        .toList();
 	}
-
-
 	@Override
 	@Transactional
 	//関連語テーブルから削除してからwordテーブルから削除する
@@ -97,13 +94,17 @@ public class WordServiceImpl implements WordService {
 		wordRepository.deleteById(id);
 		return true;
 	}
-
 	@Override
 	public Word addWord(WordForm wordForm) {
 		Word word = new Word();
-		transferWordFormToWord(word, wordForm);//WordForm型 -> Word型　の変換
-		System.out.println("■ ■ ■ ■ ■ ■ ■ ■ ■ ■ "+word.getCategory().getId());
-		return wordRepository.save(word);
+		transferWordFormToWord(word,wordForm);
+		Word savedWord = wordRepository.save(word);
+		
+		for(Word relatedWord : savedWord.getRelatedWords()) {
+			relatedWord.getRelatedWords().add(savedWord);
+			wordRepository.save(relatedWord);
+		}
+		return savedWord;
 	}
 
 	@Override
@@ -113,4 +114,5 @@ public class WordServiceImpl implements WordService {
 		transferWordFormToWord(word, wordForm);//WordForm型 -> Word型　の変換
 		return  wordRepository.save(word);
 	}
+
 }
