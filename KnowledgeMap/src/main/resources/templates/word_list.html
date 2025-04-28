@@ -17,11 +17,6 @@
 		<a th:href="@{/showWordForm}" class="button"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
 	</div>
 
-	<div th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
-	<div th:if="${delete_ok} != null" th:text="${delete_ok}"></div>
-	<div th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
-	<div th:if="${regist_cancel} != null" th:text="${regist_cancel}"></div>
-
 	<div class="mainContainer">
 		<!-- categoryList -->
 		<div id="categoryOuter">
@@ -46,7 +41,15 @@
 		<div id="wordDetailOuter">
 			<h4>Detail</h4>
 			<div class="wordDetailContainer">
+				<div class="message" th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
+				<div class="message" th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
 			</div>
+		</div>
+		<!-- 削除確認モーダル -->
+		<div id="deleteConfirmModal" class="modalHidden">
+			<p>本当に削除しますか？</p>
+			<button id="deleteOk">はい</button>
+			<button id="deleteNg">いいえ</button>
 		</div>
 </body>
 

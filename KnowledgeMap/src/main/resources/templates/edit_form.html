@@ -3,65 +3,111 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>word編集</title>
+	<title>編集</title>
+
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+	<link rel="stylesheet" th:href="@{/css/regist_form.css}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 	<script th:src="@{/js/form.js}" defer></script>
 
 </head>
 
 <body>
-	<h1>word編集</h1>
+	<h1>編集</h1>
 	<p th:if="${word_duplicate} != null" th:text="${word_duplicate}"></p>
-	<form th:action="@{/words/{id}/editConfirm(id=${word.id})}" method="post">
-		<table th:object="${wordForm}">
-			<input type="hidden" th:field="*{id}" />
-			<tr>
-				<th>word</th>
-				<td>
-					<input type="text" th:field="*{wordName}">
-					<span th:errors="*{wordName}"></span>
-				</td>
-			</tr>
-			<tr>
-				<th>content</th>
-				<td>
+	<form class="commonForm" th:action="@{/words/{id}/editConfirm(id=${word.id})}" method="post" th:object="${wordForm}">
+		<input type="hidden" th:field="*{id}" />
+		<div class="row">
+			<label for="wordName">単語</label>
+			<div class="inputContainer">
+				<input type="text" th:field="*{wordName}" autofocus>
+				<div class="error">
+					<div th:if="${#fields.hasErrors('wordName')}">
+						<div>
+							<span class="bi bi-exclamation-circle-fill"></span>
+							<a th:if="${existingWord} != null" href="#" id="existingWordLink">
+								<span th:text="${existingWord.wordName}"></span>
+								<span class="bi bi-caret-down-fill switcher"></span>
+							</a>
+							<span th:errors="*{wordName}"></span>
+						</div>
+					</div>
+				</div>
+				<!-- 既存wordの詳細（クリックイベントで表示させる） -->
+				<div th:if="${existingWord != null}" class="existingWordDetail" th:object="${existingWord}">
+					<div class="wordNameContainer">
+						<div class="wordName" th:text="*{wordName}"></div>
+						<a th:href="@{/words/{id}/editForm(id=${existingWord.id},fromRegist='fromRegist')}"
+							class="button editBtn">
+							<span class="bi bi-pencil-fill"></span>
+						</a>
+					</div>
+					<div class="category">
+						<span>カテゴリ：</span><span th:text="*{category.name}"></span>
+					</div>
+					<div class="content" th:text="*{content}"></div>
+					<div class="relatedWords">
+						<span>参照：</span>
+						<ul>
+							<li th:each="relatedWord : *{relatedWords}" th:text="${relatedWord.wordName}"></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+				<label for="categoryId">カテゴリ</label>
+				<div class="inputContainer">
+					<div id="categoryInputContainer">
+						<div>
+							<div><label for="categoryId">カテゴリ一覧から選ぶ</label></div>
+							<select th:field="*{categoryId}">
+								<option value="">カテゴリを選択</option>
+								<option th:each="category : ${categories}" th:value="${category.id}"
+									th:text="${category.name}">
+								</option>
+							</select>
+						</div>
+						<div>
+							<div><label for="categoryName">または新規作成<span class="bi bi-plus-circle-fill"></span></label>
+							</div>
+							<input type="text" th:field="*{categoryName}">
+						</div>
+					</div>
+					<div class="error">
+						<span th:if="${#fields.hasErrors('categoryNotNull')}" class="bi bi-exclamation-circle-fill"></span>
+						<span th:errors="*{categoryNotNull}"></span>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<label for="content">内容</label>
+				<div class="inputContainer">
 					<textarea th:field="*{content}"></textarea>
-					<span th:errors="*{content}"></span>
-				</td>
-			</tr>
-			<tr>
-				<th>category</th>
-				<td>
-					<select th:field="*{categoryId}" required>
-						<option value="">カテゴリを選択</option>
-						<option th:each="category : ${categories}" 
-								th:value="${category.id}" 
-								th:text="${category.name}">
+					<div class="error">
+						<span th:if="${#fields.hasErrors('content')}" class="bi bi-exclamation-circle-fill"></span>
+						<span th:errors="*{content}"></span>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<label for="relatedWordIds">関連語</label>
+				<div class="inputContainer">
+					<select multiple th:field="*{relatedWordIds}">
+						<option value="">関連語を選択</option>
+						<option th:each="word : ${wordList}" th:value="${word.id}" th:text="${word.wordName}">
 						</option>
 					</select>
-					<span th:errors="*{categoryId}"></span>
-					<span>または新しいカテゴリーをつくる
-						<input type="text" th:field="*{categoryName}">
-					</span>
-					<span th:errors="*{categoryNotNull}"></span>
-				</td>
-			</tr>
-			<tr>
-				<th>related_words</th>
-				<td>
-					<ul>
-						<li th:each="relatedWordName : ${relatedWordNames}" th:text="${relatedWordName}"></li>
-					</ul>
-					<select multiple th:field="*{relatedWordIds}">
-					    <option th:each="relatedWord : ${wordList}" 
-								th:if="${relatedWord.id} != ${word.id}"
-					            th:value="${relatedWord.id}" 
-					            th:text="${relatedWord.wordName}">
-					    </option>
-					</select>
-				</td>
-			</tr>
-		</table>
-		<input th:if="${fromRegist}" type="hidden" name="fromRegist" value="${fromRegist}">
+					<div class="error">
+						<span th:if="${#fields.hasErrors('relatedWordIds')}" class="bi bi-exclamation-circle-fill"></span>
+						<span th:errors="*{relatedWordIds}"></span>
+					</div>
+				</div>
+			</div>
+
 		<button type="submit">入力内容の確認</button>
 	</form>
 	<!-- 新規登録からの遷移の場合、戻るボタンは 登録画面へ -->
@@ -70,13 +116,14 @@
 		<input type="hidden" th:field="*{content}">
 		<input type="hidden" th:field="*{categoryId}">
 		<input type="hidden" th:field="*{relatedWordIds}">
-		<button>登録確認に戻る</button>
+		<button id="return">登録確認に戻る</button>
 	</form>
 	<!-- 編集からの遷移の場合、戻るボタンはword一覧へ-->
 	<form th:unless="${fromRegist}" th:action="@{/wordList}">
 		<input type="hidden" th:field="${wordForm.categoryId}">
 		<input type="hidden" th:field="${word.id}">
-		<button>word一覧へ</button>		
+		<button id="return">単語一覧へ戻る </button>
 	</form>
 </body>
+
 </html>
