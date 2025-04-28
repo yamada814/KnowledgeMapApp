@@ -12,6 +12,8 @@ const categoryBtns = document.querySelectorAll(".categoryBtn");
 const deleteConfirmModal = document.getElementById("deleteConfirmModal");
 const deleteOkBtn = document.getElementById("deleteOk");
 const deleteNgBtn = document.getElementById("deleteNg");
+//モーダル外側をクリックしたときに発生するイベントハンドラ(モーダルを閉じる処理を行う)
+let eventHandler = null;
 
 /*
 	新規登録または編集を実行後にword_listに戻ると
@@ -43,7 +45,6 @@ categoryBtns.forEach(categoryBtn => {
 		categoryBtn.classList.add("categoryBtnSelected");
 
 		wordListContainer.innerHTML = "";
-		closeModal();
 
 		showWordList(currentCategoryId);
 	})
@@ -111,7 +112,6 @@ async function showWordList(categoryId) {
 
 					wordBtn.addEventListener("click", () => {
 						wordDetailContainer.innerHTML = "";
-						closeModal();
 						document.querySelectorAll(".wordBtnSelected").forEach(btn => btn.classList.remove("wordBtnSelected"))
 						document.querySelectorAll(".wordDeleteBtn").forEach(btn => btn.remove());
 						wordBtn.classList.add("wordBtnSelected");
@@ -195,7 +195,7 @@ async function showWordDetail(wordId) {
 //category削除
 async function deleteCategory(event, categoryId) {
 	event.stopPropagation();
-	showModal(event,async () => {
+	showModal(event, async () => {
 		try {
 			const res = await fetch(`/api/categories/${categoryId}`, { method: "DELETE" });
 			if (res.ok) {
@@ -212,7 +212,7 @@ async function deleteCategory(event, categoryId) {
 //word削除
 async function deleteWord(event, wordId, li) {
 	event.stopPropagation();
-	showModal(event,async (isConfirmed) => {
+	showModal(event, async (isConfirmed) => {
 		if (!isConfirmed) {
 			return;
 		}
@@ -234,18 +234,18 @@ async function deleteWord(event, wordId, li) {
 
 // 削除確認モーダルを表示させる
 // 「引数として真偽値を受け取り 削除実行のリクエストを送る or 何もしない」という関数オブジェクトを 引数として受け取る
-function showModal(event,func) {
+function showModal(event, func) {
 	// モーダルの表示
 	deleteConfirmModal.classList.remove("modalHidden");
 	// モーダルの表示位置を設定
 	const rect = event.currentTarget.getBoundingClientRect();
-	
-	const modalTop = rect.bottom + scrollY + 8; 
+
+	const modalTop = rect.bottom + scrollY + 8;
 	const modalLeft = rect.right - deleteConfirmModal.offsetWidth;
-	
+
 	document.documentElement.style.setProperty('--modal-top', `${modalTop}px`);
 	document.documentElement.style.setProperty('--modal-left', `${modalLeft}px`);
-	
+
 	// OKボタンクリック -> func(true)を実行してモーダルを閉じる
 	deleteOk.onclick = () => {
 		func(true);
@@ -256,11 +256,26 @@ function showModal(event,func) {
 		func(false);
 		closeModal();
 	};
+	//モーダルの外側をクリックするとモーダルを閉じる関数
+	eventHandler = (event) => {
+		if (!deleteConfirmModal.contains(event.target)) {
+			closeModal();
+		}
+	}
+	//上記関数をクリックイベントに登録
+	document.addEventListener("click", eventHandler);
 }
 // 削除確認モーダルを閉じる
 function closeModal() {
 	if (!deleteConfirmModal.classList.contains("modalHidden")) {
 		deleteConfirmModal.classList.add("modalHidden");
+		if (eventHandler) {
+			//クリックイベント削除
+			document.removeEventListener("click", eventHandler);
+			eventHandler = null;
+		}
 	}
 }
+
+
 
