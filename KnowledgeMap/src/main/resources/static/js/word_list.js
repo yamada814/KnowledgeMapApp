@@ -57,12 +57,14 @@ function clearCategorySelection() {
 }
 // 選択中カテゴリの色変更
 function setCategorySelection(categoryId) {
-	[...categoryBtns].find(btn => btn.getAttribute("data-id") === categoryId).classList.add("categoryBtnSelected");
+	[...categoryBtns].find(btn => btn.getAttribute("data-id") == categoryId)
+		.classList.add("categoryBtnSelected");
+		
 }
 // 選択中の単語の色変更
 function setWordSelection(wordId) {
 	const wordBtns = document.querySelectorAll(".wordBtn");
-	[...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") === wordId)
+	[...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId)
 		.classList.add("wordBtnSelected");
 }
 // 単語一覧を表示
@@ -179,9 +181,18 @@ async function showWordDetail(wordId) {
 				const reference = document.createElement("span");
 				reference.textContent = "参照：";
 				const relatedWords = document.createElement("ul");
-				for (const word of wordDetail.relatedWords) {
+				for (const relatedWord of wordDetail.relatedWords) {
 					const li = document.createElement("li");
-					li.textContent = word.wordName;
+					li.textContent = relatedWord.wordName;
+					//関連語の相互参照
+					li.addEventListener("click",async()=>{ 
+						clearCategorySelection();
+						setCategorySelection(relatedWord.category.id);
+						wordListContainer.innerHTML = "";
+						showWordList(relatedWord.category.id);
+						wordDetailContainer.innerHTML="";
+						showWordDetail(relatedWord.id)});
+						
 					relatedWords.appendChild(li);
 				}
 				relatedWordsContainer.append(reference, relatedWords);

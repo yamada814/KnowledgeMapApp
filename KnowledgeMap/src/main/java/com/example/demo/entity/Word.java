@@ -27,6 +27,8 @@ import lombok.Data;
 @Entity
 @Table(name="word")
 @Data
+ //JSON変換時にword_relationを介した循環参照を防ぐ
+ //同じidのオブジェクトが2回目に出てきたら、idのみを参照する
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id"
@@ -36,14 +38,18 @@ public class Word {
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	
 	@Column(name="word_name")
 	private String wordName;
+	
 	@Column(name="content")
 	private String content;
+	
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
+    
+    //word_relationテーブルとのマッピング
     @ManyToMany
     @JoinTable(
         name = "word_relation",

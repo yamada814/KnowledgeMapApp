@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.WordDto;
 import com.example.demo.entity.Word;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.WordService;
@@ -29,8 +30,8 @@ public class WordApiController {
 	private final CategoryService categoryService;
 	
 	@GetMapping("/words")
-	public List<Word> getWordsByCategoryId(@RequestParam("categoryId") Integer categoryId){
-		return wordService.findByCategoryId(categoryId);
+	public List<WordDto> getWordsByCategoryId(@RequestParam("categoryId") Integer categoryId){
+		return wordService.findWordsByCategoryId(categoryId);
 	}
 	@DeleteMapping("/categories/{id}")
 	@ResponseBody
