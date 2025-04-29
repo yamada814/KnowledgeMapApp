@@ -5,10 +5,13 @@
 	<meta charset="UTF-8">
 	<title>編集</title>
 
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"  />
 	<link rel="stylesheet" th:href="@{/css/common.css}">
 	<link rel="stylesheet" th:href="@{/css/regist_form.css}">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 	<script th:src="@{/js/form.js}" defer></script>
 
 </head>
@@ -63,7 +66,6 @@
 						<div>
 							<div><label for="categoryId">カテゴリ一覧から選ぶ</label></div>
 							<select th:field="*{categoryId}">
-								<option value="">カテゴリを選択</option>
 								<option th:each="category : ${categories}" th:value="${category.id}"
 									th:text="${category.name}">
 								</option>
@@ -96,8 +98,7 @@
 			<div class="row">
 				<label for="relatedWordIds">関連語</label>
 				<div class="inputContainer">
-					<select multiple th:field="*{relatedWordIds}">
-						<option value="">関連語を選択</option>
+					<select multiple th:field="*{relatedWordIds}" >
 						<option th:each="word : ${wordList}" th:value="${word.id}" th:text="${word.wordName}">
 						</option>
 					</select>

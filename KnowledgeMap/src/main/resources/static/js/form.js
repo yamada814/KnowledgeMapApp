@@ -8,3 +8,12 @@ categoryInput.addEventListener("input", () => {
 		categorySelect.disabled = false;
 	}
 });
+$('#categoryId').select2({
+  placeholder: "選択してください",
+  allowClear: true
+});
+$('#relatedWordIds').select2({
+  multiple: true,
+  placeholder: "選択してください",
+  allowClear: true
+});
