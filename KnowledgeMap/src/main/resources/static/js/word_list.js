@@ -64,6 +64,7 @@ function setCategorySelection(categoryId) {
 // 選択中の単語の色変更
 function setWordSelection(wordId) {
 	const wordBtns = document.querySelectorAll(".wordBtn");
+	console.log([...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId));
 	[...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId)
 		.classList.add("wordBtnSelected");
 }
@@ -178,21 +179,27 @@ async function showWordDetail(wordId) {
 			if (wordDetail.relatedWords && wordDetail.relatedWords.length > 0) {
 				const relatedWordsContainer = document.createElement("div");
 				relatedWordsContainer.classList.add("relatedWords")
+				
 				const reference = document.createElement("span");
 				reference.textContent = "参照：";
+				
 				const relatedWords = document.createElement("ul");
 				for (const relatedWord of wordDetail.relatedWords) {
 					const li = document.createElement("li");
-					li.textContent = relatedWord.wordName;
-					//関連語の相互参照
+					li.textContent = relatedWord.wordName;			
+					//関連語の相互参照リンク作成
 					li.addEventListener("click",async()=>{ 
+						//カテゴリ一覧の設定
 						clearCategorySelection();
-						setCategorySelection(relatedWord.category.id);
+						setCategorySelection(relatedWord.categoryId);
+						//単語一覧の設定
 						wordListContainer.innerHTML = "";
-						showWordList(relatedWord.category.id);
+						await showWordList(relatedWord.categoryId);
+						setWordSelection(relatedWord.id);
+						//wordDetailの表示
 						wordDetailContainer.innerHTML="";
-						showWordDetail(relatedWord.id)});
-						
+						showWordDetail(relatedWord.id);
+					});					
 					relatedWords.appendChild(li);
 				}
 				relatedWordsContainer.append(reference, relatedWords);

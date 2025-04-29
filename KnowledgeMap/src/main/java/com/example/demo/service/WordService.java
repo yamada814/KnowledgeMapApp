@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.demo.dto.WordDetailDto;
 import com.example.demo.dto.WordDto;
 import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
@@ -17,5 +18,6 @@ public interface WordService {
     public Word updateWord(Integer id, WordForm wordForm);
     public List<WordDto> findWordsByCategoryId(Integer id);
     public List<String> getRelatedWordNames(WordForm wordForm);
+    public WordDetailDto findWordDetailDtoById(Integer id);
     
 }
