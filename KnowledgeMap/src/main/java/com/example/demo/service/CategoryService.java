@@ -7,6 +7,7 @@ import com.example.demo.entity.Category;
 
 public interface CategoryService {
 	List<Category> findAll();
+	List<Category> findByWordbookId(Integer wordbookId);
 	Optional<Category> findByCategoryId(Integer categoryId);
 	Category addCategory(String categoryName);
 	Optional<Category> findByName(String categoryName);

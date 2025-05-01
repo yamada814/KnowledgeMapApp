@@ -18,7 +18,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name="wordbook")
-public class WordBook {
+public class Wordbook {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class WordBook {
 	//@ToString.Exclude
 	private User user;
 	
-	@OneToMany(mappedBy="wordBook",cascade=CascadeType.ALL,orphanRemoval=true)
+	@OneToMany(mappedBy="wordbook",cascade=CascadeType.ALL,orphanRemoval=true)
 	private List<Category> categories;
 
 }

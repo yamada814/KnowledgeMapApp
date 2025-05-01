@@ -24,7 +24,7 @@ public class WebSecurityConfig {
 				.loginPage("/login")		//ログイン用ページ
 				.loginProcessingUrl("/login") // ログインフォームのリクエスト先
 				.usernameParameter("username") //認証のキーとなるパラメータ
-				.defaultSuccessUrl("/home",true) //認証成功時 遷移先
+				.defaultSuccessUrl("/wordbooks",true) //認証成功時 遷移先
 				.failureUrl("/login?error=true") //認証失敗時 遷移先
 				.permitAll()
 			

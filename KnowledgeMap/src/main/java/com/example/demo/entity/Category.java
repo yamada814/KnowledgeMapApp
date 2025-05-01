@@ -36,6 +36,6 @@ public class Category {
     
     @ManyToOne
     @JoinColumn(name="wordbook_id")
-    private WordBook wordBook;
+    private Wordbook wordbook;
 }
 

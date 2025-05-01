@@ -29,6 +29,6 @@ public class User {
 	
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,orphanRemoval=true)
 	//@ToString.Exclude
-	private List<WordBook> wordBooks;
+	private List<Wordbook> wordbooks;
 
 }

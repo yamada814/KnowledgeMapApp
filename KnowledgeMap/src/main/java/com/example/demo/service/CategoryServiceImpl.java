@@ -42,5 +42,9 @@ public class CategoryServiceImpl implements CategoryService {
 	public void deleteByCategoryId(Integer categoryId) {
 		categoryRepository.deleteById(categoryId);
 	}
+	@Override
+	public List<Category> findByWordbookId(Integer wordbookId) {
+		return categoryRepository.findByWordbookId(wordbookId);
+	}
 
 }

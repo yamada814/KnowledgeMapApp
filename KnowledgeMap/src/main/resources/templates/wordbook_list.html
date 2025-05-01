@@ -9,7 +9,9 @@
 	<h1>ホーム</h1>
 	<p>ようこそ、<span sec:authentication="principal.username">username</span>さん</p>
 	<ul>
-		<li th:each="wordBook : ${wordBookList}" th:text="${wordBook.name}"></li>
+		<li th:each="wordbook : ${wordbookList}">
+			<a th:href="@{/wordbooks/{id}/words}" th:text="${wordbook.name}"></a>
+		</li>
 	</ul>
 
 </body>

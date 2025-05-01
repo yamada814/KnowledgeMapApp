@@ -10,7 +10,9 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.entity.Category;
@@ -23,6 +25,7 @@ import com.example.demo.validator.WordFormValidator;
 import lombok.RequiredArgsConstructor;
 
 @Controller
+@RequestMapping("/wordbooks/{wordBookId}")
 @RequiredArgsConstructor
 public class WordController {
 	private final WordService wordService;
@@ -35,8 +38,8 @@ public class WordController {
 	}
 
 	// word一覧表示
-	@GetMapping("/wordList")
-	public String showWordList(Model model) {
+	@GetMapping("/words")
+	public String showWordList(Model model,@PathVariable Integer wordBookId) {
 		model.addAttribute("categories", categoryService.findAll());
 		return "word_list";
 	}
