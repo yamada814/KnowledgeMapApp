@@ -62,7 +62,7 @@ public class WordDetailController {
 		wordForm.setContent(word.getContent());
 		wordForm.setCategoryId(word.getCategory().getId());
 		List<Integer> relatedWordIds = word.getRelatedWords().stream()
-				.map(relatedWord -> relatedWord.getId())
+				.map(Word::getId)
 				.toList();
 		wordForm.setRelatedWordIds(relatedWordIds);
 		model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));

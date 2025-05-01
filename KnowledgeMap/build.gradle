@@ -36,6 +36,8 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'com.h2database:h2'
 	testImplementation 'org.assertj:assertj-core:3.24.2'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	
 	
 }
@@ -45,5 +47,6 @@ tasks.named('test') {
 }
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters"
+    
 }
 

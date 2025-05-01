@@ -33,9 +33,9 @@ public class WordServiceImplTest {
 	CategoryRepository categoryRepository;
 	
 	@Test
-	void testFindByWordName() {		
+	void testFindByWordName() {
 		Word word = new Word();
-		word.setWordName("word1");		
+		word.setWordName("word1");
 		String name = "word1";
 		doReturn(Optional.of(word)).when(wordRepository).findByWordName(name);
 		Optional<Word> wordOpt =  wordServiceImpl.findByWordName(name);
@@ -62,7 +62,7 @@ public class WordServiceImplTest {
 		assertThat(savedWord.getWordName()).isEqualTo("word1");
 		assertThat(savedWord.getContent()).isEqualTo("content");
 		assertThat(savedWord.getCategory().getId()).isEqualTo(1);
-		assertThat(savedWord.getCategory().getName()).isEqualTo("category1");	
+		assertThat(savedWord.getCategory().getName()).isEqualTo("category1");
 	}
 	@Test
 	void testFindAll() {
@@ -84,13 +84,13 @@ public class WordServiceImplTest {
 		word2.setContent("content2");
 		word2.setCategory(category2);
 		
-		List<Word> list = new ArrayList<Word>(List.of(word1,word2));
+		List<Word> list = new ArrayList<>(List.of(word1,word2));
 		doReturn(list).when(wordRepository).findAll();
 		
 		List<Word> resultList =  wordServiceImpl.findAll();
 		assertThat(resultList).hasSize(2);
 		assertThat(resultList.get(0).getWordName()).isEqualTo("word1");
-		assertThat(resultList.get(1).getWordName()).isEqualTo("word2");	
+		assertThat(resultList.get(1).getWordName()).isEqualTo("word2");
 	}
 	@Test
 	void testFindById() {
@@ -102,11 +102,11 @@ public class WordServiceImplTest {
 		word1.setId(1);
 		word1.setWordName("word1");
 		word1.setContent("content1");
-		word1.setCategory(category1);		
+		word1.setCategory(category1);
 		doReturn(Optional.of(word1)).when(wordRepository).findById(id);
 		
 		Optional<Word> wordOpt = wordServiceImpl.findById(id);
-		assertThat(wordOpt.get().getWordName()).isEqualTo("word1");	
+		assertThat(wordOpt.get().getWordName()).isEqualTo("word1");
 	}
 
 	@Test
@@ -132,9 +132,9 @@ public class WordServiceImplTest {
 		doReturn(Optional.of(word)).when(wordRepository).findById(id);
 		doReturn(Optional.of(newCategory)).when(categoryRepository).findById(2);
 		
-		wordServiceImpl.updateWord(1,wordForm);	
+		wordServiceImpl.updateWord(1,wordForm);
 		assertThat(word.getWordName()).isEqualTo("newWordName");
-		assertThat(word.getCategory().getName()).isEqualTo("newCategory");		
+		assertThat(word.getCategory().getName()).isEqualTo("newCategory");
 	}
 	
 }

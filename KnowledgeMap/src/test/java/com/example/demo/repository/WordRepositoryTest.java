@@ -122,7 +122,7 @@ public class WordRepositoryTest {
 		Word word1 = new Word();
 		word1.setWordName("word1");
 		word1.setContent("content1");
-		word1.setCategory(category1);		
+		word1.setCategory(category1);
 		Word savedWord = wordRepository.save(word1);
 		
 		//登録したデータのidを取得

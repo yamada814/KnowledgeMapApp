@@ -10,14 +10,14 @@ import com.example.demo.form.WordForm;
 
 public interface WordService {
 
-	public Optional<Word> findByWordName(String name);
-	public Word addWord(WordForm wordForm);
-    public List<Word> findAll();
-    public Optional<Word> findById(Integer id);
-    public boolean deleteById(Integer id);
-    public Word updateWord(Integer id, WordForm wordForm);
-    public List<WordDto> findWordsByCategoryId(Integer id);
-    public List<String> getRelatedWordNames(WordForm wordForm);
-    public WordDetailDto findWordDetailDtoById(Integer id);
+	Optional<Word> findByWordName(String name);
+	Word addWord(WordForm wordForm);
+    List<Word> findAll();
+    Optional<Word> findById(Integer id);
+    boolean deleteById(Integer id);
+    Word updateWord(Integer id, WordForm wordForm);
+    List<WordDto> findWordsByCategoryId(Integer id);
+    List<String> getRelatedWordNames(WordForm wordForm);
+    WordDetailDto findWordDetailDtoById(Integer id);
     
 }

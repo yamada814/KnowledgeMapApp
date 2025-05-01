@@ -30,7 +30,7 @@ public class WordFormValidator implements Validator {
 		if (wordForm.getRelatedWordIds() != null) {
 			List<String> relatedWordNames = wordForm.getRelatedWordIds().stream()
 					.map(relatedWordId -> wordService.findById(relatedWordId))
-					.filter(opt -> opt.isPresent())
+					.filter(Optional::isPresent)
 					.map(opt -> opt.get().getWordName())
 					.toList();
 			if (relatedWordNames.contains(wordForm.getWordName())) {
@@ -41,8 +41,8 @@ public class WordFormValidator implements Validator {
 		Optional<Word> existingWordOpt = wordService.findByWordName(wordForm.getWordName());
 		if (existingWordOpt.isPresent()) {
 			Word existingWord = existingWordOpt.get();
-			//   wordNameによる検索で既存だった  かつ  新規登録の時  
-			//					または  
+			//   wordNameによる検索で既存だった  かつ  新規登録の時
+			//					または
 			//   wordNameによる検索で既存だった  かつ  既存のwordを編集の時
 			//   ( 編集対象のwordは wordNameによる検索で見つかったword と同じidである必要がある)
 			if (wordForm.getId() == null || !wordForm.getId().equals(existingWord.getId())) {

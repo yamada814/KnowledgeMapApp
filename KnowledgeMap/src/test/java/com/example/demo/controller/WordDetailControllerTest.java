@@ -73,7 +73,7 @@ public class WordDetailControllerTest {
 		word2.setId(2);
 		word2.setWordName("word2");
 		word2.setCategory(category1);
-		word2.setRelatedWords(new ArrayList<Word>(List.of(word1)));
+		word2.setRelatedWords(new ArrayList<>(List.of(word1)));
 		List<Word> list = new ArrayList<>(List.of(word1, word2));
 
 		Word newWord1 = new Word();
@@ -174,7 +174,7 @@ public class WordDetailControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_confirm"))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))));
-		;
+		
 		verify(categoryService, never()).addCategory("newCategoryName");
 
 	}
@@ -238,6 +238,6 @@ public class WordDetailControllerTest {
 				.param("categoryName", ""))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/wordList?categoryId=1&id=1"))
-				.andExpect(flash().attributeExists("edit_ok"));	
+				.andExpect(flash().attributeExists("edit_ok"));
 	}
 }

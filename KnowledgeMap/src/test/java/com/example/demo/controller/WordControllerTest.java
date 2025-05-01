@@ -92,7 +92,7 @@ public class WordControllerTest {
 		registedWord.setId(5);
 		registedWord.setWordName("newWordName");
 		registedWord.setContent("content");
-		registedWord.setCategory(category1);	
+		registedWord.setCategory(category1);
 		doReturn(registedWord).when(wordService).addWord(any());
 
 		doReturn(list).when(wordService).findAll();
