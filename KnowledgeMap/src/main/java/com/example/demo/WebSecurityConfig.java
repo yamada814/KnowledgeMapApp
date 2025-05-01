@@ -29,14 +29,14 @@ public class WebSecurityConfig {
 				.permitAll()
 			
 			).logout(logout -> logout
-				.logoutSuccessUrl("/login")		
+				.logoutSuccessUrl("/login")
 				
 			).authorizeHttpRequests(authz -> authz
 						.requestMatchers(
 								PathRequest.toStaticResources().atCommonLocations()).permitAll() // 静的リソース（CSS, JS, 画像など）は許可
-						 .requestMatchers("/login").permitAll() 
+						 .requestMatchers("/login").permitAll()
 						 .requestMatchers("/home").authenticated()
-						.anyRequest().authenticated() 
+						.anyRequest().authenticated()
 					);
 		return http.build();
 		

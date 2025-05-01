@@ -31,6 +31,6 @@ public class WordServiceTest {
 		wordService.addWord(wordForm);
 		
 		Optional<Word> wordOpt = wordService.findByWordName("word2");
-		assertThat(wordOpt.get().getWordName()).isEqualTo("word2");		
+		assertThat(wordOpt.get().getWordName()).isEqualTo("word2");
 	}
 }

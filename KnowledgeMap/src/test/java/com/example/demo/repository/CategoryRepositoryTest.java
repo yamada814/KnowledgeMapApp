@@ -23,6 +23,6 @@ public class CategoryRepositoryTest {
 		
 		Optional<Category>  categoryOpt = categoryRepository.findByName(category.getName());
 		assertThat(categoryOpt).isPresent();
-		assertThat(categoryOpt.get().getName()).isEqualTo("テストカテゴリー");	
+		assertThat(categoryOpt.get().getName()).isEqualTo("テストカテゴリー");
 	}
 }

@@ -103,7 +103,7 @@ public class WordController {
 	public String regist(WordForm wordForm, RedirectAttributes redirectAttribute) {
 		
 		System.out.println("■ ■ ■ ■ ■ ■ ■ " +wordForm.getCategoryId());
-		// 存在しないカテゴリの場合エラー 
+		// 存在しないカテゴリの場合エラー
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
 		System.out.println("■ ■ ■ ■ ■ ■ ■ " +categoryOpt.isPresent());
 		if (categoryOpt.isEmpty()) {

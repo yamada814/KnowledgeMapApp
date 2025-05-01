@@ -6,9 +6,9 @@ import java.util.Optional;
 import com.example.demo.entity.Category;
 
 public interface CategoryService {
-	public List<Category> findAll();
-	public Optional<Category> findByCategoryId(Integer categoryId);
-	public Category addCategory(String categoryName);
-	public Optional<Category> findByName(String categoryName);
-	public void deleteByCategoryId(Integer categoryId);
+	List<Category> findAll();
+	Optional<Category> findByCategoryId(Integer categoryId);
+	Category addCategory(String categoryName);
+	Optional<Category> findByName(String categoryName);
+	void deleteByCategoryId(Integer categoryId);
 }

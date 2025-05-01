@@ -55,13 +55,13 @@ public class WordControllerIntegrationTest {
 	//登録実行 ( バリデーションエラー null )
 	public void test_registConfirm_ValidationError() throws Exception {
 		mockMvc.perform(post("/registConfirm")
-				.param("wordName", "") 
+				.param("wordName", "")
 				.param("content", "")
-				.param("categoryId", "") 
+				.param("categoryId", "")
 				.param("categoryName", "")
 				.param("relatedWordIds", ""))
 			.andExpect(model().attributeHasFieldErrors("wordForm", "wordName", "content"))
-			.andExpect(view().name("regist_form")); 
+			.andExpect(view().name("regist_form"));
 	}
 	@Test
 	//登録実行 ( バリデーションエラー 既存wordNameを入力 )
@@ -73,7 +73,7 @@ public class WordControllerIntegrationTest {
 				.param("categoryName", "")
 				.param("relatedWordIds", ""))
 			.andExpect(model().attributeHasFieldErrors("wordForm", "wordName"))
-			.andExpect(view().name("regist_form")); 
+			.andExpect(view().name("regist_form"));
 	}
 	@Test
 	//登録実行 ( バリデーションエラー 自身を関連語に指定 )
@@ -96,7 +96,7 @@ public class WordControllerIntegrationTest {
 				.param("content", "content")
 				.param("categoryId", "1") //categoryId入力
 				.param("categoryName", "categoryName") //categoryName入力
-				.param("relatedWordIds", "1")) 
+				.param("relatedWordIds", "1"))
 		.andExpect(model().attributeHasFieldErrors("wordForm", "categoryId"))
 		.andExpect(view().name("regist_form"));
 	}

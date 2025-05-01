@@ -14,6 +14,9 @@ public class LoginUserDetails implements UserDetails {
 	public LoginUserDetails(User user) {
 		this.user = user;
 	}
+	public User getUser() {
+		return this.user;
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

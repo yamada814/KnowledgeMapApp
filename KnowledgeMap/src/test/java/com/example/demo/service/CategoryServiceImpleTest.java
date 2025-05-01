@@ -32,7 +32,7 @@ public class CategoryServiceImpleTest {
 		category1.setName("category1");
 		Category category2 = new Category();
 		category2.setName("category2");
-		List<Category> list = new ArrayList<Category>(List.of(category1,category2));
+		List<Category> list = new ArrayList<>(List.of(category1,category2));
 		
 		doReturn(list).when(categoryRepository).findAll();
 		
@@ -61,7 +61,7 @@ public class CategoryServiceImpleTest {
 		
 		Optional<Category> categoryOpt = categoryServiceImpl.findByName("category1");
 		Category category = categoryOpt.get();
-		assertThat(category.getId()).isEqualTo(1);	
+		assertThat(category.getId()).isEqualTo(1);
 	}
 	@Test
 	void testAddCategory() {
@@ -82,7 +82,7 @@ public class CategoryServiceImpleTest {
 		String categoryName = "category1";
 	    doAnswer(invocation -> {
 	        Category arg = invocation.getArgument(0);
-	        arg.setId(1); 
+	        arg.setId(1);
 	        return arg;
 	    }).when(categoryRepository).save(any(Category.class));
 

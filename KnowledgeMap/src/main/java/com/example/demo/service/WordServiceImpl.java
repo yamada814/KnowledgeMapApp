@@ -42,18 +42,19 @@ public class WordServiceImpl implements WordService {
 			// .toList()はimmutableとなり、clear()が呼ばれたときにjava.lang.UnsupportedOperationExceptionが発生する
 			List<Word> relatedWords = wordForm.getRelatedWordIds().stream()
 					.map(wordId -> wordRepository.findById(wordId))
-					.filter(opt -> opt.isPresent())
-					.map(opt -> opt.get())
+					.filter(Optional::isPresent)
+					.map(Optional::get)
 					.collect(Collectors.toCollection(ArrayList::new));
 			word.setRelatedWords(relatedWords);
 		}
 	}
 
 	// wordFormからrelatedWordNamesを取得
+	@Override
 	public List<String> getRelatedWordNames(WordForm wordForm) {
 		return wordForm.getRelatedWordIds().stream()
-				.map(id -> findById(id))
-				.filter(wordOpt -> wordOpt.isPresent())
+				.map(this::findById)
+				.filter(Optional::isPresent)
 				.map(wordOpt -> wordOpt.get().getWordName())
 				.toList();
 	}

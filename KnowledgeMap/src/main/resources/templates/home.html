@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmls:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8">
 <title>ホーム</title>
@@ -7,6 +8,9 @@
 <body>
 	<h1>ホーム</h1>
 	<p>ようこそ、<span sec:authentication="principal.username">username</span>さん</p>
+	<ul>
+		<li th:each="wordBook : ${wordBookList}" th:text="${wordBook.name}"></li>
+	</ul>
 
 </body>
 </html>

@@ -12,17 +12,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import lombok.Data;
-/*
- * -- ログインユーザ
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(30) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL 
-);
-INSERT INTO users(username,password) 
-values ('testUser','$2a$10$TDKTbY8waJVqKoN0u6XLDOi4TwW4ws/v6SX3bLhT8NLMD/y/fjnQK');-- test1234
-
- */
 
 @Entity
 @Data
@@ -39,6 +28,7 @@ public class User {
 	private String password;
 	
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,orphanRemoval=true)
+	//@ToString.Exclude
 	private List<WordBook> wordBooks;
 
 }
