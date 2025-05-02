@@ -50,7 +50,7 @@ public class WordController {
 	public String showWordForm(Model model,@PathVariable("wordbookId") Integer wordbookId) {
 		model.addAttribute("wordForm", new WordForm());
 		model.addAttribute("wordList", wordService.findAll());
-		model.addAttribute("categories", categoryService.findAll());
+		model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
 		return "regist_form";
 	}
 
@@ -61,7 +61,7 @@ public class WordController {
 			@PathVariable("wordbookId") Integer wordbookId,
 			Model model) {
 		model.addAttribute("wordList", wordService.findAll());
-		model.addAttribute("categories", categoryService.findAll());
+		model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
 		return "regist_form";
 	}
 
@@ -87,8 +87,18 @@ public class WordController {
 		if (newCategoryName != null && !newCategoryName.isBlank()) {
 			Optional<Category> categoryOpt = categoryService.findByName(newCategoryName);
 			if (categoryOpt.isEmpty()) { // 入力されたcategoryNameが未登録 -> categoryテーブルへ新規登録
-				Category newCategory = categoryService.addCategory(newCategoryName);
-				wordForm.setCategoryId(newCategory.getId());
+				try {
+					Category registedCategory = categoryService.addCategory(newCategoryName,wordbookId);
+					wordForm.setCategoryId(registedCategory.getId());					
+				}catch(IllegalArgumentException e) {
+					//System.err.println("カテゴリ追加エラー: " + e.getMessage());
+					model.addAttribute("category_add_error", "カテゴリの追加に失敗しました");
+					model.addAttribute("categories", categoryService.findAll());
+					model.addAttribute("wordList", wordService.findAll());
+					model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));
+					model.addAttribute("word", wordService.findById(wordForm.getId()).orElse(null));
+					return "regist_form"; // 必要に応じてエラー画面にしてもOK
+				}
 			} else { // 登録済 -> 登録済のcategoryNameからcategoryIdを取得してフォームにセット
 				wordForm.setCategoryId(categoryOpt.get().getId());
 			}
@@ -112,16 +122,12 @@ public class WordController {
 			@PathVariable("wordbookId") Integer wordbookId,
 			RedirectAttributes redirectAttribute) {
 		
-		System.out.println("■ ■ ■ ■ ■ ■ ■ " +wordForm.getCategoryId());
 		// 存在しないカテゴリの場合エラー
 		Optional<Category> categoryOpt = categoryService.findByCategoryId(wordForm.getCategoryId());
-		System.out.println("■ ■ ■ ■ ■ ■ ■ " +categoryOpt.isPresent());
 		if (categoryOpt.isEmpty()) {
 			return "regist_error";
 		}
 		Word registedWord = wordService.addWord(wordForm);
-		System.out.println("■ ■ ■ ■ ■ ■ ■ " +registedWord.getWordName());
-		System.out.println("■ ■ ■ ■ ■ ■ ■ " +registedWord.getCategory().getId());
 		redirectAttribute.addFlashAttribute("regist_ok", "登録しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
 		return String.format("redirect:/wordbooks/%d/wordList?categoryId=%d&id=%d", wordbookId,registedWord.getCategory().getId(),

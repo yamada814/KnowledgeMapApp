@@ -9,7 +9,7 @@ public interface CategoryService {
 	List<Category> findAll();
 	List<Category> findByWordbookId(Integer wordbookId);
 	Optional<Category> findByCategoryId(Integer categoryId);
-	Category addCategory(String categoryName);
+	Category addCategory(String categoryName,Integer wordbookId);
 	Optional<Category> findByName(String categoryName);
 	void deleteByCategoryId(Integer categoryId);
 }

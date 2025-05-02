@@ -16,8 +16,7 @@ const deleteNgBtn = document.getElementById("deleteNg");
 let eventHandler = null;
 //単語帳idの取得
 const wordbookId = wordDetailContainer.dataset.wordbookId;
-console.log(typeof wordbookId);
-console.log(wordbookId);
+
 
 /*
 	新規登録または編集を実行後にword_listに戻ると
@@ -61,9 +60,9 @@ function clearCategorySelection() {
 }
 // 選択中カテゴリの色変更
 function setCategorySelection(categoryId) {
-	[...categoryBtns].find(btn => btn.getAttribute("data-id") == categoryId)
-		.classList.add("categoryBtnSelected");
-		
+	const updatedCategoryBtns = document.querySelectorAll(".categoryBtn");
+	[...updatedCategoryBtns].find(btn => btn.getAttribute("data-id") == categoryId)
+		.classList.add("categoryBtnSelected");		
 }
 // 選択中の単語の色変更
 function setWordSelection(wordId) {

@@ -67,7 +67,7 @@ public class WordDetailController {
 				.toList();
 		wordForm.setRelatedWordIds(relatedWordIds);
 		model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));
-		model.addAttribute("categories", categoryService.findAll());
+		model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
 		model.addAttribute("wordList", wordService.findAll());
 		model.addAttribute("word", word);
 
@@ -118,7 +118,7 @@ public class WordDetailController {
 		//バリデーションチェック
 		if (result.hasErrors()) {
 			System.out.println("■ ■ ■ ■ バリデーションエラーに到達");
-			model.addAttribute("categories", categoryService.findAll());
+			model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
 			model.addAttribute("wordList", wordService.findAll());
 			model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));
 			model.addAttribute("word", word);
@@ -129,8 +129,18 @@ public class WordDetailController {
 		if (newCategoryName != null && !newCategoryName.isBlank()) {
 			Optional<Category> categoryOpt = categoryService.findByName(newCategoryName);
 			if (categoryOpt.isEmpty()) { // 入力されたcategoryNameが未登録 -> categoryテーブルへ新規登録
-				Category newCategory = categoryService.addCategory(newCategoryName);
-				wordForm.setCategoryId(newCategory.getId());
+				try {
+					Category registedCategory = categoryService.addCategory(newCategoryName,wordbookId);
+					wordForm.setCategoryId(registedCategory.getId());					
+				}catch(IllegalArgumentException e) {
+					//System.err.println("カテゴリ追加エラー: " + e.getMessage());
+					model.addAttribute("category_add_error", "カテゴリの追加に失敗しました");
+					model.addAttribute("categories", categoryService.findAll());
+					model.addAttribute("wordList", wordService.findAll());
+					model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));
+					model.addAttribute("word", wordService.findById(wordForm.getId()).orElse(null));
+					return "edit_form";
+				}
 			} else { // 登録済 -> 登録済のcategoryNameからcategoryIdを取得してフォームにセット
 				wordForm.setCategoryId(categoryOpt.get().getId());
 			}
