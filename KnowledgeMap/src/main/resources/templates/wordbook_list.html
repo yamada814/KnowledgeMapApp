@@ -3,14 +3,14 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8">
-<title>ホーム</title>
+<title>単語帳一覧</title>
 </head>
 <body>
 	<h1>ホーム</h1>
 	<p>ようこそ、<span sec:authentication="principal.username">username</span>さん</p>
 	<ul>
 		<li th:each="wordbook : ${wordbookList}">
-			<a th:href="@{/wordbooks/{id}/words}" th:text="${wordbook.name}"></a>
+			<a th:href="@{/wordbooks/{wordbookId}/wordList(wordbookId=${wordbook.id})}" th:text="${wordbook.name}"></a>
 		</li>
 	</ul>
 

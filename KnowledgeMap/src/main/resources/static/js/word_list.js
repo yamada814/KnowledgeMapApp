@@ -14,6 +14,10 @@ const deleteOkBtn = document.getElementById("deleteOk");
 const deleteNgBtn = document.getElementById("deleteNg");
 //モーダル外側をクリックしたときに発生するイベントハンドラ(モーダルを閉じる処理を行う)
 let eventHandler = null;
+//単語帳idの取得
+const wordbookId = wordDetailContainer.dataset.wordbookId;
+console.log(typeof wordbookId);
+console.log(wordbookId);
 
 /*
 	新規登録または編集を実行後にword_listに戻ると
@@ -156,7 +160,7 @@ async function showWordDetail(wordId) {
 			span.classList.add("bi-pencil-fill");
 			editBtn.append(span);
 			editBtn.addEventListener("click", () => {
-				location.href = `/words/${wordId}/editForm`;
+				location.href = `/wordbooks/${wordbookId}/wordList/${wordId}/editForm`;
 			})
 			wordNameContainer.append(wordName, editBtn);
 			//カテゴリ

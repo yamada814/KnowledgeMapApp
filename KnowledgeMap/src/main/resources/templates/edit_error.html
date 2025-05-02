@@ -7,6 +7,6 @@
 <body>
     <h1>編集エラー</h1>
     <p>指定されたWordが見つかりませんでした。</p>
-    <a th:href="@{/wordList}">一覧に戻る</a>
+    <a th:href="@{/wordbooks/{wordbookId}/wordList(wordbookId=${wordbookId})}">一覧に戻る</a>
 </body>
 </html>

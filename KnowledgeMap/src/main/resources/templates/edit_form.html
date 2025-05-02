@@ -19,7 +19,10 @@
 <body>
 	<h1>編集</h1>
 	<p th:if="${word_duplicate} != null" th:text="${word_duplicate}"></p>
-	<form class="commonForm" th:action="@{/words/{id}/editConfirm(id=${word.id})}" method="post" th:object="${wordForm}">
+	<form th:action="@{/wordbooks/{wordbookId}/wordList/{wordId}/editConfirm(wordbookId=${wordbookId},wordId=${word.id})}" 
+		  class="commonForm" 
+		  method="post" 
+		  th:object="${wordForm}">
 		<input type="hidden" th:field="*{id}" />
 		<div class="row">
 			<label for="wordName">単語</label>
@@ -41,7 +44,7 @@
 				<div th:if="${existingWord != null}" class="existingWordDetail" th:object="${existingWord}">
 					<div class="wordNameContainer">
 						<div class="wordName" th:text="*{wordName}"></div>
-						<a th:href="@{/words/{id}/editForm(id=${existingWord.id},fromRegist='fromRegist')}"
+						<a th:href="@{/wordbooks/{wordbookId}/wordList/{wordId}/editForm(worddbookId={wordbookId},wordId=${existingWord.id},fromRegist='fromRegist')}"
 							class="button editBtn">
 							<span class="bi bi-pencil-fill"></span>
 						</a>
@@ -112,7 +115,7 @@
 		<button type="submit">入力内容の確認</button>
 	</form>
 	<!-- 新規登録からの遷移の場合、戻るボタンは 登録画面へ -->
-	<form th:if="${fromRegist}" th:action="@{/registConfirm}" method="post" th:object="${wordForm}">
+	<form th:if="${fromRegist}" th:action="@{/wordbooks/{wordbookId}/wordList/registConfirm(wordbookId=${wordbookId})}" method="post" th:object="${wordForm}">
 		<input type="hidden" th:field="*{wordName}">
 		<input type="hidden" th:field="*{content}">
 		<input type="hidden" th:field="*{categoryId}">
@@ -120,7 +123,7 @@
 		<button id="return">登録確認に戻る</button>
 	</form>
 	<!-- 編集からの遷移の場合、戻るボタンはword一覧へ-->
-	<form th:unless="${fromRegist}" th:action="@{/wordList}">
+	<form th:unless="${fromRegist}" th:action="@{/wordbooks/{wordbookId}/wordList(wordbookId=${wordbookId})}">
 		<input type="hidden" th:field="${wordForm.categoryId}">
 		<input type="hidden" th:field="${word.id}">
 		<button id="return">単語一覧へ戻る </button>

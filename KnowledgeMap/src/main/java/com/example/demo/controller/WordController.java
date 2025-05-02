@@ -25,7 +25,7 @@ import com.example.demo.validator.WordFormValidator;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/wordbooks/{wordBookId}")
+@RequestMapping("/wordbooks/{wordbookId}/wordList")
 @RequiredArgsConstructor
 public class WordController {
 	private final WordService wordService;
@@ -38,15 +38,16 @@ public class WordController {
 	}
 
 	// word一覧表示
-	@GetMapping("/words")
-	public String showWordList(Model model,@PathVariable Integer wordBookId) {
-		model.addAttribute("categories", categoryService.findAll());
+	@GetMapping("")
+	public String showWordList(Model model,@PathVariable("wordbookId") Integer wordbookId) {
+		model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
+		model.addAttribute("wordbookId",wordbookId);
 		return "word_list";
 	}
 
 	//新規登録画面
 	@GetMapping("/showWordForm")
-	public String showWordForm(Model model) {
+	public String showWordForm(Model model,@PathVariable("wordbookId") Integer wordbookId) {
 		model.addAttribute("wordForm", new WordForm());
 		model.addAttribute("wordList", wordService.findAll());
 		model.addAttribute("categories", categoryService.findAll());
@@ -54,8 +55,11 @@ public class WordController {
 	}
 
 	// 登録画面へ戻るとき
-	@PostMapping("showWordForm")
-	public String backToWordForm(@ModelAttribute("wordForm") WordForm wordForm, Model model) {
+	@PostMapping("/showWordForm")
+	public String backToWordForm(
+			@ModelAttribute("wordForm") WordForm wordForm,
+			@PathVariable("wordbookId") Integer wordbookId,
+			Model model) {
 		model.addAttribute("wordList", wordService.findAll());
 		model.addAttribute("categories", categoryService.findAll());
 		return "regist_form";
@@ -66,6 +70,7 @@ public class WordController {
 	public String registConfirm(
 			@ModelAttribute("wordForm") @Validated WordForm wordForm,
 			BindingResult result,
+			@PathVariable("wordbookId") Integer wordbookId,
 			Model model) {
 		if (result.hasErrors()) {
 			model.addAttribute("categories", categoryService.findAll());
@@ -103,7 +108,9 @@ public class WordController {
 
 	//DB新規登録
 	@PostMapping("/regist")
-	public String regist(WordForm wordForm, RedirectAttributes redirectAttribute) {
+	public String regist(WordForm wordForm,
+			@PathVariable("wordbookId") Integer wordbookId,
+			RedirectAttributes redirectAttribute) {
 		
 		System.out.println("■ ■ ■ ■ ■ ■ ■ " +wordForm.getCategoryId());
 		// 存在しないカテゴリの場合エラー
@@ -117,7 +124,7 @@ public class WordController {
 		System.out.println("■ ■ ■ ■ ■ ■ ■ " +registedWord.getCategory().getId());
 		redirectAttribute.addFlashAttribute("regist_ok", "登録しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
-		return String.format("redirect:/wordList?categoryId=%d&id=%d", registedWord.getCategory().getId(),
+		return String.format("redirect:/wordbooks/%d/wordList?categoryId=%d&id=%d", wordbookId,registedWord.getCategory().getId(),
 				registedWord.getId());
 	}
 }

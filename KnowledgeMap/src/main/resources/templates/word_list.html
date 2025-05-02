@@ -14,7 +14,7 @@
 	<h1>単語帳</h1>
 
 	<div id="regist">
-		<a th:href="@{/showWordForm}" class="button"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
+		<a th:href="@{/wordbooks/{wordbookId}/wordList/showWordForm(wordbookId=${wordbookId})}" class="button"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
 	</div>
 
 	<div class="mainContainer">
@@ -40,7 +40,7 @@
 		<!-- wordDetail -->
 		<div id="wordDetailOuter">
 			<h4>Detail</h4>
-			<div class="wordDetailContainer">
+			<div class="wordDetailContainer" th:attr="data-wordbook-id=${wordbookId}">
 				<div class="message" th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
 				<div class="message" th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
 			</div>
