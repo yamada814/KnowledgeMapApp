@@ -15,12 +15,16 @@
 <body>
 	<h1>edit_confirm</h1>
 	<h2>以下の内容で編集します</h2>
-	<form class="commonForm" th:action="@{/words/{id}/edit(id=${word.id})}" method="post" th:object="${wordForm}">
+	<form  th:action="@{/wordbooks/{wordbookId}/wordList/{wordId}/edit(wordbookId=${wordbookId},wordId=${word.id})}" 
+		   class="commonForm"
+		   method="post" 
+		   th:object="${wordForm}">
 
 		<input type="hidden" th:field="*{id}" />
 		<input type="hidden" th:field="*{wordName}">
 		<input type="hidden" th:field="*{categoryId}">
 		<input type="hidden" th:field="*{content}">
+		<input type="hidden" th:field="*{wordbookId}">
 		<input type="hidden" th:field="*{relatedWordIds}">
 
 		<div class="row">
@@ -49,12 +53,15 @@
 
 		<button type="submit">編集する</button>
 	</form>
-	<form th:action="@{/words/{id}/editForm(id=${word.id})}" th:object="${wordForm}" style="display:inline;">
+	<form th:action="@{/wordbooks/{wordbookId}/wordList/{wordId}/editForm(wordbookId=${wordbookId},wordId=${word.id})}" 
+		  method="post"	  
+		  th:object="${wordForm}" 
+		  style="display:inline;">
+		<input type="hidden" th:field="*{id}">
 		<input type="hidden" th:field="*{wordName}">
 		<input type="hidden" th:field="*{content}">
 		<input type="hidden" th:field="*{categoryId}">
 		<input type="hidden" th:field="*{relatedWordIds}">
-		<input type="hidden" th:field="*{categoryName}">
 		<input th:if="${fromRegist}" type="hidden" name="fromRegist" value="${fromRegist}">
 		<button  id="return"  type="submit">入力画面に戻る</button>
 	</form>

@@ -9,6 +9,8 @@ import com.example.demo.entity.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
 	Optional<Category> findByName(String name);
+	Optional<Category> findByNameAndWordbookId(String name,Integer wordbookId);
+	
 	List<Category> findByWordbookId(Integer wordbookId);
 }
 

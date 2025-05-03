@@ -37,22 +37,39 @@ public class WordFormValidator implements Validator {
 				errors.rejectValue("relatedWordIds", null, "自身の単語は関連語として登録できません");
 			}
 		}
-		// 既存wordNameならエラー
-		Optional<Word> existingWordOpt = wordService.findByWordName(wordForm.getWordName());
+		//既存のwordNameで登録しようとするとエラー
+		Optional<Word> existingWordOpt = wordService.findByWordNameAndWordbookId(wordForm.getWordName(),wordForm.getWordbookId());
+		Integer wordFormId = wordForm.getId();
+		// wordNameが既存
 		if (existingWordOpt.isPresent()) {
 			Word existingWord = existingWordOpt.get();
-			//   wordNameによる検索で既存だった  かつ  新規登録の時
-			//					または
-			//   wordNameによる検索で既存だった  かつ  既存のwordを編集の時
-			//   ( 編集対象のwordは wordNameによる検索で見つかったword と同じidである必要がある)
-			if (wordForm.getId() == null || !wordForm.getId().equals(existingWord.getId())) {
-//				errors.rejectValue("wordName", null, wordForm.getWordName() + "は既に登録されています");
+			// 新規登録時( = wordFormIdがない)
+			if (wordFormId == null) {
+				errors.rejectValue("wordName", null, "はすでに登録されています");
+				// 編集時 ( = wordFormIdがあり、かつ、wordFormIdは既存wordのIdと異なる)
+			} else if (!wordFormId.equals(existingWord.getId())) {
 				errors.rejectValue("wordName", null, "はすでに登録されています");
 			}
 		}
+
+		//		 wordName に一致する単語がすでに存在する場合
+		//		 かつ、現在の編集がその単語自身ではない（＝他人と重複）または新規登録の場合はエラー
+		//		 ( 編集対象のwordは wordNameによる検索で見つかったword と同じidである必要がある )
+		//				if (existingWordOpt.isPresent()) {
+		//			Word existingWord = existingWordOpt.get();
+		//			
+		//			if (wordForm.getId() == null || !wordForm.getId().equals(existingWord.getId())) {
+		//				errors.rejectValue("wordName", null, "はすでに登録されています");//wordNameはHTMLで埋め込む
+		//			}
+		//		}
+
 		//categoryIdとcategoryNameの両方に入力があればエラー
-		if(wordForm.getCategoryId() != null && wordForm.getCategoryName() != null && !wordForm.getCategoryName().isBlank()) {
-			errors.rejectValue("categoryId", null,"新規カテゴリを入力した場合は、カテゴリを選択できません");
+		if (wordForm.getCategoryId() != null && wordForm.getCategoryName() != null
+				&& !wordForm.getCategoryName().isBlank())
+
+		{
+			errors.rejectValue("categoryId", null, "新規カテゴリを入力した場合は、カテゴリを選択できません");
 		}
+
 	}
 }

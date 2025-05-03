@@ -8,14 +8,17 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.CategoryDto;
 import com.example.demo.dto.WordDetailDto;
 import com.example.demo.dto.WordDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
+import com.example.demo.entity.Wordbook;
 import com.example.demo.form.WordForm;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.WordRelationRepository;
 import com.example.demo.repository.WordRepository;
+import com.example.demo.repository.WordbookRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +28,7 @@ public class WordServiceImpl implements WordService {
 	private final WordRepository wordRepository;
 	private final CategoryRepository categoryRepository;
 	private final WordRelationRepository wordRelationRepository;
+	private final WordbookRepository wordbookRepository;
 
 	// WordForm型からWord型への変換を行うユーティリティメソッド
 	public void transferWordFormToWord(Word word, WordForm wordForm) {
@@ -35,6 +39,10 @@ public class WordServiceImpl implements WordService {
 		Optional<Category> categoryOpt = categoryRepository.findById(wordForm.getCategoryId());
 		if (categoryOpt.isPresent()) {
 			word.setCategory(categoryOpt.get());
+		}
+		Optional<Wordbook> wordbookOpt = wordbookRepository.findById(wordForm.getWordbookId());
+		if(wordbookOpt.isPresent()) {
+			word.setWordbook(wordbookOpt.get());
 		}
 		if (wordForm.getRelatedWordIds() != null) {
 
@@ -68,6 +76,7 @@ public class WordServiceImpl implements WordService {
 	public Optional<Word> findById(Integer id) {
 		return wordRepository.findById(id);
 	}
+
 	// wordDetail表示
 	@Override
 	public WordDetailDto findWordDetailDtoById(Integer id) {
@@ -75,11 +84,16 @@ public class WordServiceImpl implements WordService {
 		WordDetailDto dto = new WordDetailDto();
 		if (wordOpt.isPresent()) {
 			Word word = wordOpt.get();
+
+			CategoryDto categoryDto = new CategoryDto();
+			categoryDto.setId(word.getCategory().getId());
+			categoryDto.setName(word.getCategory().getName());
+
 			dto.setId(word.getId());
 			dto.setWordName(word.getWordName());
 			dto.setContent(word.getContent());
-			dto.setCategory(word.getCategory());
-			
+			dto.setCategory(categoryDto);
+
 			List<WordDto> relatedWords = new ArrayList<>();
 			for (Word relatedWord : word.getRelatedWords()) {
 				WordDto wordDto = new WordDto();
@@ -98,6 +112,10 @@ public class WordServiceImpl implements WordService {
 	public Optional<Word> findByWordName(String name) {
 		return wordRepository.findByWordName(name);
 	}
+	@Override
+	public Optional<Word> findByWordNameAndWordbookId(String name,Integer wordbookId) {
+		return wordRepository.findByWordNameAndWordbookId(name,wordbookId);
+	}
 
 	@Override
 	public List<WordDto> findWordsByCategoryId(Integer categoryId) {
@@ -111,6 +129,11 @@ public class WordServiceImpl implements WordService {
 					return dto;
 				})
 				.toList();
+	}
+
+	@Override
+	public List<Word> findByWordbookId(Integer wordbookId) {
+		return wordRepository.findByWordbookId(wordbookId);
 	}
 
 	@Override
@@ -154,5 +177,6 @@ public class WordServiceImpl implements WordService {
 		interactRelatedWord(updatedWord);
 		return updatedWord;
 	}
+
 
 }
