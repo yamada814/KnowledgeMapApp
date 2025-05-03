@@ -12,7 +12,7 @@
 	<h3><span sec:authentication="principal.username">username</span>さんの単語帳一覧</h3>
 	<ul class="wordbookList">
 		<li th:each="wordbook : ${wordbookList}">
-			<a th:href="@{/wordbooks/{wordbookId}/wordList(wordbookId=${wordbook.id})}" th:text="${wordbook.name}"></a>
+			<a th:href="@{/wordbooks/{wordbookId}/words(wordbookId=${wordbook.id})}" th:text="${wordbook.name}"></a>
 		</li>
 	</ul>
 	<a th:href="@{/login}" id="return" class="button">ログアウトする</a>

@@ -7,5 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.demo.entity.Wordbook;
 
 public interface WordbookRepository extends JpaRepository<Wordbook, Integer> {
-	public List<Wordbook> findByUserId(Integer userId);
+	List<Wordbook> findByUserId(Integer userId);
+	Wordbook save(Wordbook wordbook);
+	
 }

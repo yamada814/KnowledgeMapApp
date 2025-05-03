@@ -20,4 +20,9 @@ public class WordbookServiceImpl implements WordbookService{
 	public List<Wordbook> findWordBook(User user) {
 		return wordbookRepository.findByUserId(user.getId());
 	}
+
+	@Override
+	public Wordbook save(Wordbook wordbook) {
+		return wordbookRepository.save(wordbook);
+	}
 }

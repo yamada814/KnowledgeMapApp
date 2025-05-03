@@ -7,4 +7,5 @@ import com.example.demo.entity.Wordbook;
 
 public interface WordbookService {
 	List<Wordbook> findWordBook(User user);
+	Wordbook save(Wordbook wordbook);
 }
