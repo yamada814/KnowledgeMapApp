@@ -14,7 +14,7 @@
 	<h1>単語帳</h1>
 
 	<div id="regist">
-		<a th:href="@{/wordbooks/{wordbookId}/wordList/showWordForm(wordbookId=${wordbookId})}" class="button"><span class="bi bi-plus-circle-fill"></span>単語を追加</a>
+		<a th:href="@{/wordbooks/{wordbookId}/wordList/showWordForm(wordbookId=${wordbookId})}" class="button"><span class="bi bi-plus-circle-fill"></span>&nbsp;単語を追加</a>
 	</div>
 
 	<div class="mainContainer">
@@ -45,6 +45,10 @@
 				<div class="message" th:if="${edit_ok} != null" th:text="${edit_ok}"></div>
 			</div>
 		</div>
+	</div>
+	
+	<a th:href="@{/wordbooks}" id="return" class="button">単語帳一覧へ戻る</a>
+
 		<!-- 削除確認モーダル -->
 		<div id="deleteConfirmModal" class="modalHidden">
 			<p>本当に削除しますか？</p>

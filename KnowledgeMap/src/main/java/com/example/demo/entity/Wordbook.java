@@ -34,5 +34,8 @@ public class Wordbook {
 	
 	@OneToMany(mappedBy="wordbook",cascade=CascadeType.ALL,orphanRemoval=true)
 	private List<Category> categories;
+	
+	@OneToMany(mappedBy="wordbook",cascade=CascadeType.ALL,orphanRemoval=true)
+	private List<Word> words;
 
 }

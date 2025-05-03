@@ -16,6 +16,7 @@ public class WordForm {
     private String content;
     private Integer categoryId;// カテゴリ選択用
 	private String categoryName;// カテゴリ新規登録用
+	private Integer wordbookId;
     private List<Integer> relatedWordIds;// 関連語（複数選択）
     
     @AssertTrue(message="カテゴリが選択されていません")

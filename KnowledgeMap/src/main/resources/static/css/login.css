@@ -1,0 +1,11 @@
+@charset "UTF-8";
+.inputContainer{
+	margin: 0 auto;
+	width: fit-content;
+}
+label{
+	display: block;
+	text-align: end;
+	margin:2rem
+}
+

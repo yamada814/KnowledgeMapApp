@@ -48,8 +48,10 @@ public class WordController {
 	//新規登録画面
 	@GetMapping("/showWordForm")
 	public String showWordForm(Model model,@PathVariable("wordbookId") Integer wordbookId) {
-		model.addAttribute("wordForm", new WordForm());
-		model.addAttribute("wordList", wordService.findAll());
+		WordForm wordForm = new WordForm();
+		wordForm.setWordbookId(wordbookId);
+		model.addAttribute("wordForm", wordForm);
+		model.addAttribute("wordList", wordService.findByWordbookId(wordbookId));
 		model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
 		return "regist_form";
 	}
@@ -60,7 +62,7 @@ public class WordController {
 			@ModelAttribute("wordForm") WordForm wordForm,
 			@PathVariable("wordbookId") Integer wordbookId,
 			Model model) {
-		model.addAttribute("wordList", wordService.findAll());
+		model.addAttribute("wordList", wordService.findByWordbookId(wordbookId));
 		model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
 		return "regist_form";
 	}
@@ -73,10 +75,10 @@ public class WordController {
 			@PathVariable("wordbookId") Integer wordbookId,
 			Model model) {
 		if (result.hasErrors()) {
-			model.addAttribute("categories", categoryService.findAll());
-			model.addAttribute("wordList", wordService.findAll());
+			model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
+			model.addAttribute("wordList", wordService.findByWordbookId(wordbookId));
 			// 既存word情報をmodelに格納
-			Optional<Word> wordOpt = wordService.findByWordName(wordForm.getWordName());
+			Optional<Word> wordOpt = wordService.findByWordNameAndWordbookId(wordForm.getWordName(),wordForm.getWordbookId());
 			if (wordOpt.isPresent()) {
 				model.addAttribute("existingWord", wordOpt.get());
 			}
@@ -85,7 +87,7 @@ public class WordController {
 		// categoryNameに入力があった場合
 		String newCategoryName = wordForm.getCategoryName();
 		if (newCategoryName != null && !newCategoryName.isBlank()) {
-			Optional<Category> categoryOpt = categoryService.findByName(newCategoryName);
+			Optional<Category> categoryOpt = categoryService.findByNameAndWordbookId(newCategoryName,wordbookId);
 			if (categoryOpt.isEmpty()) { // 入力されたcategoryNameが未登録 -> categoryテーブルへ新規登録
 				try {
 					Category registedCategory = categoryService.addCategory(newCategoryName,wordbookId);
@@ -93,8 +95,8 @@ public class WordController {
 				}catch(IllegalArgumentException e) {
 					//System.err.println("カテゴリ追加エラー: " + e.getMessage());
 					model.addAttribute("category_add_error", "カテゴリの追加に失敗しました");
-					model.addAttribute("categories", categoryService.findAll());
-					model.addAttribute("wordList", wordService.findAll());
+					model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
+					model.addAttribute("wordList", wordService.findByWordbookId(wordbookId));
 					model.addAttribute("relatedWordNames", wordService.getRelatedWordNames(wordForm));
 					model.addAttribute("word", wordService.findById(wordForm.getId()).orElse(null));
 					return "regist_form"; // 必要に応じてエラー画面にしてもOK
@@ -129,7 +131,7 @@ public class WordController {
 		}
 		Word registedWord = wordService.addWord(wordForm);
 		redirectAttribute.addFlashAttribute("regist_ok", "登録しました");
-		redirectAttribute.addFlashAttribute("wordList", wordService.findAll());
+		redirectAttribute.addFlashAttribute("wordList", wordService.findByWordbookId(wordbookId));
 		return String.format("redirect:/wordbooks/%d/wordList?categoryId=%d&id=%d", wordbookId,registedWord.getCategory().getId(),
 				registedWord.getId());
 	}

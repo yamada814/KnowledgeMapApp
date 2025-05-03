@@ -13,10 +13,12 @@ import com.example.demo.dto.WordDetailDto;
 import com.example.demo.dto.WordDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
+import com.example.demo.entity.Wordbook;
 import com.example.demo.form.WordForm;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.WordRelationRepository;
 import com.example.demo.repository.WordRepository;
+import com.example.demo.repository.WordbookRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +28,7 @@ public class WordServiceImpl implements WordService {
 	private final WordRepository wordRepository;
 	private final CategoryRepository categoryRepository;
 	private final WordRelationRepository wordRelationRepository;
+	private final WordbookRepository wordbookRepository;
 
 	// WordForm型からWord型への変換を行うユーティリティメソッド
 	public void transferWordFormToWord(Word word, WordForm wordForm) {
@@ -36,6 +39,10 @@ public class WordServiceImpl implements WordService {
 		Optional<Category> categoryOpt = categoryRepository.findById(wordForm.getCategoryId());
 		if (categoryOpt.isPresent()) {
 			word.setCategory(categoryOpt.get());
+		}
+		Optional<Wordbook> wordbookOpt = wordbookRepository.findById(wordForm.getWordbookId());
+		if(wordbookOpt.isPresent()) {
+			word.setWordbook(wordbookOpt.get());
 		}
 		if (wordForm.getRelatedWordIds() != null) {
 
@@ -105,6 +112,10 @@ public class WordServiceImpl implements WordService {
 	public Optional<Word> findByWordName(String name) {
 		return wordRepository.findByWordName(name);
 	}
+	@Override
+	public Optional<Word> findByWordNameAndWordbookId(String name,Integer wordbookId) {
+		return wordRepository.findByWordNameAndWordbookId(name,wordbookId);
+	}
 
 	@Override
 	public List<WordDto> findWordsByCategoryId(Integer categoryId) {
@@ -118,6 +129,11 @@ public class WordServiceImpl implements WordService {
 					return dto;
 				})
 				.toList();
+	}
+
+	@Override
+	public List<Word> findByWordbookId(Integer wordbookId) {
+		return wordRepository.findByWordbookId(wordbookId);
 	}
 
 	@Override
@@ -161,5 +177,6 @@ public class WordServiceImpl implements WordService {
 		interactRelatedWord(updatedWord);
 		return updatedWord;
 	}
+
 
 }

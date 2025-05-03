@@ -66,6 +66,10 @@ public class Word {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
     
+    @ManyToOne
+    @JoinColumn(name="wordbook_id",nullable = false)
+    private Wordbook wordbook;
+    
     //word_relationテーブルとのマッピング
     @ManyToMany
     @JoinTable(
@@ -74,4 +78,8 @@ public class Word {
         inverseJoinColumns = @JoinColumn(name = "related_word_id")
     )
     private List<Word> relatedWords;
+    
+    
+    
+    
 }

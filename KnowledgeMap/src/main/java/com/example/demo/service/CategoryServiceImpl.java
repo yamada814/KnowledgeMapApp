@@ -34,6 +34,10 @@ public class CategoryServiceImpl implements CategoryService {
 	public Optional<Category> findByName(String categoryName) {
 		return categoryRepository.findByName(categoryName);
 	}
+	@Override
+	public Optional<Category> findByNameAndWordbookId(String categoryName,Integer wordbookId) {
+		return categoryRepository.findByNameAndWordbookId(categoryName,wordbookId);
+	}
 
 	@Override
 	public List<Category> findByWordbookId(Integer wordbookId) {

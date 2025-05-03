@@ -11,5 +11,6 @@ public interface CategoryService {
 	Optional<Category> findByCategoryId(Integer categoryId);
 	Category addCategory(String categoryName,Integer wordbookId);
 	Optional<Category> findByName(String categoryName);
+	Optional<Category> findByNameAndWordbookId(String categoryName,Integer wordbookId);
 	void deleteByCategoryId(Integer categoryId);
 }

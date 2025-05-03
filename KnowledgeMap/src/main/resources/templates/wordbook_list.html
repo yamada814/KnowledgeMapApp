@@ -4,15 +4,17 @@
 <head>
 <meta charset="UTF-8">
 <title>単語帳一覧</title>
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<link rel="stylesheet" th:href="@{/css/wordbook_list.css}">
 </head>
 <body>
 	<h1>ホーム</h1>
-	<p>ようこそ、<span sec:authentication="principal.username">username</span>さん</p>
-	<ul>
+	<h3><span sec:authentication="principal.username">username</span>さんの単語帳一覧</h3>
+	<ul class="wordbookList">
 		<li th:each="wordbook : ${wordbookList}">
 			<a th:href="@{/wordbooks/{wordbookId}/wordList(wordbookId=${wordbook.id})}" th:text="${wordbook.name}"></a>
 		</li>
 	</ul>
-
+	<a th:href="@{/login}" id="return" class="button">ログアウトする</a>
 </body>
 </html>

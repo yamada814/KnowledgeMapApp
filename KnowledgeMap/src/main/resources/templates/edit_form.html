@@ -24,6 +24,7 @@
 		  method="post" 
 		  th:object="${wordForm}">
 		<input type="hidden" th:field="*{id}" />
+		<input type="hidden" th:field="*{wordbookId}" />
 		<div class="row">
 			<label for="wordName">単語</label>
 			<div class="inputContainer">
