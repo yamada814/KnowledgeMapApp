@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.WordbookDto;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Wordbook;
 import com.example.demo.repository.WordbookRepository;
@@ -22,7 +23,9 @@ public class WordbookServiceImpl implements WordbookService{
 	}
 
 	@Override
-	public Wordbook save(Wordbook wordbook) {
-		return wordbookRepository.save(wordbook);
+	public WordbookDto save(Wordbook wordbook) {
+		Wordbook savedWordbook =  wordbookRepository.save(wordbook);
+		WordbookDto dto = new WordbookDto(savedWordbook.getId(),savedWordbook.getName());
+		return dto;
 	}
 }

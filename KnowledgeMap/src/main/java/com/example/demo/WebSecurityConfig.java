@@ -35,7 +35,7 @@ public class WebSecurityConfig {
 						.requestMatchers(
 								PathRequest.toStaticResources().atCommonLocations()).permitAll() // 静的リソース（CSS, JS, 画像など）は許可
 						 .requestMatchers("/login").permitAll()
-						 .requestMatchers("/home").authenticated()
+						 .requestMatchers("/wordbooks").authenticated()
 						.anyRequest().authenticated()
 					);
 		return http.build();

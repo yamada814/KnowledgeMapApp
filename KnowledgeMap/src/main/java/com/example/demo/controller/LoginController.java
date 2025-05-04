@@ -6,8 +6,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.example.demo.entity.Wordbook;
+import com.example.demo.form.WordbookForm;
 import com.example.demo.service.LoginUserDetails;
 import com.example.demo.service.UserService;
 import com.example.demo.service.WordbookService;
@@ -29,7 +31,8 @@ public class LoginController {
 	@GetMapping("/wordbooks")
 	public String home(
 			Model model,
-			@AuthenticationPrincipal LoginUserDetails loginUserDetails) {
+			@AuthenticationPrincipal LoginUserDetails loginUserDetails,
+			@ModelAttribute("wordbookForm") WordbookForm wordbookForm) {
 		List<Wordbook> wordbookList = wordbookService.findWordBook(loginUserDetails.getUser());
 		model.addAttribute("wordbookList", wordbookList);
 	    return "wordbook_list";
