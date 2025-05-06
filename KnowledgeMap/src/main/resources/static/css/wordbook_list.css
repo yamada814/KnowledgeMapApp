@@ -25,7 +25,13 @@ button:hover,
 .visible{
 	display:block;
 }
-
+.errorMsgHidden{
+	display:none;
+}
+.errorMsgVisible{
+	display:block;
+	color: red;
+}
 /* 単語帳リスト */
 #wordbookListContainer{
 	width: 80%;

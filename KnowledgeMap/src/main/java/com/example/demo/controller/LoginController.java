@@ -6,7 +6,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.example.demo.entity.Wordbook;
 import com.example.demo.form.WordbookForm;
@@ -31,10 +30,13 @@ public class LoginController {
 	@GetMapping("/wordbooks")
 	public String home(
 			Model model,
-			@AuthenticationPrincipal LoginUserDetails loginUserDetails,
-			@ModelAttribute("wordbookForm") WordbookForm wordbookForm) {
+			@AuthenticationPrincipal LoginUserDetails loginUserDetails) {
 		List<Wordbook> wordbookList = wordbookService.findWordBook(loginUserDetails.getUser());
+		WordbookForm wordbookForm = new WordbookForm();
+		wordbookForm.setUserId(loginUserDetails.getUser().getId());
 		model.addAttribute("wordbookList", wordbookList);
+		model.addAttribute("wordbookForm", wordbookForm);
+		System.out.println("■ ■ ■ ■ ■ ■ " + wordbookForm.getUserId());
 	    return "wordbook_list";
 	}
 

@@ -19,11 +19,13 @@
 		&nbsp;単語帳を追加
 	</button>
 	<!-- 登録用フォーム -->
-	<div th:object="${wordbookForm}" class="commonForm hidden">
+	<form th:action="@{/wordbooks/api/regist}" th:object="${wordbookForm}" class="commonForm hidden">
 		<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />
+		<input type="hidden" th:field="*{userId}" />
 		<label>単語帳名：<input type="text" th:field="*{wordbookName}"></label>
-		<button id="registBtn">追加する</button>
-	</div>
+		<ul id="errorMsgList" class="errorMsgHidden"></ul>
+		<button type="submit" id="registBtn">追加する</button>
+	</form>
 	<!-- 単語帳リスト -->
 	<div id="wordbookListContainer">
 

@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -27,5 +28,10 @@ public class WordbookServiceImpl implements WordbookService{
 		Wordbook savedWordbook =  wordbookRepository.save(wordbook);
 		WordbookDto dto = new WordbookDto(savedWordbook.getId(),savedWordbook.getName());
 		return dto;
+	}
+
+	@Override
+	public Optional<Wordbook> findByWordbookNameAndUserId(String name,Integer userId) {
+		return wordbookRepository.findByNameAndUserId(name,userId);
 	}
 }

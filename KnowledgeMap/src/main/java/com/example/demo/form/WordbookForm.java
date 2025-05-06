@@ -8,6 +8,6 @@ import lombok.Data;
 public class WordbookForm {
 	@NotBlank(message="単語帳名が空です")
 	private String wordbookName;
-	
+	private Integer userId;
 
 }
