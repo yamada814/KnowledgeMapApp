@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +36,7 @@ public class WordApiController {
 	
 	// wordDetail表示
 	@GetMapping("/words/{id}")
-	public ResponseEntity<WordDetailDto> getDetail(@PathVariable("id") Integer id,Model model) {
+	public ResponseEntity<WordDetailDto> getDetail(@PathVariable("id") Integer id) {
 		WordDetailDto dto = wordService.findWordDetailDtoById(id);
 		if(dto == null) {
 			return ResponseEntity.notFound().build();

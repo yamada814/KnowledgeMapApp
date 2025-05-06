@@ -1,20 +1,43 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-<meta charset="UTF-8">
-<title>単語帳一覧</title>
-<link rel="stylesheet" th:href="@{/css/common.css}">
-<link rel="stylesheet" th:href="@{/css/wordbook_list.css}">
+	<meta charset="UTF-8">
+	<title>単語帳一覧</title>
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+	<link rel="stylesheet" th:href="@{/css/wordbook_list.css}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+	<script th:src="@{/js/wordbook_list.js}" defer></script>
 </head>
+
 <body>
 	<h1>ホーム</h1>
 	<h3><span sec:authentication="principal.username">username</span>さんの単語帳一覧</h3>
-	<ul class="wordbookList">
-		<li th:each="wordbook : ${wordbookList}">
-			<a th:href="@{/wordbooks/{wordbookId}/wordList(wordbookId=${wordbook.id})}" th:text="${wordbook.name}"></a>
-		</li>
-	</ul>
+	<!-- 登録用フォームの表示/非表示 切り替えボタン　-->
+	<button id="showFormBtn">
+		<span class="bi bi-plus-circle-fill"></span>
+		&nbsp;単語帳を追加
+	</button>
+	<!-- 登録用フォーム -->
+	<form th:action="@{/wordbooks/api/regist}" th:object="${wordbookForm}" class="commonForm hidden">
+		<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />
+		<input type="hidden" th:field="*{userId}" />
+		<label>単語帳名：<input type="text" th:field="*{wordbookName}"></label>
+		<ul id="errorMsgList" class="errorMsgHidden"></ul>
+		<button type="submit" id="registBtn">追加する</button>
+	</form>
+	<!-- 単語帳リスト -->
+	<div id="wordbookListContainer">
+
+		<ul class="wordbookList">
+			<li th:each="wordbook : ${wordbookList}">
+				<a th:href="@{/wordbooks/{wordbookId}/words(wordbookId=${wordbook.id})}" th:text="${wordbook.name}">
+				</a>
+			</li>
+		</ul>
+
+	</div>
 	<a th:href="@{/login}" id="return" class="button">ログアウトする</a>
 </body>
+
 </html>

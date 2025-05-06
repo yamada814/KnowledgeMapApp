@@ -14,7 +14,7 @@
 
 <body>
 	<h1>登録確認</h1>
-	<form class="commonForm" th:action="@{/wordbooks/{wordbookId}/wordList/regist(wordbookId=${wordbookId})}" method="post" th:object="${wordForm}">
+	<form class="commonForm" th:action="@{/wordbooks/{wordbookId}/words/regist(wordbookId=${wordbookId})}" method="post" th:object="${wordForm}">
 	<h4>以下の内容で登録します。</h4>
 		
 				<input type="hidden" th:field="*{wordName}">
@@ -49,7 +49,7 @@
 
 		<button type="submit">登録する</button>
 	</form>
-	<form th:action="@{/wordbooks/{wordbookId}/wordList/showWordForm(wordbookId=${wordbookId})}" method="post" th:object="${wordForm}">
+	<form th:action="@{/wordbooks/{wordbookId}/words/showWordForm(wordbookId=${wordbookId})}" method="post" th:object="${wordForm}">
 		<input type="hidden" th:field="*{wordName}">
 		<input type="hidden" th:field="*{content}">
 		<input type="hidden" th:field="*{categoryId}">

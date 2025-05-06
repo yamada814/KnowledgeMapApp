@@ -19,7 +19,7 @@
 
 <body>
 	<h1>新規登録</h1>
-	<form class="commonForm" th:action="@{/wordbooks/{wordbookId}/wordList/registConfirm(wordbookId=${wordbookId})}" method="post" th:object="${wordForm}">
+	<form class="commonForm" th:action="@{/wordbooks/{wordbookId}/words/registConfirm(wordbookId=${wordbookId})}" method="post" th:object="${wordForm}">
 		<input type="hidden" th:field="*{id}">
 		<input type="hidden" th:field="*{wordbookId}">
 
@@ -117,7 +117,7 @@
 
 	</form>
 
-	<a id="return" class="button" th:href="@{/wordbooks/{wordbookId}/wordList(wordbookId=${wordbookId})}">一覧へ戻る</a>
+	<a id="return" class="button" th:href="@{/wordbooks/{wordbookId}/words(wordbookId=${wordbookId})}">一覧へ戻る</a>
 
 </body>
 

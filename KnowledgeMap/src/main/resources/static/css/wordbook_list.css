@@ -1,13 +1,49 @@
 @charset "UTF-8";
 
-.wordbookList {
-	width: 40%;
+/* 新規登録ボタン */
+button{
+	width: 10rem;
+	padding: 0.6rem 1.5rem;
+	display: block;
+	margin:  0 auto;
+	font-size: 0.8rem;
+}
+button:hover,
+.button:hover{
+	background-color: var(--hover-bg-color)
+}
+
+/* 単語帳入力フォーム */
+.commonForm{
+	width: 80%;
+	text-align: center;
+	margin: 1rem auto;
+}
+.hidden{
+	display:none;
+}
+.visible{
+	display:block;
+}
+.errorMsgHidden{
+	display:none;
+}
+.errorMsgVisible{
+	display:block;
+	color: red;
+}
+/* 単語帳リスト */
+#wordbookListContainer{
+	width: 80%;
 	max-width: 800px;
 	min-width: 500px;
 	background-color: var(--container-bg-color);
 	border: 1px solid var(--line-color);
 	border-radius: 10px;
 	padding: 2rem;
+}
+.wordbookList {
+
 	text-align: center;
 
 }

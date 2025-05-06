@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/wordbooks/{wordbookId}/wordList")
+@RequestMapping("/wordbooks/{wordbookId}/words")
 public class WordDetailController {
 	private final WordService wordService;
 	private final CategoryService categoryService;
@@ -164,6 +164,6 @@ public class WordDetailController {
 		Word updatedWord = wordService.updateWord(wordId, wordForm);
 		redirectAttribute.addFlashAttribute("edit_ok", "編集しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findByWordbookId(wordbookId));
-		return String.format("redirect:/wordbooks/%d/wordList?categoryId=%d&id=%d", wordbookId, updatedWord.getCategory().getId(), updatedWord.getId());
+		return String.format("redirect:/wordbooks/%d/words?categoryId=%d&id=%d", wordbookId, updatedWord.getCategory().getId(), updatedWord.getId());
 	}
 }

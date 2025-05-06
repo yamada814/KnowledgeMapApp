@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.demo.entity.Wordbook;
+import com.example.demo.form.WordbookForm;
 import com.example.demo.service.LoginUserDetails;
 import com.example.demo.service.UserService;
 import com.example.demo.service.WordbookService;
@@ -31,8 +32,13 @@ public class LoginController {
 			Model model,
 			@AuthenticationPrincipal LoginUserDetails loginUserDetails) {
 		List<Wordbook> wordbookList = wordbookService.findWordBook(loginUserDetails.getUser());
+		WordbookForm wordbookForm = new WordbookForm();
+		wordbookForm.setUserId(loginUserDetails.getUser().getId());
 		model.addAttribute("wordbookList", wordbookList);
+		model.addAttribute("wordbookForm", wordbookForm);
+		System.out.println("■ ■ ■ ■ ■ ■ " + wordbookForm.getUserId());
 	    return "wordbook_list";
 	}
+
 
 }

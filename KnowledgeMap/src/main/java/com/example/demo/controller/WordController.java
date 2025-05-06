@@ -25,7 +25,7 @@ import com.example.demo.validator.WordFormValidator;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/wordbooks/{wordbookId}/wordList")
+@RequestMapping("/wordbooks/{wordbookId}/words")
 @RequiredArgsConstructor
 public class WordController {
 	private final WordService wordService;
@@ -132,7 +132,7 @@ public class WordController {
 		Word registedWord = wordService.addWord(wordForm);
 		redirectAttribute.addFlashAttribute("regist_ok", "登録しました");
 		redirectAttribute.addFlashAttribute("wordList", wordService.findByWordbookId(wordbookId));
-		return String.format("redirect:/wordbooks/%d/wordList?categoryId=%d&id=%d", wordbookId,registedWord.getCategory().getId(),
+		return String.format("redirect:/wordbooks/%d/words?categoryId=%d&id=%d", wordbookId,registedWord.getCategory().getId(),
 				registedWord.getId());
 	}
 }

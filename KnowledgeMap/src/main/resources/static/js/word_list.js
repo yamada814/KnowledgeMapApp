@@ -159,7 +159,7 @@ async function showWordDetail(wordId) {
 			span.classList.add("bi-pencil-fill");
 			editBtn.append(span);
 			editBtn.addEventListener("click", () => {
-				location.href = `/wordbooks/${wordbookId}/wordList/${wordId}/editForm`;
+				location.href = `/wordbooks/${wordbookId}/words/${wordId}/editForm`;
 			})
 			wordNameContainer.append(wordName, editBtn);
 			//カテゴリ
