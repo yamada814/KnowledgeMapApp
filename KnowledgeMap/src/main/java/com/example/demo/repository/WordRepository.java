@@ -12,6 +12,7 @@ public interface WordRepository extends JpaRepository<Word, Integer> {
     List<Word> findByCategoryId(Integer categoryId);
     List<Word> findByWordbookId(Integer wordbookId);
     Optional<Word> findByWordNameAndWordbookId(String name,Integer wordbookId);
+    void deleteByWordbookId(Integer id);
     
 }
 

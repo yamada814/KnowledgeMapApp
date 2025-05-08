@@ -55,16 +55,27 @@ function addWordbookToList(wordbookId, wordbookName) {
 	a.href = `/wordbooks/${wordbookId}/words`;
 	a.textContent = wordbookName;
 	li.appendChild(a);
+	const form = document.createElement("form");
+	form.className = "buttonContainer";
+	form.innerHTML = `
+		<input type="hidden" id="csrfToken" value="${document.getElementById("csrfToken").value}" />
+		<button class="deleteBtn" data-id="${wordbookId}"><span class="bi-trash3-fill"></span></button>
+		<button data-id="${wordbookId}"><span class="bi-pencil-fill"></span></button>
+	`;
+	li.appendChild(form);
 	wordbookList.insertBefore(li, wordbookList.firstElementChild);
 
 	document.getElementById("wordbookName").value = "";
+	console.log("delete button added");
 }
-//削除ボタンをクリックすると 削除実行
-const deleteBtns = document.querySelectorAll(".deleteBtn");
-deleteBtns.forEach(btn => {
-	btn.addEventListener("click", async (event) => {
+//削除ボタンをクリックすると 削除実行(イベントデリゲーションのため、親要素にイベント付与)
+	document.querySelector(".wordbookList").addEventListener("click", async (event) => {
+		const deleteBtn = event.target.closest(".deleteBtn");
+		if(!deleteBtn) return;
+		
 		event.preventDefault();
-		const id = btn.dataset.id;
+		
+		const id = deleteBtn.dataset.id;
 		const csrfToken = document.getElementById("csrfToken").value;
 		try {
 			const res = await fetch(`/wordbooks/api/delete/${id}`,
@@ -73,13 +84,12 @@ deleteBtns.forEach(btn => {
 					headers: { "X-CSRF-TOKEN": csrfToken }
 				});
 			if (res.ok) {
-				btn.closest('li').remove();
-				//btn.parentElement.parentElement.remove();
+				deleteBtn.closest('li').remove();
 			}
 		} catch (error) {
 			console.log(error);
 		}
 	})
-})
+
 
 
