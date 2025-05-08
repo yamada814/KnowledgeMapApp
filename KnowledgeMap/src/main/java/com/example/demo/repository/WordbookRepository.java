@@ -11,4 +11,5 @@ public interface WordbookRepository extends JpaRepository<Wordbook, Integer> {
 	List<Wordbook> findByUserId(Integer userId);
 	Wordbook save(Wordbook wordbook);
 	Optional<Wordbook>findByNameAndUserId(String name,Integer userId);
+	void deleteById(Integer id);
 }

@@ -34,4 +34,14 @@ public class WordbookServiceImpl implements WordbookService{
 	public Optional<Wordbook> findByWordbookNameAndUserId(String name,Integer userId) {
 		return wordbookRepository.findByNameAndUserId(name,userId);
 	}
+
+	@Override
+	public boolean deleteById(Integer id) {
+		Optional<Wordbook> wordbookOpt = wordbookRepository.findById(id);
+		if(wordbookOpt.isPresent()) {
+			wordbookRepository.deleteById(id);
+			return true;
+		}
+		return false;
+	}	
 }

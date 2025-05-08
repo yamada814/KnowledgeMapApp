@@ -5,7 +5,7 @@ const showFormBtn = document.getElementById("showFormBtn");
 //バリデーションエラー表示
 const errorMsgList = document.getElementById("errorMsgList");
 
-
+//「単語帳を追加」ボタンをクリックすると フォーム出現
 showFormBtn.addEventListener("click", () => {
 	if (!registForm.classList.toggle("hidden")) {//hiddenが存在して削除したとき
 		registForm.classList.add("visible");
@@ -13,6 +13,7 @@ showFormBtn.addEventListener("click", () => {
 		registForm.classList.remove("visible");//hiddenが存在せず追加したとき	
 	}
 })
+//「追加する」ボタンをクリックすると 登録処理実行
 registForm.addEventListener("submit", async (event) => {
 	event.preventDefault();
 	errorMsgList.innerHTML = "";
@@ -32,20 +33,21 @@ registForm.addEventListener("submit", async (event) => {
 			const wordbook = await res.json();
 			addWordbookToList(wordbook.id, wordbook.wordbookName);
 		} else {
-			
+
 			//バリデーションエラーがあるとき
-			errorMsgList.classList.replace("errorMsgHidden","errorMsgVisible");
+			errorMsgList.classList.replace("errorMsgHidden", "errorMsgVisible");
 			const errorMessages = await res.json();
-			for(const msg of errorMessages){
+			for (const msg of errorMessages) {
 				const li = document.createElement("li");
 				li.textContent = msg;
 				errorMsgList.append(li);
-			} 
+			}
 		}
 	} catch (error) {
 		alert("登録に失敗しました");
 	}
 })
+//単語帳リストに追加する
 function addWordbookToList(wordbookId, wordbookName) {
 	const wordbookList = document.querySelector(".wordbookList");
 	const li = document.createElement("li");
@@ -56,6 +58,28 @@ function addWordbookToList(wordbookId, wordbookName) {
 	wordbookList.insertBefore(li, wordbookList.firstElementChild);
 
 	document.getElementById("wordbookName").value = "";
-
 }
+//削除ボタンをクリックすると 削除実行
+const deleteBtns = document.querySelectorAll(".deleteBtn");
+deleteBtns.forEach(btn => {
+	btn.addEventListener("click", async (event) => {
+		event.preventDefault();
+		const id = btn.dataset.id;
+		const csrfToken = document.getElementById("csrfToken").value;
+		try {
+			const res = await fetch(`/wordbooks/api/delete/${id}`,
+				{
+					method: "DELETE",
+					headers: { "X-CSRF-TOKEN": csrfToken }
+				});
+			if (res.ok) {
+				btn.closest('li').remove();
+				//btn.parentElement.parentElement.remove();
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	})
+})
+
 

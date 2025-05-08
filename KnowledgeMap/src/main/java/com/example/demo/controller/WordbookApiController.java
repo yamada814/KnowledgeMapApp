@@ -8,7 +8,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +57,14 @@ public class WordbookApiController {
 		wordbook.setName(wordbookForm.getWordbookName());
 		WordbookDto dto = wordbookService.save(wordbook);
 		return ResponseEntity.ok(dto);
+	}
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<Void> delete(@PathVariable("id") Integer id){
+		boolean deleted = wordbookService.deleteById(id);
+		if (deleted){
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
 	}
 
 }

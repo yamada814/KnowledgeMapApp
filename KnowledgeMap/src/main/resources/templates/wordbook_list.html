@@ -30,9 +30,14 @@
 	<div id="wordbookListContainer">
 
 		<ul class="wordbookList">
-			<li th:each="wordbook : ${wordbookList}">
-				<a th:href="@{/wordbooks/{wordbookId}/words(wordbookId=${wordbook.id})}" th:text="${wordbook.name}">
+			<li th:each="wordbook : ${wordbookList}" th:object="${wordbook}">
+				<a th:href="@{/wordbooks/{wordbookId}/words(wordbookId=*{id})}" th:text="*{name}">
 				</a>
+				<form class="buttonContainer">	
+					<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />				
+					<button class="deleteBtn" th:attr="data-id=*{id}"><span class="bi-trash3-fill"></span></button>
+					<button th:attr="data-id=*{id}"><span class="bi-pencil-fill"></span></button>
+				</form>
 			</li>
 		</ul>
 
