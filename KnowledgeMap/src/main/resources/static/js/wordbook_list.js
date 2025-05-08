@@ -1,9 +1,14 @@
+console.log("DOM fully loaded?", document.readyState);
+console.log("modal:", document.getElementById("deleteConfirmModal"));
+
 //登録用フォーム
 const registForm = document.querySelector(".commonForm");
 //登録用フォームの表示/非表示切り替えボタン
 const showFormBtn = document.getElementById("showFormBtn");
 //バリデーションエラー表示
 const errorMsgList = document.getElementById("errorMsgList");
+
+
 
 //「単語帳を追加」ボタンをクリックすると フォーム出現
 showFormBtn.addEventListener("click", () => {
@@ -60,23 +65,32 @@ function addWordbookToList(wordbookId, wordbookName) {
 	form.innerHTML = `
 		<input type="hidden" id="csrfToken" value="${document.getElementById("csrfToken").value}" />
 		<button class="deleteBtn" data-id="${wordbookId}"><span class="bi-trash3-fill"></span></button>
-		<button data-id="${wordbookId}"><span class="bi-pencil-fill"></span></button>
-	`;
+		`;
 	li.appendChild(form);
 	wordbookList.insertBefore(li, wordbookList.firstElementChild);
 
 	document.getElementById("wordbookName").value = "";
 	console.log("delete button added");
 }
+
+const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+const deleteOk = document.getElementById("deleteOk");
+const deleteNg = document.getElementById("deleteNg");
+
+let pendingDeleteBtn = null; // 削除予定のボタンを保持
+let eventHandler = null;
 //削除ボタンをクリックすると 削除実行(イベントデリゲーションのため、親要素にイベント付与)
-	document.querySelector(".wordbookList").addEventListener("click", async (event) => {
-		const deleteBtn = event.target.closest(".deleteBtn");
-		if(!deleteBtn) return;
-		
-		event.preventDefault();
-		
+document.querySelector(".wordbookList").addEventListener("click", async (event) => {
+	const deleteBtn = event.target.closest(".deleteBtn");
+	if (!deleteBtn) return;
+	event.stopPropagation();
+	event.preventDefault();//documentへのイベント伝播によるcloseModal()の即実行を防ぐ
+	showModal(deleteBtn, async (isConfirmed) => {
 		const id = deleteBtn.dataset.id;
 		const csrfToken = document.getElementById("csrfToken").value;
+		if (!isConfirmed) {
+			return;
+		}
 		try {
 			const res = await fetch(`/wordbooks/api/delete/${id}`,
 				{
@@ -90,6 +104,49 @@ function addWordbookToList(wordbookId, wordbookName) {
 			console.log(error);
 		}
 	})
+	console.log("aftershowModal:", deleteConfirmModal.classList.value);
+})
+function showModal(deleteBtn, func) {
+	console.log("before:", deleteConfirmModal.classList.value);
 
+	deleteConfirmModal.classList.remove("modalHidden");
+
+	console.log("after:", deleteConfirmModal.classList.value);
+
+	const rect = deleteBtn.getBoundingClientRect();
+	const modalTop = rect.bottom + scrollY + 8;
+	const modalLeft = rect.right - deleteConfirmModal.offsetWidth;
+
+	document.documentElement.style.setProperty('--modal-top', `${modalTop}px`);
+	document.documentElement.style.setProperty('--modal-left', `${modalLeft}px`);
+
+
+	deleteOk.onclick = () => {
+		func(true);
+		closeModal();
+	};
+	deleteNg.onclick = () => {
+		func(false);
+		closeModal();
+	};
+
+	eventHandler = (event) => {
+		if (!deleteConfirmModal.contains(event.target)) {
+			closeModal();
+		}
+	};
+	document.addEventListener("click", eventHandler);
+}
+
+function closeModal() {
+	console.log("closeModalイベント発火");
+	if (!deleteConfirmModal.classList.contains("modalHidden")) {
+		deleteConfirmModal.classList.add("modalHidden");
+		if (eventHandler) {
+			document.removeEventListener("click", eventHandler);
+			eventHandler = null;
+		}
+	}
+}
 
 
