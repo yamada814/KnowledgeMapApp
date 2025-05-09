@@ -12,9 +12,11 @@
 
 <body>
 	<h1>単語帳</h1>
+	<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />				
 
 	<div id="regist">
-		<a th:href="@{/wordbooks/{wordbookId}/words/showWordForm(wordbookId=${wordbookId})}" class="button"><span class="bi bi-plus-circle-fill"></span>&nbsp;単語を追加</a>
+		<a th:href="@{/wordbooks/{wordbookId}/words/showWordForm(wordbookId=${wordbookId})}" class="button"><span
+				class="bi bi-plus-circle-fill"></span>&nbsp;単語を追加</a>
 	</div>
 
 	<div class="mainContainer">
@@ -46,14 +48,17 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<a th:href="@{/wordbooks}" id="return" class="button">単語帳一覧へ戻る</a>
-		<!-- 削除確認モーダル -->
-		<div id="deleteConfirmModal" class="modalHidden">
-			<p>本当に削除しますか？</p>
-			<button id="deleteOk">はい</button>
-			<button id="deleteNg">いいえ</button>
-		</div>
+	
+	<!-- 背景オーバーレイ -->
+	<div id="modalOverlay" class="modalOverlayHidden"></div>
+	<!-- 削除確認モーダル -->
+	<div id="deleteConfirmModal" class="modalHidden">
+		<p>本当に削除しますか？</p>
+		<button id="deleteOk">はい</button>
+		<button id="deleteNg">いいえ</button>
+	</div>
 </body>
 
 </html>

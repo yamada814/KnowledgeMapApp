@@ -44,7 +44,6 @@
 .wordbookList li {
 	position: relative;
 	height: 3rem;
-	;
 }
 .wordbookList li a {
 	display: block;
@@ -55,24 +54,26 @@
 	width: 100%;
 	height: 100%;
 }
-/* 単語帳名　ホバー時 */
-.wordbookList li:hover {
+.wordbookList li:hover,
+.wordbookList li:has(a.selected){
 	background-color: var(--main-text-color);
 	transition: all ease 0.5s;
 }
 .deleteBtn {
 	opacity: 0;
 }
-.wordbookList li:hover .deleteBtn {
-	opacity: 1;
-	pointer-events: auto;
-	transition: opacity 0.5s ease;
+.wordbookList li:hover .deleteBtn,
+.wordbookList li:has(a.selected) .deleteBtn {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.5s ease;
 }
-.wordbookList li:hover a {
+.wordbookList li:hover a,
+.wordbookList a.selected {
 	color: white;
-	border-radius: 5px;
 	font-size: 1.2rem;
 	transform: scale(1.05);
+	transition: all ease 0.5s;
 }
 /* ボタン */
 .buttonContainer {

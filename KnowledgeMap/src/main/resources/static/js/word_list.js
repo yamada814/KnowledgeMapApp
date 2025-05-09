@@ -19,9 +19,9 @@ const wordbookId = wordDetailContainer.dataset.wordbookId;
 
 
 /*
-	新規登録または編集を実行後にword_listに戻ると
-	処理を実行した単語が表示された状態にする
-	(カテゴリ一覧と単語一覧から該当する対象が選択され、かつwordDetailが表示された状態)
+更新処理を実行後、リダイレクトで一覧画面に戻ると
+処理対象の単語が表示された状態にする
+(カテゴリ一覧と単語一覧から該当する対象が選択され、かつwordDetailが表示された状態)
 */
 window.addEventListener("DOMContentLoaded", async () => {
 	const params = new URLSearchParams(window.location.search);
@@ -62,7 +62,7 @@ function clearCategorySelection() {
 function setCategorySelection(categoryId) {
 	const updatedCategoryBtns = document.querySelectorAll(".categoryBtn");
 	[...updatedCategoryBtns].find(btn => btn.getAttribute("data-id") == categoryId)
-		.classList.add("categoryBtnSelected");		
+		.classList.add("categoryBtnSelected");
 }
 // 選択中の単語の色変更
 function setWordSelection(wordId) {
@@ -85,7 +85,7 @@ async function showWordList(categoryId) {
 				wordListContainer.appendChild(msg);
 				// カテゴリ削除ボタン
 				const categoryDeleteBtn = document.createElement("button");
-				categoryDeleteBtn.classList.add("categoryDeleteBtn","deleteBtn");
+				categoryDeleteBtn.classList.add("categoryDeleteBtn", "deleteBtn");
 				const span = document.createElement("span");
 				span.classList.add("bi-trash3-fill");
 				categoryDeleteBtn.appendChild(span);
@@ -107,7 +107,7 @@ async function showWordList(categoryId) {
 					li.appendChild(wordBtn);
 					// 単語削除ボタン <button class="categoryDeleteBtn"><span class="bi-trash3-fill"></span></button>
 					const wordDeleteBtn = document.createElement("button");
-					wordDeleteBtn.classList.add("wordDeleteBtn","deleteBtn");
+					wordDeleteBtn.classList.add("wordDeleteBtn", "deleteBtn");
 					const span = document.createElement("span");
 					span.classList.add("bi-trash3-fill");
 					wordDeleteBtn.appendChild(span);
@@ -182,16 +182,16 @@ async function showWordDetail(wordId) {
 			if (wordDetail.relatedWords && wordDetail.relatedWords.length > 0) {
 				const relatedWordsContainer = document.createElement("div");
 				relatedWordsContainer.classList.add("relatedWords")
-				
+
 				const reference = document.createElement("span");
 				reference.textContent = "参照：";
-				
+
 				const relatedWords = document.createElement("ul");
 				for (const relatedWord of wordDetail.relatedWords) {
 					const li = document.createElement("li");
-					li.textContent = relatedWord.wordName;			
+					li.textContent = relatedWord.wordName;
 					//関連語の相互参照リンク作成
-					li.addEventListener("click",async()=>{ 
+					li.addEventListener("click", async () => {
 						//カテゴリ一覧の設定
 						clearCategorySelection();
 						setCategorySelection(relatedWord.categoryId);
@@ -200,9 +200,9 @@ async function showWordDetail(wordId) {
 						await showWordList(relatedWord.categoryId);
 						setWordSelection(relatedWord.id);
 						//wordDetailの表示
-						wordDetailContainer.innerHTML="";
+						wordDetailContainer.innerHTML = "";
 						showWordDetail(relatedWord.id);
-					});					
+					});
 					relatedWords.appendChild(li);
 				}
 				relatedWordsContainer.append(reference, relatedWords);
@@ -232,13 +232,19 @@ async function deleteCategory(event, categoryId) {
 }
 //word削除
 async function deleteWord(event, wordId, li) {
+	const csrfToken = document.getElementById("csrfToken").value;
 	event.stopPropagation();
 	showModal(event, async (isConfirmed) => {
 		if (!isConfirmed) {
 			return;
 		}
 		try {
-			const res = await fetch(`/api/words/${wordId}`, { method: "DELETE" });
+			const res = await fetch(
+				`/api/words/${wordId}`,
+				 { 
+					method: "DELETE",
+					headers:{ "X-CSRF-TOKEN": csrfToken }				
+				});
 			if (res.ok) {
 				li.remove();
 				wordDetailContainer.innerHTML = "";
@@ -253,43 +259,50 @@ async function deleteWord(event, wordId, li) {
 	})
 }
 
-// 削除確認モーダルを表示させる
-// 「引数として真偽値を受け取り 削除実行のリクエストを送る or 何もしない」という関数オブジェクトを 引数として受け取る
+// モーダルを表示する関数
+// 引数として受け取る関数funcは、 「引数がtrueの時に削除実行のリクエストを送る」関数
 function showModal(event, func) {
-	// モーダルの表示
 	deleteConfirmModal.classList.remove("modalHidden");
+	modalOverlay.classList.remove("modalOverlayHidden");
+
 	// モーダルの表示位置を設定
 	const rect = event.currentTarget.getBoundingClientRect();
-
 	const modalTop = rect.bottom + scrollY + 8;
 	const modalLeft = rect.right - deleteConfirmModal.offsetWidth;
-
+	//CSS変数に値をセット
 	document.documentElement.style.setProperty('--modal-top', `${modalTop}px`);
 	document.documentElement.style.setProperty('--modal-left', `${modalLeft}px`);
 
 	// OKボタンクリック -> func(true)を実行してモーダルを閉じる
-	deleteOk.onclick = () => {
+	deleteOk.addEventListener("click", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
 		func(true);
 		closeModal();
-	};
+	})
+
 	// NGボタンクリック -> func(false)を実行してモーダルを閉じる
-	deleteNg.onclick = () => {
+	deleteNg.addEventListener("click", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
 		func(false);
 		closeModal();
-	};
+	})
+
 	//モーダルの外側をクリックするとモーダルを閉じる関数
 	eventHandler = (event) => {
 		if (!deleteConfirmModal.contains(event.target)) {
 			closeModal();
 		}
 	}
-	//上記関数をクリックイベントに登録
+	//モーダルを閉じる関数をクリックイベントに登録
 	document.addEventListener("click", eventHandler);
 }
 // 削除確認モーダルを閉じる
 function closeModal() {
 	if (!deleteConfirmModal.classList.contains("modalHidden")) {
 		deleteConfirmModal.classList.add("modalHidden");
+		modalOverlay.classList.add("modalOverlayHidden");
 		if (eventHandler) {
 			//クリックイベント削除
 			document.removeEventListener("click", eventHandler);
