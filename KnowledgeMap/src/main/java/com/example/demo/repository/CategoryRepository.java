@@ -12,5 +12,6 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 	Optional<Category> findByNameAndWordbookId(String name,Integer wordbookId);
 	
 	List<Category> findByWordbookId(Integer wordbookId);
+	void deleteByWordbookId(Integer id);
 }
 

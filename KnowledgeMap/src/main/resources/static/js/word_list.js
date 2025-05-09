@@ -85,7 +85,7 @@ async function showWordList(categoryId) {
 				wordListContainer.appendChild(msg);
 				// カテゴリ削除ボタン
 				const categoryDeleteBtn = document.createElement("button");
-				categoryDeleteBtn.classList.add("categoryDeleteBtn");
+				categoryDeleteBtn.classList.add("categoryDeleteBtn","deleteBtn");
 				const span = document.createElement("span");
 				span.classList.add("bi-trash3-fill");
 				categoryDeleteBtn.appendChild(span);
@@ -107,7 +107,7 @@ async function showWordList(categoryId) {
 					li.appendChild(wordBtn);
 					// 単語削除ボタン <button class="categoryDeleteBtn"><span class="bi-trash3-fill"></span></button>
 					const wordDeleteBtn = document.createElement("button");
-					wordDeleteBtn.classList.add("wordDeleteBtn");
+					wordDeleteBtn.classList.add("wordDeleteBtn","deleteBtn");
 					const span = document.createElement("span");
 					span.classList.add("bi-trash3-fill");
 					wordDeleteBtn.appendChild(span);

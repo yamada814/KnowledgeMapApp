@@ -73,21 +73,8 @@ h4{
 	color:  var(--container-bg-color);
 	border:1px solid var(--main-text-color);
 }
-.categoryDeleteBtn,
-.wordDeleteBtn{
-	width: 20%;
-	background-color:  var(--container-bg-color);
-	color:#777499;
-	border-radius: 0%;
-	border:2px solid var(--main-text-color);
-	font-size: 1rem;
-	cursor: pointer;
-}
-.categoryDeleteBtn:hover,
-.wordDeleteBtn:hover{
-	background-color: #e5e5ee;
-	color: var(--main-text-color);
-}
+
+
 /* wordDetail */
 .wordDetailContainer div{
 	margin:0%;
@@ -138,30 +125,4 @@ h4{
 	display: block;
 	padding:10px;
 }
-/* 削除確認モーダル
-   表示位置はクリックしたボタン要素の下になるよう変数で定義
- */
-.modalHidden{
-	display:none;
-}
-:root{
-	--modal-top:50%;
-	--modal-left:50%;
-}
-#deleteConfirmModal{
-	position: absolute;
-	top: var(--modal-top);
-	left: var(--modal-left);
-	
-	padding:1.5rem;
-	text-align: center;	
-	
-	background-color: #f5dede;
-	color: var(--main-text-color);
-	border: 2px solid var(--main-text-color);
-	border-radius: 10px;
-}
-#deleteConfirmModal button{
-	margin: 0.5rem 1rem;
-	padding:0.5rem;
-}
+

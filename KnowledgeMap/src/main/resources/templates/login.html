@@ -13,8 +13,8 @@
 	<h1>ログイン</h1>
 	<form class="commonForm" th:action="@{/login}" method="post">
 		<div class="inputContainer">
-			<label>ユーザ名：<input type="text" name="username"></label>
-			<label>パスワード：<input type="password" name="password"></label>
+			<label>ユーザ名：<input type="text" name="username" autofocus value="a"></label>
+			<label>パスワード：<input type="password" name="password" value="test1234"></label>
 		</div>
 		<button type="submit">ログイン</button>
 	</form>

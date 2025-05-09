@@ -22,7 +22,7 @@
 	<form th:action="@{/wordbooks/api/regist}" th:object="${wordbookForm}" class="commonForm hidden">
 		<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />
 		<input type="hidden" th:field="*{userId}" />
-		<label>単語帳名：<input type="text" th:field="*{wordbookName}"></label>
+		<label>単語帳名：<input type="text" th:field="*{wordbookName}" autofocus></label>
 		<ul id="errorMsgList" class="errorMsgHidden"></ul>
 		<button type="submit" id="registBtn">追加する</button>
 	</form>
@@ -30,14 +30,29 @@
 	<div id="wordbookListContainer">
 
 		<ul class="wordbookList">
-			<li th:each="wordbook : ${wordbookList}">
-				<a th:href="@{/wordbooks/{wordbookId}/words(wordbookId=${wordbook.id})}" th:text="${wordbook.name}">
+			<li th:each="wordbook : ${wordbookList}" th:object="${wordbook}">
+				<a th:href="@{/wordbooks/{wordbookId}/words(wordbookId=*{id})}"  th:text="*{name}">
 				</a>
+				<div class="buttonContainer">	
+					<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />				
+					<button class="deleteBtn" th:attr="data-id=*{id}"><span class="bi-trash3-fill"></span></button>
+					<!-- <button th:attr="data-id=*{id}"><span class="bi-pencil-fill"></span></button> -->
+				</div>
 			</li>
 		</ul>
 
 	</div>
 	<a th:href="@{/login}" id="return" class="button">ログアウトする</a>
+	<!-- 背景オーバーレイ -->
+	<div id="modalOverlay" class="modalOverlayHidden"></div>
+
+	<!-- モーダル本体 -->
+	<div id="deleteConfirmModal" class="modalHidden">
+		<p>本当に削除しますか？</p>
+		<button id="deleteOk">はい</button>
+		<button id="deleteNg">いいえ</button>
+	</div>
+
 </body>
 
 </html>
