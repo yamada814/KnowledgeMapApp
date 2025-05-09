@@ -124,6 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	function showModal(deleteBtn, func) {
 		deleteConfirmModal.classList.remove("modalHidden");
 		modalOverlay.classList.remove("modalOverlayHidden");
+		deleteBtn.closest("li").querySelector("a").classList.add("selected");
+			
 		// モーダルの表示位置を設定
 		const rect = deleteBtn.getBoundingClientRect();
 		const modalTop = rect.bottom + scrollY + 8;
@@ -162,6 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		console.log("closeModal実行");
 		deleteConfirmModal.classList.add("modalHidden");
 		modalOverlay.classList.add("modalOverlayHidden");
+		document.querySelector(".selected").classList.remove("selected");
 		if (eventHandler) {
 			document.removeEventListener("click", eventHandler);
 			eventHandler = null;
