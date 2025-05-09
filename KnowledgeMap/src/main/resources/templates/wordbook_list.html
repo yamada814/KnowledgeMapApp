@@ -12,6 +12,7 @@
 
 <body>
 	<h1>ホーム</h1>
+	<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />				
 	<h3><span sec:authentication="principal.username">username</span>さんの単語帳一覧</h3>
 	<!-- 登録用フォームの表示/非表示 切り替えボタン　-->
 	<button id="showFormBtn">
@@ -34,7 +35,6 @@
 				<a th:href="@{/wordbooks/{wordbookId}/words(wordbookId=*{id})}"  th:text="*{name}">
 				</a>
 				<div class="buttonContainer">	
-					<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />				
 					<button class="deleteBtn" th:attr="data-id=*{id}"><span class="bi-trash3-fill"></span></button>
 					<!-- <button th:attr="data-id=*{id}"><span class="bi-pencil-fill"></span></button> -->
 				</div>
