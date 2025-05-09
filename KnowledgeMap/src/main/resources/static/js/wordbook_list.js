@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
 	//登録用フォーム
 	const registForm = document.querySelector(".commonForm");
@@ -5,9 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	const showFormBtn = document.getElementById("showFormBtn");
 	//バリデーションエラー表示
 	const errorMsgList = document.getElementById("errorMsgList");
-
-
-	//「単語帳を追加」ボタンをクリックすると フォーム表示
+	/*
+	単語帳の登録フォーム表示
+	*/
 	showFormBtn.addEventListener("click", () => {
 		if (!registForm.classList.toggle("hidden")) {//hiddenが存在して削除したとき
 			registForm.classList.add("visible");
@@ -15,7 +16,9 @@ document.addEventListener("DOMContentLoaded", () => {
 			registForm.classList.remove("visible");//hiddenが存在せず追加したとき	
 		}
 	})
-	//「追加する」ボタンをクリックすると 登録処理実行
+	/*
+	単語帳の登録処理実行
+	*/
 	registForm.addEventListener("submit", async (event) => {
 		event.preventDefault();
 		errorMsgList.innerHTML = "";
@@ -35,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
 				const wordbook = await res.json();
 				addWordbookToList(wordbook.id, wordbook.wordbookName);
 			} else {
-
 				//バリデーションエラーがあるとき
 				errorMsgList.classList.replace("errorMsgHidden", "errorMsgVisible");
 				const errorMessages = await res.json();
@@ -49,14 +51,17 @@ document.addEventListener("DOMContentLoaded", () => {
 			alert("登録に失敗しました");
 		}
 	})
-	//単語帳リストに追加する
+	//単語帳リストにDOMを追加する関数
 	function addWordbookToList(wordbookId, wordbookName) {
+		
 		const wordbookList = document.querySelector(".wordbookList");
 		const li = document.createElement("li");
 		const a = document.createElement("a");
+		
 		a.href = `/wordbooks/${wordbookId}/words`;
 		a.textContent = wordbookName;
 		li.appendChild(a);
+		
 		const form = document.createElement("form");
 		form.className = "buttonContainer";
 		form.innerHTML = `
@@ -64,26 +69,36 @@ document.addEventListener("DOMContentLoaded", () => {
 		<button class="deleteBtn" data-id="${wordbookId}"><span class="bi-trash3-fill"></span></button>
 		`;
 		li.appendChild(form);
+		
 		wordbookList.insertBefore(li, wordbookList.firstElementChild);
 
 		document.getElementById("wordbookName").value = "";
-		console.log("delete button added");
 	}
 
+
+	/*
+	単語帳の削除
+	
+	(動的に追加される単語帳に対してもイベントを付与するため、親要素にイベントを登録する)
+	*/
+
 	const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+	const modalOverlay = document.getElementById("modalOverlay");
 	const deleteOk = document.getElementById("deleteOk");
 	const deleteNg = document.getElementById("deleteNg");
-
-
-	//削除ボタンをクリックすると 削除実行(イベントデリゲーションのため、親要素にイベント付与)
+	
 	document.querySelector(".wordbookList").addEventListener("click", async (event) => {
 		const deleteBtn = event.target.closest(".deleteBtn");
 		if (!deleteBtn) return;
+
 		event.stopPropagation();
 		event.preventDefault();//documentへのイベント伝播によるcloseModal()の即実行を防ぐ
+		
+		// モーダルの表示
 		showModal(deleteBtn, async (isConfirmed) => {
 			const id = deleteBtn.dataset.id;
 			const csrfToken = document.getElementById("csrfToken").value;
+
 			if (!isConfirmed) {
 				console.log("funcにfalseが渡った")
 				return;
@@ -104,14 +119,16 @@ document.addEventListener("DOMContentLoaded", () => {
 		})
 	})
 
+	// モーダルを表示する関数
+	// 引数として受け取る関数funcは、 「引数がtrueの時に削除実行のリクエストを送る」関数
 	function showModal(deleteBtn, func) {
-		// モーダルの表示
 		deleteConfirmModal.classList.remove("modalHidden");
+		modalOverlay.classList.remove("modalOverlayHidden");
 		// モーダルの表示位置を設定
 		const rect = deleteBtn.getBoundingClientRect();
 		const modalTop = rect.bottom + scrollY + 8;
 		const modalLeft = rect.right - deleteConfirmModal.offsetWidth;
-
+		//CSS変数に値をセット
 		document.documentElement.style.setProperty('--modal-top', `${modalTop}px`);
 		document.documentElement.style.setProperty('--modal-left', `${modalLeft}px`);
 
@@ -137,13 +154,14 @@ document.addEventListener("DOMContentLoaded", () => {
 				closeModal();
 			}
 		}
-		//上記関数をクリックイベントに登録
+		//モーダルを閉じる関数をクリックイベントに登録
 		document.addEventListener("click", eventHandler);
 	}
-
+	// モーダルを閉じる関数
 	function closeModal() {
 		console.log("closeModal実行");
 		deleteConfirmModal.classList.add("modalHidden");
+		modalOverlay.classList.add("modalOverlayHidden");
 		if (eventHandler) {
 			document.removeEventListener("click", eventHandler);
 			eventHandler = null;

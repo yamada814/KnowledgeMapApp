@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.WordbookDto;
 import com.example.demo.entity.User;
-import com.example.demo.entity.Word;
 import com.example.demo.entity.Wordbook;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.WordRelationRepository;
@@ -49,11 +48,6 @@ public class WordbookServiceImpl implements WordbookService{
 	public boolean deleteById(Integer id) {
 		Optional<Wordbook> wordbookOpt = wordbookRepository.findById(id);
 		if(wordbookOpt.isPresent()) {
-			List<Word> words = wordRepository.findByWordbookId(id);
-			for(Word word :words) {
-				wordRelationRepository.deleteByWordId(word.getId());
-				wordRelationRepository.deleteByRelatedWordId(word.getId());				
-			}
 			wordRepository.deleteByWordbookId(id);
 			categoryRepository.deleteByWordbookId(id);
 			wordbookRepository.deleteById(id);
