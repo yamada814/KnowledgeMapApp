@@ -25,7 +25,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.demo.WebSecurityConfig;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
-import com.example.demo.entity.Wordbook;
 import com.example.demo.form.WordForm;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.WordService;
@@ -62,9 +61,6 @@ public class WordControllerTest {
 
 	@BeforeEach
 	void setupMockMvc() {
-
-		Wordbook wordbook1 = new Wordbook();
-		wordbook1.setId(1);
 
 		Category category1 = new Category();
 		category1.setId(1);

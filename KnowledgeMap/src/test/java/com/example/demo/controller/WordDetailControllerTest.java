@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -19,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.demo.WebSecurityConfig;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
 import com.example.demo.form.WordForm;
@@ -29,6 +32,7 @@ import com.example.demo.service.WordService;
 import com.example.demo.validator.WordFormValidator;
 
 @WebMvcTest(WordDetailController.class)
+@Import(WebSecurityConfig.class)
 public class WordDetailControllerTest {
 	@Autowired
 	MockMvc mockMvc;
@@ -43,12 +47,10 @@ public class WordDetailControllerTest {
 		WordService wordService() {
 			return org.mockito.Mockito.mock(WordService.class);
 		}
-
 		@Bean
 		CategoryService categoryService() {
 			return org.mockito.Mockito.mock(CategoryService.class);
 		}
-
 		@Bean
 		WordFormValidator wordFormValidator() {
 			return new WordFormValidator(wordService());
@@ -100,11 +102,11 @@ public class WordDetailControllerTest {
 		doReturn(Optional.of(word1)).when(wordService).findById(1);
 		doReturn(Optional.empty()).when(wordService).findById(999);
 		doReturn(Optional.empty()).when(wordService).findByWordName("newWordName");//word重複なし
-		doReturn(Optional.of(newWord1)).when(wordService).findByWordName("ExistingWordName");//word重複あり
+		doReturn(Optional.of(newWord1)).when(wordService).findByWordNameAndWordbookId("ExistingWordName",1);//word重複あり
 
-		doReturn(Optional.of(category1)).when(categoryService).findByName("category1");
-		doReturn(Optional.empty()).when(categoryService).findByName("newCategoryName");
-		doReturn(newCategory).when(categoryService).addCategory("newCategoryName");
+		doReturn(Optional.empty()).when(categoryService).findByNameAndWordbookId("newCategoryName",1);
+		doReturn(Optional.of(category1)).when(categoryService).findByNameAndWordbookId("category1",1);
+		doReturn(newCategory).when(categoryService).addCategory("newCategoryName", 1);
 		doReturn(Optional.of(category1)).when(categoryService).findByCategoryId(1);
 		doReturn(Optional.of(newCategory)).when(categoryService).findByCategoryId(2);
 	}
@@ -112,7 +114,9 @@ public class WordDetailControllerTest {
 	@Test
 	//編集画面表示 成功
 	void testShowEditForm() throws Exception {
-		mockMvc.perform(get("/words/{id}/editForm", 1))
+		mockMvc.perform(get("/wordbooks/1/words/{id}/editForm", 1)
+				.with(csrf())
+				.with(user("testUser")))
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_form"))
 				.andExpect(model().attributeExists("word"));
@@ -122,7 +126,9 @@ public class WordDetailControllerTest {
 	//編集画面表示 失敗
 	void testShowEditForm_NotExistsWord() throws Exception {
 		doReturn(Optional.empty()).when(wordService).findById(999);
-		mockMvc.perform(get("/words/{id}/editForm", 999))
+		mockMvc.perform(get("/wordbooks/1/words/{id}/editForm", 999)
+				.with(csrf())
+				.with(user("testUser")))
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_error"));
 	}
@@ -130,7 +136,9 @@ public class WordDetailControllerTest {
 	@Test
 	//編集画面表示 ( 遷移元がword_detail )
 	void testShowEditForm_FromWordDetail() throws Exception {
-		mockMvc.perform(get("/words/{id}/editForm", 1))
+		mockMvc.perform(get("/wordbooks/1/words/{id}/editForm", 1)
+				.with(csrf())
+				.with(user("testUser")))
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_form"))
 				.andExpect(model().attributeDoesNotExist("fromRegistConfirm"))
@@ -139,8 +147,10 @@ public class WordDetailControllerTest {
 
 	//編集画面表示 ( 遷移元がregist_confirm )
 	void testShowEditForm_FromRegistConfirm() throws Exception {
-		mockMvc.perform(get("/words/{id}/editForm", 1)
-				.param("fromRegistConfirm", "true"))
+		mockMvc.perform(get("/wordbooks/1/words/{id}/editForm", 1)
+				.param("fromRegistConfirm", "true")
+				.with(csrf())
+				.with(user("testUser")))
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_word"))
 				.andExpect(model().attributeExists("fromRegistConfirm"))
@@ -150,7 +160,9 @@ public class WordDetailControllerTest {
 	@Test
 	//編集確認 バリデーションエラー発生
 	void testEditConfirm() throws Exception {
-		mockMvc.perform(post("/words/{id}/editConfirm", 2)
+		mockMvc.perform(post("/wordbooks/1/words/{id}/editConfirm", 2)
+				.with(csrf())
+				.with(user("testUser"))
 				.param("id", "2")
 				.param("wordName", "")
 				.param("content", "")
@@ -166,7 +178,9 @@ public class WordDetailControllerTest {
 		form.setWordName("newWordName");
 		form.setContent("newContent");
 		form.setCategoryId(2);
-		mockMvc.perform(post("/words/{id}/editConfirm", 1)
+		mockMvc.perform(post("/wordbooks/1/words/{id}/editConfirm", 1)
+				.with(csrf())
+				.with(user("testUser"))
 				.param("wordName", "newWordName")
 				.param("content", "newContent")
 				.param("categoryId", "1")
@@ -174,8 +188,8 @@ public class WordDetailControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_confirm"))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))));
-		
-		verify(categoryService, never()).addCategory("newCategoryName");
+
+		verify(categoryService, never()).addCategory("newCategoryName", 1);
 
 	}
 
@@ -185,7 +199,9 @@ public class WordDetailControllerTest {
 		WordForm form = new WordForm();
 		form.setWordName("newWordName");
 		form.setContent("newContent");
-		mockMvc.perform(post("/words/{id}/editConfirm", 1)
+		mockMvc.perform(post("/wordbooks/1/words/{id}/editConfirm", 1)
+				.with(csrf())
+				.with(user("testUser"))
 				.param("wordName", "notExistingWordName")
 				.param("content", "newContent")
 				.param("categoryId", "")
@@ -193,7 +209,7 @@ public class WordDetailControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_confirm"))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("newCategoryName"))));
-		verify(categoryService, atLeastOnce()).addCategory("newCategoryName");
+		verify(categoryService, atLeastOnce()).addCategory("newCategoryName", 1);
 
 	}
 
@@ -203,7 +219,9 @@ public class WordDetailControllerTest {
 		WordForm form = new WordForm();
 		form.setWordName("newWordName");
 		form.setContent("newContent");
-		mockMvc.perform(post("/words/{id}/editConfirm", 1)
+		mockMvc.perform(post("/wordbooks/1/words/{id}/editConfirm", 1)
+				.with(csrf())
+				.with(user("testUser"))
 				.param("wordName", "newWordName")
 				.param("content", "newContent")
 				.param("categoryId", "")
@@ -211,13 +229,15 @@ public class WordDetailControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(view().name("edit_confirm"))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))));
-		verify(categoryService, never()).addCategory("category1");
+		verify(categoryService, never()).addCategory("category1", 1);
 	}
 
 	@Test
 	//編集確認 ( wordカブリあり -> 　入力フォームのビューを返し、エラーメッセージを表示 )
 	void testEditConfirm_ExistingWord() throws Exception {
-		mockMvc.perform(post("/words/{id}/editConfirm", 1)
+		mockMvc.perform(post("/wordbooks/1/words/{id}/editConfirm", 1)
+				.with(csrf())
+				.with(user("testUser"))
 				.param("wordName", "ExistingWordName")
 				.param("content", "newContent")
 				.param("categoryId", "")
@@ -230,14 +250,15 @@ public class WordDetailControllerTest {
 	@Test
 	//編集実行
 	void testEdit() throws Exception {
-		mockMvc.perform(post("/words/{id}/edit", 1)
-				.param("id", "1")
+		mockMvc.perform(post("/wordbooks/1/words/{id}/edit", 1)
+				.with(csrf())
+				.with(user("testUser"))
 				.param("wordName", "updatedWordName")
 				.param("content", "updatedContent")
 				.param("categoryId", "1")
 				.param("categoryName", ""))
 				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/wordList?categoryId=1&id=1"))
+				.andExpect(redirectedUrl("/wordbooks/1/words?categoryId=1&id=1"))
 				.andExpect(flash().attributeExists("edit_ok"));
 	}
 }
