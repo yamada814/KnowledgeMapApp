@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 
 import lombok.Data;
 /*
- * CREATE TABLE category (
+CREATE TABLE category (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     wordbook_id INT,

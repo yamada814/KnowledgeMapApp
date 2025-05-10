@@ -15,6 +15,15 @@ import jakarta.persistence.Table;
 
 import lombok.Data;
 
+/* 単語帳
+ * CREATE TABLE wordbook (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(30) NOT NULL ,
+    user_id INT,
+    UNIQUE name(user_id,name),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+ */
 @Entity
 @Data
 @Table(name="wordbook")
