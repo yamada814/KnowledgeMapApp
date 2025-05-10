@@ -4,7 +4,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
@@ -17,16 +19,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.demo.WebSecurityConfig;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
+import com.example.demo.entity.Wordbook;
 import com.example.demo.form.WordForm;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.WordService;
 import com.example.demo.validator.WordFormValidator;
 
 @WebMvcTest(WordController.class)
+@Import(WebSecurityConfig.class)
 public class WordControllerTest {
 	@Autowired
 	MockMvc mockMvc;
@@ -56,6 +62,10 @@ public class WordControllerTest {
 
 	@BeforeEach
 	void setupMockMvc() {
+
+		Wordbook wordbook1 = new Wordbook();
+		wordbook1.setId(1);
+
 		Category category1 = new Category();
 		category1.setId(1);
 		category1.setName("category1");
@@ -96,16 +106,16 @@ public class WordControllerTest {
 		doReturn(registedWord).when(wordService).addWord(any());
 
 		doReturn(list).when(wordService).findAll();
-		doReturn(Optional.of(existingWord)).when(wordService).findByWordName("existingWordName");//wordが既存
-		doReturn(Optional.empty()).when(wordService).findByWordName("newWordName");//wordが未登録
+		doReturn(Optional.of(existingWord)).when(wordService).findByWordNameAndWordbookId("existingWordName", 1);
+		doReturn(Optional.empty()).when(wordService).findByWordNameAndWordbookId("newWordName",1);//wordが未登録
 		doReturn(Optional.of(word2)).when(wordService).findById(2);
 		doReturn(Optional.of(newWord)).when(wordService).findById(3);
 		List<String> relatedWordNames = new ArrayList<>(List.of(word1.getWordName(), word2.getWordName()));
 		doReturn(relatedWordNames).when(wordService).getRelatedWordNames(any());
 
-		doReturn(Optional.of(category1)).when(categoryService).findByName("category1");//categoryNameが既存
+		doReturn(Optional.of(category1)).when(categoryService).findByNameAndWordbookId("category1",1);//categoryNameが既存
 		doReturn(Optional.empty()).when(categoryService).findByName("newCategoryName");//categoryNameが未登録
-		doReturn(newCategory).when(categoryService).addCategory("newCategoryName");//新規カテゴリを追加
+		doReturn(newCategory).when(categoryService).addCategory("newCategoryName", 1);//新規カテゴリを追加
 		doReturn(Optional.of(category1)).when(categoryService).findByCategoryId(1);//categoryIdによる検索
 		doReturn(Optional.of(category2)).when(categoryService).findByCategoryId(2);//categoryIdによる検索
 		doReturn(Optional.of(newCategory)).when(categoryService).findByCategoryId(3);//categoryIdによる検索
@@ -114,12 +124,15 @@ public class WordControllerTest {
 	@Test
 	//登録確認画面 バリデーションのチェック null
 	void testRegistConfirm_Validation_Empty() throws Exception {
-		mockMvc.perform(post("/registConfirm")
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", "")
 				.param("content", "")
 				.param("categoryId", "")
 				.param("categoryName", "")
 				.param("relatedWordIds", "1"))
+				.andDo(print())
 				.andExpect(view().name("regist_form"))
 				.andExpect(model().attributeHasFieldErrors(
 						"wordForm", "wordName", "content", "categoryNotNull"));
@@ -128,7 +141,9 @@ public class WordControllerTest {
 	@Test
 	//登録確認画面 バリデーションのチェック 既存word
 	void testRegistConfirm_Validation_ExistingWord() throws Exception {
-		mockMvc.perform(post("/registConfirm")
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", "existingWordName")
 				.param("content", "content")
 				.param("categoryId", "1")
@@ -141,7 +156,9 @@ public class WordControllerTest {
 	@Test
 	//登録確認 ( categoryNameに入力あり ->  categoryNameで新規登録 -> そのcategoryIdをフォームにセット )
 	void testRegistConfirm_InputCategoryName() throws Exception {
-		mockMvc.perform(post("/registConfirm")
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", "newWordName")
 				.param("content", "newContent")
 				.param("categoryId", "")
@@ -150,13 +167,15 @@ public class WordControllerTest {
 				.andExpect(view().name("regist_confirm"))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("newCategoryName"))))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(3))));
-		verify(categoryService, atLeastOnce()).addCategory("newCategoryName");
+		verify(categoryService, atLeastOnce()).addCategory("newCategoryName", 1);
 	}
 
 	@Test
 	//登録確認 (categoryNameに入力あり -> そのカテゴリーが既存   -> 既存のカテゴリーのcategoryIdをフォームにセット )
 	void testRegistConfirm_InputCategoryName_ExistCategory() throws Exception {
-		mockMvc.perform(post("/registConfirm")
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", "newWordName")
 				.param("content", "newContent")
 				.param("categoryId", "")
@@ -165,13 +184,15 @@ public class WordControllerTest {
 				.andExpect(view().name("regist_confirm"))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("category1"))));
-		verify(categoryService, never()).addCategory("category1");
+		verify(categoryService, never()).addCategory("category1", 1);
 	}
 
 	@Test
 	//登録確認 (categoryName と categoryId の両方に入力あり -> バリデーションエラー)
 	void testRegistConfirm_InputCategoryNameAndId() throws Exception {
-		mockMvc.perform(post("/registConfirm")
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", "newWordName")
 				.param("content", "newContent")
 				.param("categoryId", "1")//catgoryNameに矛盾しないcategoryIdを入力
@@ -180,16 +201,17 @@ public class WordControllerTest {
 				.andExpect(view().name("regist_form"))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryId", is(1))))
 				.andExpect(model().attribute("wordForm", hasProperty("categoryName", is("category1"))));
-		verify(categoryService, never()).addCategory("category1");
+		verify(categoryService, never()).addCategory("category1", 1);
 	}
-
 
 	@Test
 	//登録確認 ( categoryIdに入力あり -> そのidで未登録 -> エラー画面 )
 	void testRegistConfirm_InputCategoryId_NotExistCategory() throws Exception {
 		int categoryId = 99;
 		doReturn(Optional.empty()).when(categoryService).findByCategoryId(categoryId);
-		mockMvc.perform(post("/registConfirm")
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", "newWordName")
 				.param("content", "newContent")
 				.param("categoryId", Integer.toString(categoryId))
@@ -201,7 +223,9 @@ public class WordControllerTest {
 	@Test
 	//登録確認 ( wordNameによる検索 -> そのwordで未登録 -> 受け付けたwordFormの情報を表示 )
 	void testRegistConfirm_NotExistword() throws Exception {
-		mockMvc.perform(post("/registConfirm")
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", "newWordName")
 				.param("content", "content")
 				.param("categoryId", "1")
@@ -221,13 +245,16 @@ public class WordControllerTest {
 		wordform.setWordName("newWordName");
 		wordform.setContent("content");
 		wordform.setCategoryId(1);
-		
-		mockMvc.perform(post("/regist")
+
+		mockMvc.perform(post("/wordbooks/1/words/regist")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", wordform.getWordName())
 				.param("content", wordform.getContent())
-				.param("categoryId", String.valueOf(wordform.getCategoryId())))
+				.param("categoryId", String.valueOf(wordform.getCategoryId()))
+				.with(csrf()))
 				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/wordList?categoryId=1&id=5"))
+				.andExpect(redirectedUrl("/wordbooks/1/words?categoryId=1&id=5"))
 				.andExpect(flash().attributeExists("regist_ok"));
 	}
 
@@ -239,13 +266,15 @@ public class WordControllerTest {
 		wordform.setContent("content");
 		wordform.setCategoryId(1);
 
-		mockMvc.perform(post("/regist")
+		mockMvc.perform(post("/wordbooks/1/words/regist")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", wordform.getWordName())
 				.param("content", wordform.getContent())
 				.param("categoryId", String.valueOf(wordform.getCategoryId()))
 				.param("relatedWordIds", "1", "2"))
 				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/wordList?categoryId=1&id=5"))
+				.andExpect(redirectedUrl("/wordbooks/1/words?categoryId=1&id=5"))
 				.andExpect(flash().attributeExists("regist_ok"));
 	}
 
@@ -259,11 +288,15 @@ public class WordControllerTest {
 		wordform.setContent("content");
 		wordform.setCategoryId(categoryId);
 
-		mockMvc.perform(post("/regist")
+		mockMvc.perform(post("/wordbooks/1/words/regist")
+				.with(csrf())
+				.with(user("testUser")) 
 				.param("wordName", wordform.getWordName())
 				.param("content", wordform.getContent())
 				.param("categoryId", String.valueOf(wordform.getCategoryId())))
 				.andExpect(status().isOk())
 				.andExpect(view().name("regist_error"));
 	}
+
+
 }
