@@ -32,32 +32,38 @@ public class WordServiceImpl implements WordService {
 
 	// WordForm型からWord型への変換を行うユーティリティメソッド
 	public void transferWordFormToWord(Word word, WordForm wordForm) {
-		//		word.setId(wordForm.getId());
+
 		word.setWordName(wordForm.getWordName());
 		word.setContent(wordForm.getContent());
-		// wordForm型の categoryId から Category型に変換して Word型にセット
+
+		// category (Integer -> Category へ変換)
 		Optional<Category> categoryOpt = categoryRepository.findById(wordForm.getCategoryId());
 		if (categoryOpt.isPresent()) {
 			word.setCategory(categoryOpt.get());
 		}
+
+		// wordbook (Integer -> Wordbook へ変換)
 		Optional<Wordbook> wordbookOpt = wordbookRepository.findById(wordForm.getWordbookId());
-		if(wordbookOpt.isPresent()) {
+		if (wordbookOpt.isPresent()) {
 			word.setWordbook(wordbookOpt.get());
 		}
-		if (wordForm.getRelatedWordIds() != null) {
 
-			//@ManyToManyのついてるフィールドは、Hibernateが内部で clear()やadd()を行う可能性があるので mutable である必要がある
-			// .toList()はimmutableとなり、clear()が呼ばれたときにjava.lang.UnsupportedOperationExceptionが発生する
-			List<Word> relatedWords = wordForm.getRelatedWordIds().stream()
+		// relatedWords (List<Integer> -> List<Word> へ変換)		
+		List<Word> relatedWords = new ArrayList<>();
+		
+		if (wordForm.getRelatedWordIds() != null && !wordForm.getRelatedWordIds().contains(word.getId())) {// List<>.contains(null)はfalseを返す
+			relatedWords = wordForm.getRelatedWordIds().stream()
 					.map(wordId -> wordRepository.findById(wordId))
 					.filter(Optional::isPresent)
 					.map(Optional::get)
+					//@ManyToManyのついてるフィールドは、Hibernateが内部で clear()やadd()を行う可能性があるので mutable である必要がある
+					// .toList()はimmutableとなり、clear()が呼ばれたときにjava.lang.UnsupportedOperationExceptionが発生する
 					.collect(Collectors.toCollection(ArrayList::new));
-			word.setRelatedWords(relatedWords);
 		}
+		word.setRelatedWords(relatedWords);
 	}
 
-	// wordFormからrelatedWordNamesを取得
+	// 関連語の単語名を取得する (List<Integer> -> List<String>)
 	@Override
 	public List<String> getRelatedWordNames(WordForm wordForm) {
 		return wordForm.getRelatedWordIds().stream()
@@ -78,6 +84,7 @@ public class WordServiceImpl implements WordService {
 	}
 
 	// wordDetail表示
+	//(JSONで返す際に循環参照防止のため WordエンティティではなくWordDto型で返す)
 	@Override
 	public WordDetailDto findWordDetailDtoById(Integer id) {
 		Optional<Word> wordOpt = wordRepository.findById(id);
@@ -94,15 +101,15 @@ public class WordServiceImpl implements WordService {
 			dto.setContent(word.getContent());
 			dto.setCategory(categoryDto);
 
-			List<WordDto> relatedWords = new ArrayList<>();
-			for (Word relatedWord : word.getRelatedWords()) {
-				WordDto wordDto = new WordDto();
-				wordDto.setId(relatedWord.getId());
-				wordDto.setWordName(relatedWord.getWordName());
-				wordDto.setCategoryId(relatedWord.getCategory().getId());
-				relatedWords.add(wordDto);
-			}
-
+			List<WordDto> relatedWords = word.getRelatedWords().stream()
+					.map(relatedWord -> {
+						WordDto WordDto = new WordDto();
+						WordDto.setId(relatedWord.getId());
+						WordDto.setWordName(relatedWord.getWordName());
+						WordDto.setCategoryId(relatedWord.getCategory().getId());
+						return WordDto;
+					})
+					.toList();
 			dto.setRelatedWords(relatedWords);
 		}
 		return dto;
@@ -112,9 +119,10 @@ public class WordServiceImpl implements WordService {
 	public Optional<Word> findByWordName(String name) {
 		return wordRepository.findByWordName(name);
 	}
+
 	@Override
-	public Optional<Word> findByWordNameAndWordbookId(String name,Integer wordbookId) {
-		return wordRepository.findByWordNameAndWordbookId(name,wordbookId);
+	public Optional<Word> findByWordNameAndWordbookId(String name, Integer wordbookId) {
+		return wordRepository.findByWordNameAndWordbookId(name, wordbookId);
 	}
 
 	@Override
@@ -149,21 +157,15 @@ public class WordServiceImpl implements WordService {
 		return true;
 	}
 
-	//関連語にも新規作成した単語を関連づけるメソッド
-	public void interactRelatedWord(Word savedWord) {
-		for (Word relatedWord : savedWord.getRelatedWords()) {
-			relatedWord.getRelatedWords().add(savedWord);
-			wordRepository.save(relatedWord);
-		}
-	}
-
 	@Override
 	public Word addWord(WordForm wordForm) {
 		Word word = new Word();
 		transferWordFormToWord(word, wordForm);
 		Word savedWord = wordRepository.save(word);
 		//関連語の相互参照
-		interactRelatedWord(savedWord);
+		if (savedWord.getRelatedWords() != null) {
+			interactRelatedWord(savedWord);
+		}
 		return savedWord;
 	}
 
@@ -174,9 +176,23 @@ public class WordServiceImpl implements WordService {
 		transferWordFormToWord(word, wordForm);//WordForm型 -> Word型　の変換
 		Word updatedWord = wordRepository.save(word);
 		//関連語の相互参照
-		interactRelatedWord(updatedWord);
+		if (updatedWord.getRelatedWords() != null) {
+			interactRelatedWord(updatedWord);
+		}
 		return updatedWord;
 	}
 
-
+	// 関連語にも新規作成した単語を関連づけるメソッド
+	public void interactRelatedWord(Word savedWord) {
+		// 自身のwordを関連語として登録しようとするとConcurrentModificationExceptionが発生するので
+		// ループの中で 自身のwordじゃないかをチェック & 自身のrelatedWordsのコピーを作成してループ
+		// (関連語フィールドに自身のwordを登録しないようバリデーションチェックはかけているが、念の為)
+		List<Word> relatedWordsCopy = new ArrayList<>(savedWord.getRelatedWords());
+		for (Word relatedWord : relatedWordsCopy) {
+			if (!relatedWord.equals(savedWord)) {
+				relatedWord.getRelatedWords().add(savedWord);
+			}
+			wordRepository.save(relatedWord);
+		}
+	}
 }
