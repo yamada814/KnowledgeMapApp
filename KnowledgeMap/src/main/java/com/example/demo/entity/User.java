@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import lombok.Data;
+import lombok.ToString;
 
 /*
  * ログインユーザ
@@ -41,7 +42,7 @@ public class User {
 	private String password;
 	
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,orphanRemoval=true)
-	//@ToString.Exclude
+	@ToString.Exclude//ログ出力時に循環参照によるStackOverflowErrorを防ぐ
 	private List<Wordbook> wordbooks;
 
 }

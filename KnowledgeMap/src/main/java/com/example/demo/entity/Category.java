@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.Data;
+import lombok.ToString;
 /*
 CREATE TABLE category (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -36,6 +37,7 @@ public class Category {
     
     @ManyToOne
     @JoinColumn(name="wordbook_id")
+    @ToString.Exclude
     private Wordbook wordbook;
 }
 

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.Data;
+import lombok.ToString;
 
 /*
 
@@ -58,10 +59,12 @@ public class Word {
 	
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
+    @ToString.Exclude
     private Category category;
     
     @ManyToOne
     @JoinColumn(name="wordbook_id",nullable = false)
+    @ToString.Exclude
     private Wordbook wordbook;
     
     //word_relationテーブルとのマッピング
@@ -71,6 +74,7 @@ public class Word {
         joinColumns = @JoinColumn(name = "word_id"),
         inverseJoinColumns = @JoinColumn(name = "related_word_id")
     )
+    @ToString.Exclude
     private List<Word> relatedWords;
     
     

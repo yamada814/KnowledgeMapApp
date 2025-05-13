@@ -37,13 +37,6 @@ public class WordController {
 		webDataBinder.addValidators(wordFormValidator);
 	}
 
-	// word一覧表示
-	@GetMapping("")
-	public String showWordList(Model model,@PathVariable("wordbookId") Integer wordbookId) {
-		model.addAttribute("categories", categoryService.findByWordbookId(wordbookId));
-		model.addAttribute("wordbookId",wordbookId);
-		return "word_list";
-	}
 
 	//新規登録画面
 	@GetMapping("/showWordForm")
