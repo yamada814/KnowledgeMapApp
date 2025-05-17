@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -59,12 +61,13 @@ public class WordbookApiController {
 		return ResponseEntity.ok(dto);
 	}
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") Integer id){
+	public ResponseEntity<?> delete(@PathVariable("id") Integer id){
 		boolean deleted = wordbookService.deleteById(id);
 		if (deleted){
 			return ResponseEntity.ok().build();
 		}
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.body(Map.of("error","指定された単語張は存在しません"));
 	}
 
 }

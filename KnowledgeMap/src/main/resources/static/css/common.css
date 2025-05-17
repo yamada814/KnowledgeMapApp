@@ -120,15 +120,15 @@ button:hover,
  	--modal-top:50%;
  	--modal-left:50%;
  }
-.modalHidden,
-.modalOverlayHidden{
+.hidden{
 	display:none;
 }
-#deleteConfirmModal{	
+#modalOuter{	
 	position: absolute;
 	top: var(--modal-top);
 	left: var(--modal-left);
 	
+	width: 15rem;
 	padding:1.5rem;
 	text-align: center;	
 	
@@ -139,6 +139,7 @@ button:hover,
 	
 	z-index: 1000;
 }
+
 #modalOverlay {
 	position: fixed;
 	top: 0;
@@ -151,7 +152,7 @@ button:hover,
 	
 	z-index: 999;
 }
-#deleteConfirmModal button{
+#modalOuter button{
 	margin: 0.5rem 1rem;
 	padding:0.5rem;
 }
