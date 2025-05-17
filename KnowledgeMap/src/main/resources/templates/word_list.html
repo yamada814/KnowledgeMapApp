@@ -6,13 +6,13 @@
 	<title>単語一覧</title>
 	<link rel="stylesheet" th:href="@{/css/word_list.css}">
 	<link rel="stylesheet" th:href="@{/css/common.css}">
-	<script th:src="@{/js/word_list.js}" defer></script>
+	<script type="module" th:src="@{/js/word_list.js}" defer></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
 <body>
 	<h1>単語帳</h1>
-	<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />				
+	<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />
 
 	<div id="regist">
 		<a th:href="@{/wordbooks/{wordbookId}/words/showWordForm(wordbookId=${wordbookId})}" class="button"><span
@@ -21,7 +21,7 @@
 
 	<div class="mainContainer">
 		<!-- categoryList -->
-		<div id="categoryOuter">
+		<div id="categoryOuter" class="outer">
 			<h4>Category</h4>
 			<div class="categoryContainer">
 				<ul id="categoryList">
@@ -33,14 +33,14 @@
 		</div>
 
 		<!-- wordList -->
-		<div id="wordListOuter">
+		<div id="wordListOuter" class="outer">
 			<h4>Word</h4>
 			<div class="wordListContainer">
 			</div>
 		</div>
 
 		<!-- wordDetail -->
-		<div id="wordDetailOuter">
+		<div id="wordDetailOuter" class="outer">
 			<h4>Detail</h4>
 			<div class="wordDetailContainer" th:attr="data-wordbook-id=${wordbookId}">
 				<div class="message" th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
@@ -50,14 +50,22 @@
 	</div>
 
 	<a th:href="@{/wordbooks}" id="return" class="button">単語帳一覧へ戻る</a>
-	
+
 	<!-- 背景オーバーレイ -->
-	<div id="modalOverlay" class="modalOverlayHidden"></div>
+	<div id="modalOverlay" class="hidden"></div>
 	<!-- 削除確認モーダル -->
-	<div id="deleteConfirmModal" class="modalHidden">
-		<p>本当に削除しますか？</p>
-		<button id="deleteOk">はい</button>
-		<button id="deleteNg">いいえ</button>
+	<div id="modalOuter" class="hidden">
+		<div id="deleteConfirmModal" class="">
+			<p>本当に削除しますか？</p>
+			<div id="btnContainer">
+				<button id="deleteOk">はい</button>
+				<button id="deleteNg">いいえ</button>
+			</div>
+		</div>
+		<div id="deletedMsgModal" class="hidden">
+			<p id="deletedMsg"></p>
+			<button id="closeModalBtn">閉じる</button>
+		</div>
 	</div>
 </body>
 

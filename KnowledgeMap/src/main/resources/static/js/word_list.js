@@ -1,4 +1,4 @@
-
+import { showModal, showDeletedMsg, closeModal } from "./modal.js";
 // 各コンテナ
 const mainConteiner = document.querySelector(".mainContainer");
 const categoryContainer = document.querySelector(".categoryContainer");
@@ -15,22 +15,13 @@ const wordbookId = wordDetailContainer.dataset.wordbookId;
 //CSRFトークンの取得
 const csrfToken = document.getElementById("csrfToken").value;
 
-
-//削除確認モーダル
-const deleteConfirmModal = document.getElementById("deleteConfirmModal");
-const deleteOkBtn = document.getElementById("deleteOk");
-const deleteNgBtn = document.getElementById("deleteNg");
-//モーダル外側をクリックしたときに発生するイベントハンドラ(モーダルを閉じる処理を行う)
-let eventHandler = null;
-//モーダルの はい/いいえ ボタンをクリックしたときに発生するイベントハンドラ()
-let deleteOkFunc = null;
-let deleteNgFunc = null;
-
+// 削除実行後にモーダルに表示する処理結果メッセージ
+let modalMsg;
 
 /*
-更新処理を実行後、リダイレクトで一覧画面に戻ると
-処理対象の単語が表示された状態にする
-(カテゴリ一覧と単語一覧から該当する対象が選択され、かつwordDetailが表示された状態)
+	更新処理を実行後、リダイレクトで一覧画面に戻ると
+	処理対象の単語が表示された状態にする
+	(カテゴリ一覧と単語一覧から該当する対象が選択され、かつwordDetailが表示された状態)
 */
 window.addEventListener("DOMContentLoaded", async () => {
 	const params = new URLSearchParams(window.location.search);
@@ -76,32 +67,41 @@ function setCategorySelection(categoryId) {
 // 選択中の単語の色変更
 function setWordSelection(wordId) {
 	const wordBtns = document.querySelectorAll(".wordBtn");
-	console.log([...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId));
-	[...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId)
-		.classList.add("wordBtnSelected");
+	[...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId)?.classList.add("wordBtnSelected");
+
 }
 //category削除
 async function deleteCategory(event, categoryId) {
 	event.stopPropagation();
-	showModal(event, async () => {
-		try {
-			const res = await fetch(
-				`/api/categories/${categoryId}`,
-				{
-					method: "DELETE",
-					headers: { "X-CSRF-TOKEN": csrfToken }
-				});
-			if (res.ok) {
-				event.target.closest("li").remove();
-			} else {
-				const errorMsg = await res.json();
-				alert(errorMsg.error || "削除に失敗しました");
-			}
-		} catch (error) {
-			console.error(error);
-			alert("通信エラーが発生しました");
-		}
-	})
+	showModal(
+		{
+			triggerEl: event.currentTarget,
+			func:
+				async (isConfirmed) => {
+					if(!isConfirmed){
+						return;
+					}
+					try {
+						const res = await fetch(
+							`/api/categories/${categoryId}`,
+							{
+								method: "DELETE",
+								headers: { "X-CSRF-TOKEN": csrfToken }
+							});
+						if (res.ok) {
+							event.target.closest("li").remove();
+							modalMsg = "削除しました";
+						} else {
+							const errorMsg = await res.json();
+							modalMsg = errorMsg.error
+						}
+					} catch (error) {
+						console.error(error);
+						modalMsg = "削除に失敗しました";
+					}
+					showDeletedMsg(modalMsg);
+				}
+		})
 }
 // 単語一覧を表示
 async function showWordList(categoryId) {
@@ -123,7 +123,9 @@ async function showWordList(categoryId) {
 				categoryDeleteBtn.appendChild(span);
 				//カテゴリボタンの横にカテゴリ削除ボタンを追加
 				[...categoryBtns].find(btn => btn.getAttribute("data-id") === categoryId).after(categoryDeleteBtn);
-				categoryDeleteBtn.addEventListener("click", (event) => deleteCategory(event, categoryId))
+
+				const li =
+					categoryDeleteBtn.addEventListener("click", (event) => deleteCategory(event, categoryId))
 
 				// 単語ありの場合
 			} else {
@@ -251,93 +253,37 @@ async function showWordDetail(wordId) {
 }
 
 //word削除
-async function deleteWord(event, wordId, li) {
+async function deleteWord(event, wordId) {
 	event.stopPropagation();
-	showModal(event, async (isConfirmed) => {
-		if (!isConfirmed) {
-			return;
-		}
-		try {
-			const res = await fetch(
-				`/api/words/${wordId}`,
-				{
-					method: "DELETE",
-					headers: { "X-CSRF-TOKEN": csrfToken }
-				});
-			if (res.ok) {
-				li.remove();
-				wordDetailContainer.innerHTML = "";
-				document.querySelector(".deleteMsg").textContent = "削除しました";
-			} else if (res.status === 404) {
-				const errorMsg = await res.json();
-				alert(errorMsg.error || "削除に失敗しました");
-			}
-		} catch (error) {
-			console.log(error);
-			alert("通信エラーが発生しました");
-		}
-	})
-}
-
-// モーダルを表示する関数
-// 引数として受け取る関数funcは、 「引数がtrueの時に削除実行のリクエストを送る」関数
-function showModal(event, func) {
-	deleteConfirmModal.classList.remove("modalHidden");
-	modalOverlay.classList.remove("modalOverlayHidden");
-
-	// モーダルの表示位置を設定
-	const rect = event.currentTarget.getBoundingClientRect();
-	const modalTop = rect.bottom + scrollY + 8;
-	const modalLeft = rect.right - deleteConfirmModal.offsetWidth;
-	//CSS変数に値をセット
-	document.documentElement.style.setProperty('--modal-top', `${modalTop}px`);
-	document.documentElement.style.setProperty('--modal-left', `${modalLeft}px`);
-
-	// OKボタンクリック -> func(true)を実行してモーダルを閉じる
-	deleteOkFunc = (event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		func(true);
-		closeModal();
-	}
-	deleteOk.addEventListener("click", deleteOkFunc);
-	// NGボタンクリック -> func(false)を実行してモーダルを閉じる
-	deleteNgFunc = (event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		func(false);
-		closeModal();
-	}
-	deleteOk.addEventListener("click", deleteOkFunc);
-	
-	//モーダルの外側をクリックするとモーダルを閉じる関数
-	eventHandler = (event) => {
-		if (!deleteConfirmModal.contains(event.target)) {
-			closeModal();
-		}
-	}
-	//モーダルを閉じる関数をクリックイベントに登録
-	document.addEventListener("click", eventHandler);
-}
-// 削除確認モーダルを閉じる
-function closeModal() {
-	if (!deleteConfirmModal.classList.contains("modalHidden")) {
-		deleteConfirmModal.classList.add("modalHidden");
-		modalOverlay.classList.add("modalOverlayHidden");
-		
-		//画面全体のクリックイベント削除
-		if (eventHandler) {
-			document.removeEventListener("click", eventHandler);
-			eventHandler = null;
-		}
-		//はい/いいえボタンのクリックイベント削除
-		if (deleteOkFunc) {
-			deleteOk.removeEventListener("click", deleteOkFunc);
-			deleteOkFunc = null;
-		}
-		if (deleteNgFunc) {
-			deleteNg.removeEventListener("click", deleteNgFunc);
-			deleteNgFunc = null;
-		}
-	}
+	showModal(
+		{
+			triggerEl: event.currentTarget,
+			func:
+				async (isConfirmed) => {
+					if (!isConfirmed) {
+						return;
+					}
+					try {
+						const res = await fetch(
+							`/api/words/${wordId}`,
+							{
+								method: "DELETE",
+								headers: { "X-CSRF-TOKEN": csrfToken }
+							});
+						if (res.ok) {
+							event.target.closest("li").remove();
+							wordDetailContainer.innerHTML = "";
+							modalMsg = "削除しました";
+						} else if (res.status === 404) {
+							const errorMsg = await res.json();
+							modalMsg = errorMsg.error;
+						}
+					} catch (error) {
+						console.log(error);
+						modalMsg = "削除に失敗しました";
+					}
+					// 削除結果のメッセージ表示
+					showDeletedMsg(modalMsg);
+				}
+		})
 }
