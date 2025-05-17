@@ -43,7 +43,7 @@
 					<div th:if="${existingWord != null}" class="existingWordDetail" th:object="${existingWord}">
 						<div class="wordNameContainer">
 							<div class="wordName" th:text="*{wordName}"></div>
-							<a th:href="@{/words/{id}/editForm(id=${existingWord.id},fromRegist='fromRegist')}"
+							<a th:href="@{/wordbooks/{wordbookId}/words/{id}/editForm(wordbookId=${wordbookId},id=${existingWord.id},fromRegist='fromRegist')}"
 								class="button editBtn">
 								<span class="bi bi-pencil-fill"></span>
 							</a>

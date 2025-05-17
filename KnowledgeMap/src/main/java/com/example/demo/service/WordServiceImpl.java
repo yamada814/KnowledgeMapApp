@@ -148,7 +148,7 @@ public class WordServiceImpl implements WordService {
 	@Transactional
 	//関連語テーブルから削除してからwordテーブルから削除する
 	public boolean deleteById(Integer id) {
-		if (wordRepository.findById(id).isEmpty()) {
+		if (wordRepository.findById(id).isEmpty()) {		
 			return false;
 		}
 		wordRelationRepository.deleteByWordId(id);
