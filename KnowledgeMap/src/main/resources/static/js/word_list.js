@@ -4,18 +4,27 @@ const mainConteiner = document.querySelector(".mainContainer");
 const categoryContainer = document.querySelector(".categoryContainer");
 const wordListContainer = document.querySelector(".wordListContainer");
 const wordDetailContainer = document.querySelector(".wordDetailContainer");
+
 // カテゴリ
 let currentCategoryId = null;
 const categoryList = document.querySelector(".categoryList");
 const categoryBtns = document.querySelectorAll(".categoryBtn");
+
+//単語帳idの取得
+const wordbookId = wordDetailContainer.dataset.wordbookId;
+//CSRFトークンの取得
+const csrfToken = document.getElementById("csrfToken").value;
+
+
 //削除確認モーダル
 const deleteConfirmModal = document.getElementById("deleteConfirmModal");
 const deleteOkBtn = document.getElementById("deleteOk");
 const deleteNgBtn = document.getElementById("deleteNg");
 //モーダル外側をクリックしたときに発生するイベントハンドラ(モーダルを閉じる処理を行う)
 let eventHandler = null;
-//単語帳idの取得
-const wordbookId = wordDetailContainer.dataset.wordbookId;
+//モーダルの はい/いいえ ボタンをクリックしたときに発生するイベントハンドラ()
+let deleteOkFunc = null;
+let deleteNgFunc = null;
 
 
 /*
@@ -70,6 +79,29 @@ function setWordSelection(wordId) {
 	console.log([...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId));
 	[...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId)
 		.classList.add("wordBtnSelected");
+}
+//category削除
+async function deleteCategory(event, categoryId) {
+	event.stopPropagation();
+	showModal(event, async () => {
+		try {
+			const res = await fetch(
+				`/api/categories/${categoryId}`,
+				{
+					method: "DELETE",
+					headers: { "X-CSRF-TOKEN": csrfToken }
+				});
+			if (res.ok) {
+				event.target.closest("li").remove();
+			} else {
+				const errorMsg = await res.json();
+				alert(errorMsg.error || "削除に失敗しました");
+			}
+		} catch (error) {
+			console.error(error);
+			alert("通信エラーが発生しました");
+		}
+	})
 }
 // 単語一覧を表示
 async function showWordList(categoryId) {
@@ -147,6 +179,7 @@ async function showWordDetail(wordId) {
 
 			const wordNameContainer = document.createElement("div");
 			wordNameContainer.classList.add("wordNameContainer");
+
 			//単語名
 			const wordName = document.createElement("div");
 			wordName.classList.add("wordName");
@@ -162,6 +195,7 @@ async function showWordDetail(wordId) {
 				location.href = `/wordbooks/${wordbookId}/words/${wordId}/editForm`;
 			})
 			wordNameContainer.append(wordName, editBtn);
+
 			//カテゴリ
 			const categoryContainer = document.createElement("div");
 			categoryContainer.classList.add("category");
@@ -172,12 +206,14 @@ async function showWordDetail(wordId) {
 			category.textContent = wordDetail.category.name;
 
 			categoryContainer.append(categoryLabel, category);
+
 			//説明文
 			const content = document.createElement("div");
 			content.classList.add("content");
 			content.textContent = wordDetail.content;
 
 			wordDetailContainer.append(wordNameContainer, categoryContainer, content);
+
 			//関連語
 			if (wordDetail.relatedWords && wordDetail.relatedWords.length > 0) {
 				const relatedWordsContainer = document.createElement("div");
@@ -213,26 +249,9 @@ async function showWordDetail(wordId) {
 		console.log(error)
 	}
 }
-//category削除
-async function deleteCategory(event, categoryId) {
-	event.stopPropagation();
-	showModal(event, async () => {
-		try {
-			const res = await fetch(`/api/categories/${categoryId}`, { method: "DELETE" });
-			if (res.ok) {
-				location.reload();
-			} else {
-				alert("削除に失敗しました");
-			}
-		} catch (error) {
-			console.error(error);
-			alert("通信エラーが発生しました");
-		}
-	})
-}
+
 //word削除
 async function deleteWord(event, wordId, li) {
-	const csrfToken = document.getElementById("csrfToken").value;
 	event.stopPropagation();
 	showModal(event, async (isConfirmed) => {
 		if (!isConfirmed) {
@@ -241,20 +260,21 @@ async function deleteWord(event, wordId, li) {
 		try {
 			const res = await fetch(
 				`/api/words/${wordId}`,
-				 { 
+				{
 					method: "DELETE",
-					headers:{ "X-CSRF-TOKEN": csrfToken }				
+					headers: { "X-CSRF-TOKEN": csrfToken }
 				});
 			if (res.ok) {
 				li.remove();
 				wordDetailContainer.innerHTML = "";
-				clearWordDetail();
 				document.querySelector(".deleteMsg").textContent = "削除しました";
-			} else {
-				alert("削除に失敗しました");
+			} else if (res.status === 404) {
+				const errorMsg = await res.json();
+				alert(errorMsg.error || "削除に失敗しました");
 			}
 		} catch (error) {
 			console.log(error);
+			alert("通信エラーが発生しました");
 		}
 	})
 }
@@ -274,21 +294,22 @@ function showModal(event, func) {
 	document.documentElement.style.setProperty('--modal-left', `${modalLeft}px`);
 
 	// OKボタンクリック -> func(true)を実行してモーダルを閉じる
-	deleteOk.addEventListener("click", (event) => {
+	deleteOkFunc = (event) => {
 		event.preventDefault();
 		event.stopPropagation();
 		func(true);
 		closeModal();
-	})
-
+	}
+	deleteOk.addEventListener("click", deleteOkFunc);
 	// NGボタンクリック -> func(false)を実行してモーダルを閉じる
-	deleteNg.addEventListener("click", (event) => {
+	deleteNgFunc = (event) => {
 		event.preventDefault();
 		event.stopPropagation();
 		func(false);
 		closeModal();
-	})
-
+	}
+	deleteOk.addEventListener("click", deleteOkFunc);
+	
 	//モーダルの外側をクリックするとモーダルを閉じる関数
 	eventHandler = (event) => {
 		if (!deleteConfirmModal.contains(event.target)) {
@@ -303,13 +324,20 @@ function closeModal() {
 	if (!deleteConfirmModal.classList.contains("modalHidden")) {
 		deleteConfirmModal.classList.add("modalHidden");
 		modalOverlay.classList.add("modalOverlayHidden");
+		
+		//画面全体のクリックイベント削除
 		if (eventHandler) {
-			//クリックイベント削除
 			document.removeEventListener("click", eventHandler);
 			eventHandler = null;
 		}
+		//はい/いいえボタンのクリックイベント削除
+		if (deleteOkFunc) {
+			deleteOk.removeEventListener("click", deleteOkFunc);
+			deleteOkFunc = null;
+		}
+		if (deleteNgFunc) {
+			deleteNg.removeEventListener("click", deleteNgFunc);
+			deleteNgFunc = null;
+		}
 	}
 }
-
-
-

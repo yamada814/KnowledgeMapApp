@@ -26,8 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public Optional<Category> findByCategoryId(Integer categoryId) {
-		Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
-		return categoryOpt;
+		return categoryRepository.findById(categoryId);
 	}
 
 	@Override
@@ -61,8 +60,14 @@ public class CategoryServiceImpl implements CategoryService {
 
 
 	@Override
-	public void deleteByCategoryId(Integer categoryId) {
-		categoryRepository.deleteById(categoryId);
+	public boolean deleteByCategoryId(Integer categoryId) {
+		Optional<Category> categoryOpt = findByCategoryId(categoryId);
+		if(categoryOpt.isPresent()) {
+			categoryRepository.deleteById(categoryId);
+			return true;
+		}else {
+			return false;
+		}
 	}
 
 }

@@ -14,7 +14,17 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import lombok.Data;
+import lombok.ToString;
 
+/* 単語帳
+ * CREATE TABLE wordbook (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(30) NOT NULL ,
+    user_id INT,
+    UNIQUE name(user_id,name),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+ */
 @Entity
 @Data
 @Table(name="wordbook")
@@ -29,7 +39,7 @@ public class Wordbook {
 	
 	@ManyToOne
 	@JoinColumn(name="user_id",nullable=false)
-	//@ToString.Exclude
+	@ToString.Exclude
 	private User user;
 	
 	@OneToMany(mappedBy="wordbook",cascade=CascadeType.ALL,orphanRemoval=true)

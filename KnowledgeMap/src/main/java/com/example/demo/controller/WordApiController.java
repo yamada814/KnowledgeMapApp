@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,19 +50,25 @@ public class WordApiController {
 	// カテゴリ削除
 	@DeleteMapping("/categories/{id}")
 	@ResponseBody
-	public ResponseEntity<Void> deleteCategory(@PathVariable("id") Integer id) {
-	    categoryService.deleteByCategoryId(id);
-	    return ResponseEntity.ok().build();
+	public ResponseEntity<?> deleteCategory(@PathVariable("id") Integer id) {
+	    boolean deleted = categoryService.deleteByCategoryId(id);
+	    if(deleted) {
+	    	return ResponseEntity.ok().build();	    	
+	    }else {
+	    	return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	    			.body(Map.of("error","指定されたカテゴリは存在しません"));
+	    }
 	}
 	
 	// 単語削除
 	@DeleteMapping("/words/{id}")
-	public ResponseEntity<Void> deleteWord(@PathVariable("id") Integer id) {
+	public ResponseEntity<?> deleteWord(@PathVariable("id") Integer id) {
 	    boolean deleted = wordService.deleteById(id);
 	    if (deleted) {
 	        return ResponseEntity.ok().build();
 	    } else {
-	        return ResponseEntity.notFound().build();
+	    	return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	    			.body(Map.of("error","指定された単語は存在しません"));
 	    }
 	}
 }

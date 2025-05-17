@@ -12,7 +12,21 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import lombok.Data;
+import lombok.ToString;
 
+/*
+ * ログインユーザ
+ * CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(30) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL 
+);
+INSERT INTO users(username,password) 
+values ('a','$2a$10$TDKTbY8waJVqKoN0u6XLDOi4TwW4ws/v6SX3bLhT8NLMD/y/fjnQK');-- test1234
+INSERT INTO users(username,password) 
+values ('b','$2a$10$UIJ2i1EGfCh4zFx.rfCthuVEq0.K5Y5hBLCi2nBYRYS3dTHR5dtWO');-- test0000
+
+ */
 @Entity
 @Data
 @Table(name="users")
@@ -28,7 +42,7 @@ public class User {
 	private String password;
 	
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,orphanRemoval=true)
-	//@ToString.Exclude
+	@ToString.Exclude//ログ出力時に循環参照によるStackOverflowErrorを防ぐ
 	private List<Wordbook> wordbooks;
 
 }

@@ -17,28 +17,23 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.Data;
+import lombok.ToString;
 
 /*
- * -- 単語
+
+-- 単語
 CREATE TABLE word (
+
     id INT AUTO_INCREMENT PRIMARY KEY,
     word_name VARCHAR(50) NOT NULL,
     content TEXT NOT NULL,
     category_id INT NOT NULL,
+    wordbook_id INT NOT NULL,
+    
     FOREIGN KEY (category_id) REFERENCES category(id),
+    FOREIGN KEY (wordbook_id) REFERENCES wordbook(id),
     UNIQUE(category_id,word_name)
 );
-INSERT INTO word(word_name, content, category_id)
-VALUES("word1", "word1", 1);
-
-INSERT INTO word(word_name, content, category_id)
-VALUES("word2", "word2_content", 1);
-
-INSERT INTO word(word_name, content, category_id)
-VALUES("word3", "word3_content", 2);
-
-INSERT INTO word(word_name, content, category_id)
-VALUES("word4", "word4_content", 2);
 
  */
 @Entity
@@ -64,10 +59,12 @@ public class Word {
 	
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
+    @ToString.Exclude
     private Category category;
     
     @ManyToOne
     @JoinColumn(name="wordbook_id",nullable = false)
+    @ToString.Exclude
     private Wordbook wordbook;
     
     //word_relationテーブルとのマッピング
@@ -77,6 +74,7 @@ public class Word {
         joinColumns = @JoinColumn(name = "word_id"),
         inverseJoinColumns = @JoinColumn(name = "related_word_id")
     )
+    @ToString.Exclude
     private List<Word> relatedWords;
     
     
