@@ -8,18 +8,6 @@ const showFormBtn = document.getElementById("showFormBtn");
 //バリデーションエラー表示
 const errorMsgList = document.getElementById("errorMsgList");
 
-//削除確認モーダル
-const modalOverlay = document.getElementById("modalOverlay");
-const modalOuter = document.getElementById("modalOuter");
-const deleteConfirmModal = document.getElementById("deleteConfirmModal");
-//削除確認モーダル内のボタン
-const deleteOk = document.getElementById("deleteOk");
-const deleteNg = document.getElementById("deleteNg");
-//モーダル外側をクリックしたときに発生するイベントハンドラ(モーダルを閉じる処理を行う)
-let eventHandler = null;
-//モーダルの はい/いいえ ボタンをクリックしたときに発生するイベントハンドラ(削除実行を行う関数にtrue/falseを渡す)
-let deleteOkFunc = null;
-let deleteNgFunc = null;
 // 削除実行後にモーダルに表示する処理結果メッセージ
 let modalMsg;
 

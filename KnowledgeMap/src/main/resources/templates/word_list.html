@@ -21,7 +21,7 @@
 
 	<div class="mainContainer">
 		<!-- categoryList -->
-		<div id="categoryOuter">
+		<div id="categoryOuter" class="outer">
 			<h4>Category</h4>
 			<div class="categoryContainer">
 				<ul id="categoryList">
@@ -33,14 +33,14 @@
 		</div>
 
 		<!-- wordList -->
-		<div id="wordListOuter">
+		<div id="wordListOuter" class="outer">
 			<h4>Word</h4>
 			<div class="wordListContainer">
 			</div>
 		</div>
 
 		<!-- wordDetail -->
-		<div id="wordDetailOuter">
+		<div id="wordDetailOuter" class="outer">
 			<h4>Detail</h4>
 			<div class="wordDetailContainer" th:attr="data-wordbook-id=${wordbookId}">
 				<div class="message" th:if="${regist_ok} != null" th:text="${regist_ok}"></div>
@@ -57,12 +57,14 @@
 	<div id="modalOuter" class="hidden">
 		<div id="deleteConfirmModal" class="">
 			<p>本当に削除しますか？</p>
-			<button id="deleteOk">はい</button>
-			<button id="deleteNg">いいえ</button>
+			<div id="btnContainer">
+				<button id="deleteOk">はい</button>
+				<button id="deleteNg">いいえ</button>
+			</div>
 		</div>
 		<div id="deletedMsgModal" class="hidden">
 			<p id="deletedMsg"></p>
-			<button id="closeModalBtn">閉じる</button>		
+			<button id="closeModalBtn">閉じる</button>
 		</div>
 	</div>
 </body>

@@ -67,9 +67,8 @@ function setCategorySelection(categoryId) {
 // 選択中の単語の色変更
 function setWordSelection(wordId) {
 	const wordBtns = document.querySelectorAll(".wordBtn");
-	console.log([...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId));
-	[...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId)
-		.classList.add("wordBtnSelected");
+	[...wordBtns].find(wordBtn => wordBtn.getAttribute("data-id") == wordId)?.classList.add("wordBtnSelected");
+
 }
 //category削除
 async function deleteCategory(event, categoryId) {

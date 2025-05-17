@@ -28,7 +28,7 @@
 		<button type="submit" id="registBtn">追加する</button>
 	</form>
 	<!-- 単語帳リスト -->
-	<div id="wordbookListContainer">
+	<div id="wordbookListContainer" class="outer">
 
 		<ul class="wordbookList">
 			<li th:each="wordbook : ${wordbookList}" th:object="${wordbook}">
@@ -48,8 +48,10 @@
 	<div id="modalOuter" class="hidden">
 		<div id="deleteConfirmModal" class="">
 			<p>本当に削除しますか？</p>
-			<button id="deleteOk">はい</button>
-			<button id="deleteNg">いいえ</button>
+			<div id="btnContainer">
+				<button id="deleteOk">はい</button>
+				<button id="deleteNg">いいえ</button>
+			</div>
 		</div>
 		<div id="deletedMsgModal" class="hidden">
 			<p id="deletedMsg"></p>

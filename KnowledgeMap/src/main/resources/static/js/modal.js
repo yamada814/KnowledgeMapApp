@@ -15,32 +15,35 @@ let deleteNgFunc = null;
 
 /**
  * モーダルを表示する共通関数
- * @param {Event} event - イベントオブジェクト
  * @param {HTMLElement} triggerEl - 削除ボタン
  * @param {Function} func - 真偽値を引数として受け取りtrueの場合はサーバへ削除リクエストを送信する関数
  * @param {Object} [options] - オプション設定
  */
 
 export function showModal({ triggerEl, func, options = {} }) {
-	modalOuter.classList.remove("hidden");
 	modalOverlay.classList.remove("hidden");
+	modalOuter.classList.remove("hidden");
+	deleteConfirmModal.classList.remove("hidden");
+	deletedMsgModal.classList.add("hidden");
 
 	// モーダルの表示位置を設定
-	const rect = triggerEl.getBoundingClientRect();
-	const modalTop = rect.bottom + scrollY + 8;
-	const modalLeft = rect.right - modalOuter.offsetWidth;
+	const outer = triggerEl.closest(".outer");
+	const outerRect = outer.getBoundingClientRect();
+	
+	const btnRect = triggerEl.getBoundingClientRect()
+	
+	const modalTop = btnRect.bottom + scrollY + 8;
+	const modalRight = window.innerWidth - outerRect.right;
+	const modalWidth = outerRect.width;
+	
 	//CSS変数に値をセット
 	document.documentElement.style.setProperty('--modal-top', `${modalTop}px`);
-	document.documentElement.style.setProperty('--modal-left', `${modalLeft}px`);
-	
-	console.log(options.selectedTargerSelecrtor);
+	document.documentElement.style.setProperty('--modal-right', `${modalRight}px`);
+	document.documentElement.style.setProperty('--modal-width', `${modalWidth}px`);
+
 	// wordbook_listにて対象となる li > a 要素を、選択中として色変更
 	if (options.selectedTargetSelector) {
-		const selectedEl = triggerEl.closest("li").querySelector(options.selectedTargetSelector);
-		console.log(selectedEl);
-		if (selectedEl) {
-			selectedEl.classList.add("selected");
-		}
+		triggerEl.closest("li").querySelector(options.selectedTargetSelector)?.classList.add("selected");
 	}
 
 	// OKボタンクリック -> func(true)を実行してモーダルを閉じる
@@ -86,9 +89,11 @@ export function closeModal() {
 	if (!modalOuter.classList.contains("hidden")) {
 		modalOuter.classList.add("hidden");
 		modalOverlay.classList.add("hidden");
-			
-		const selectedEl = document.querySelector(".selected")
-		if(selectedEl){
+		deletedMsgModal.classList.add("hidden");
+		
+
+		const selectedEl = document.querySelector(".selected");		
+		if (selectedEl) {
 			selectedEl.classList.remove("selected");
 		}
 
