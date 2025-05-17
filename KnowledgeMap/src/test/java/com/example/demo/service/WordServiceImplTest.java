@@ -84,7 +84,7 @@ public class WordServiceImplTest {
 		wordForm.setContent("content");
 		wordForm.setCategoryId(1);
 		//wordForm.setCategoryName("category1");
-		wordForm.setRelatedWordIds(List.of(w1.getId(), w2.getId()));
+		wordForm.setRelatedWordIds(new ArrayList<Integer>(List.of(w1.getId(), w2.getId())));
 		wordForm.setWordbookId(testWordbook.getId());
 
 		savedWord = new Word();

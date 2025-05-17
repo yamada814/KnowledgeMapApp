@@ -51,7 +51,10 @@ public class WordServiceImpl implements WordService {
 		// relatedWords (List<Integer> -> List<Word> へ変換)		
 		List<Word> relatedWords = new ArrayList<>();
 		
-		if (wordForm.getRelatedWordIds() != null && !wordForm.getRelatedWordIds().contains(word.getId())) {// List<>.contains(null)はfalseを返す
+		if (wordForm.getRelatedWordIds() != null 
+				// && word.getId() != null
+				 && !wordForm.getRelatedWordIds().contains(word.getId())
+				) {// List<>.contains(null)はfalseを返す
 			relatedWords = wordForm.getRelatedWordIds().stream()
 					.map(wordId -> wordRepository.findById(wordId))
 					.filter(Optional::isPresent)
