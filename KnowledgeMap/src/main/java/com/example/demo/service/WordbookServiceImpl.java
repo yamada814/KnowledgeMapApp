@@ -39,6 +39,7 @@ public class WordbookServiceImpl implements WordbookService{
 	}
 
 	@Override
+	//既存wordかの確認用
 	public Optional<Wordbook> findByWordbookNameAndUserId(String name,Integer userId) {
 		return wordbookRepository.findByNameAndUserId(name,userId);
 	}

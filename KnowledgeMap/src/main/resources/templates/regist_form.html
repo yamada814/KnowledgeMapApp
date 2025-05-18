@@ -13,7 +13,6 @@
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-	<script th:src="@{/js/regist_form.js}" defer></script>
 	<script th:src="@{/js/form.js}" defer></script>
 </head>
 
@@ -71,7 +70,7 @@
 						<div><label for="categoryId">カテゴリ一覧から選ぶ</label></div>
 						<select th:field="*{categoryId}">
 							<option value="">選択してください</option>
-							<option th:each="category : ${categories}" th:value="${category.id}"
+							<option th:each="category : ${categoryList}" th:value="${category.id}"
 								th:text="${category.name}">
 							</option>
 						</select>

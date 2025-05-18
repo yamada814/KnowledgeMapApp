@@ -29,9 +29,8 @@ public class WordFormValidator implements Validator {
 		// 関連語に自身のwordを選択するとエラー
 		if (wordForm.getRelatedWordIds() != null) {
 			List<String> relatedWordNames = wordForm.getRelatedWordIds().stream()
-					.map(relatedWordId -> wordService.findById(relatedWordId))
-					.filter(Optional::isPresent)
-					.map(opt -> opt.get().getWordName())
+					.map(wordService:: findById)
+					.map(Word::getWordName)
 					.toList();
 			if (relatedWordNames.contains(wordForm.getWordName())) {
 				errors.rejectValue("relatedWordIds", null, "自身の単語は関連語として登録できません");
