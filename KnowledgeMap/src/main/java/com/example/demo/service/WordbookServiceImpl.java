@@ -3,12 +3,15 @@ package com.example.demo.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.WordbookDto;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Wordbook;
+import com.example.demo.exception.DeleteFailException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.WordRelationRepository;
 import com.example.demo.repository.WordRepository;
@@ -46,14 +49,14 @@ public class WordbookServiceImpl implements WordbookService{
 
 	@Override
 	@Transactional
-	public boolean deleteById(Integer id) {
-		Optional<Wordbook> wordbookOpt = wordbookRepository.findById(id);
-		if(wordbookOpt.isPresent()) {
+	public void deleteById(Integer id) {
+		wordbookRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("指定された単語帳は見つかりません"));
+		try {
 			wordRepository.deleteByWordbookId(id);
 			categoryRepository.deleteByWordbookId(id);
 			wordbookRepository.deleteById(id);
-			return true;
+		}catch(DataAccessException e) {
+			throw new DeleteFailException("削除処理中にエラーが発生しました",e);
 		}
-		return false;
 	}	
 }

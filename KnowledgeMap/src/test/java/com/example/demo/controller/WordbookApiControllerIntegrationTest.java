@@ -84,6 +84,15 @@ public class WordbookApiControllerIntegrationTest {
 		
 		assertThat(wordbookRepository.findById(1)).isEmpty();	
 	}
+	@Test
+	// 削除
+	void testDelete_NotFound() throws Exception {
+		mockMvc.perform(delete("/wordbooks/api/delete/{id}",2)
+				.with(csrf())
+				.with(user(userDetails)))
+		.andExpect(status().isNotFound())
+		.andExpect(jsonPath("$.error").value("指定された単語帳は見つかりません"));			
+	}
 	
 
 }

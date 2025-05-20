@@ -11,5 +11,5 @@ public interface WordbookService {
 	List<Wordbook> findWordBook(User user);
 	WordbookDto save(Wordbook wordbook);
 	Optional<Wordbook> findByWordbookNameAndUserId(String name,Integer userId);
-	boolean deleteById(Integer id);
+	void deleteById(Integer id);
 }

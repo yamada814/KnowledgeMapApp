@@ -1,13 +1,10 @@
-import { showModal, showDeletedMsg, closeModal } from "./modal.js";
+import { showModal, showDeletedMsg } from "./modal.js";
 // 各コンテナ
-const mainConteiner = document.querySelector(".mainContainer");
-const categoryContainer = document.querySelector(".categoryContainer");
 const wordListContainer = document.querySelector(".wordListContainer");
 const wordDetailContainer = document.querySelector(".wordDetailContainer");
 
 // カテゴリ
 let currentCategoryId = null;
-const categoryList = document.querySelector(".categoryList");
 const categoryBtns = document.querySelectorAll(".categoryBtn");
 
 //単語帳idの取得
@@ -124,8 +121,7 @@ async function showWordList(categoryId) {
 				//カテゴリボタンの横にカテゴリ削除ボタンを追加
 				[...categoryBtns].find(btn => btn.getAttribute("data-id") === categoryId).after(categoryDeleteBtn);
 
-				const li =
-					categoryDeleteBtn.addEventListener("click", (event) => deleteCategory(event, categoryId))
+				categoryDeleteBtn.addEventListener("click", (event) => deleteCategory(event, categoryId));
 
 				// 単語ありの場合
 			} else {

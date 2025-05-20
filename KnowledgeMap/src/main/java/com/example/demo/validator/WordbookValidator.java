@@ -29,6 +29,6 @@ public class WordbookValidator implements Validator{
 				wordbookService.findByWordbookNameAndUserId(wordbookForm.getWordbookName(),wordbookForm.getUserId());
 		if(wordbookOpt.isPresent()) {
 			errors.rejectValue("wordbookName", null, "この単語帳名は既に登録されています");
-		}			
+		}
 	}
 }

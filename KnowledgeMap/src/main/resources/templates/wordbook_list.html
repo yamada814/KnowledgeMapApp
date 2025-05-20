@@ -12,7 +12,7 @@
 
 <body>
 	<h1>ホーム</h1>
-	<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />				
+	<input type="hidden" id="csrfToken" name="csrfToken" th:value="${_csrf.token}" />				
 	<h3><span sec:authentication="principal.username">username</span>さんの単語帳一覧</h3>
 	<!-- 登録用フォームの表示/非表示 切り替えボタン　-->
 	<button id="showFormBtn">
@@ -20,8 +20,7 @@
 		&nbsp;単語帳を追加
 	</button>
 	<!-- 登録用フォーム -->
-	<form th:action="@{/wordbooks/api/regist}" th:object="${wordbookForm}" class="commonForm hidden">
-		<input type="hidden" id="csrfToken" th:value="${_csrf.token}" />
+	<form th:object="${wordbookForm}" class="commonForm hidden">
 		<input type="hidden" th:field="*{userId}" />
 		<label>単語帳名：<input type="text" th:field="*{wordbookName}" autofocus></label>
 		<ul id="errorMsgList" class="errorMsgHidden"></ul>

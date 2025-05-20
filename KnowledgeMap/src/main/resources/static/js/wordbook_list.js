@@ -1,5 +1,4 @@
-import { showModal, showDeletedMsg, closeModal } from "./modal.js";
-
+import { showModal, showDeletedMsg } from "./modal.js";
 
 //登録用フォーム
 const registForm = document.querySelector(".commonForm");
@@ -7,7 +6,8 @@ const registForm = document.querySelector(".commonForm");
 const showFormBtn = document.getElementById("showFormBtn");
 //バリデーションエラー表示
 const errorMsgList = document.getElementById("errorMsgList");
-
+//CSRFトークンの取得
+const csrfToken = document.getElementById("csrfToken").value;
 // 削除実行後にモーダルに表示する処理結果メッセージ
 let modalMsg;
 
@@ -29,8 +29,7 @@ registForm.addEventListener("submit", async (event) => {
 	event.preventDefault();
 	errorMsgList.innerHTML = "";
 	const wordbookName = document.getElementById("wordbookName").value.trim();
-	const userId = document.getElementById("userId").value;
-	const csrfToken = document.getElementById("csrfToken").value;
+	const userId = document.getElementById("userId").value;//バリデータ用
 	try {
 		const res = await fetch(`/wordbooks/api/regist`, {
 			method: "POST",
@@ -45,7 +44,9 @@ registForm.addEventListener("submit", async (event) => {
 			addWordbookToList(wordbook.id, wordbook.wordbookName);
 		} else {
 			//バリデーションエラーがあるとき
-			errorMsgList.classList.replace("errorMsgHidden", "errorMsgVisible");
+			errorMsgList.classList.remove("errorMsgHidden");
+			errorMsgList.classList.add("errorMsgVisible");
+
 			const errorMessages = await res.json();
 			for (const msg of errorMessages) {
 				const li = document.createElement("li");
@@ -71,7 +72,6 @@ function addWordbookToList(wordbookId, wordbookName) {
 	const form = document.createElement("form");
 	form.className = "buttonContainer";
 	form.innerHTML = `
-		<input type="hidden" id="csrfToken" value="${document.getElementById("csrfToken").value}" />
 		<button class="deleteBtn" data-id="${wordbookId}"><span class="bi-trash3-fill"></span></button>
 		`;
 	li.appendChild(form);
@@ -98,10 +98,10 @@ document.querySelector(".wordbookList").addEventListener("click", async (event) 
 	// モーダルの表示
 	showModal({
 		triggerEl: deleteBtn,
-		func: async (isConfirmed) => {
+		func: 
+		async (isConfirmed) => {
 			const id = deleteBtn.dataset.id;
 			const csrfToken = document.getElementById("csrfToken").value;
-
 			if (!isConfirmed) {
 				return;
 			}
@@ -114,7 +114,7 @@ document.querySelector(".wordbookList").addEventListener("click", async (event) 
 				if (res.ok) {
 					deleteBtn.closest('li').remove();
 					modalMsg = "削除しました";
-				} else if (res.status === 404) {
+				} else {
 					const errorMsg = await res.json();
 					modalMsg = errorMsg.error;
 				}
@@ -122,6 +122,7 @@ document.querySelector(".wordbookList").addEventListener("click", async (event) 
 				console.log(error);
 				modalMsg = "削除に失敗しました";
 			}
+			
 			showDeletedMsg(modalMsg);
 		},
 		options: {
