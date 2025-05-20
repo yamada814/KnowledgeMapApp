@@ -32,7 +32,7 @@ public class WordServiceImpl implements WordService {
 	private final WordbookRepository wordbookRepository;
 
 	// WordForm型からWord型への変換を行うユーティリティメソッド
-	public void transferWordFormToWord(Word word, WordForm wordForm) {
+	public void convertToWord(Word word, WordForm wordForm) {
 
 		word.setWordName(wordForm.getWordName());
 		word.setContent(wordForm.getContent());
@@ -161,11 +161,11 @@ public class WordServiceImpl implements WordService {
 	@Override
 	public Word addWord(WordForm wordForm) {
 		Word word = new Word();
-		transferWordFormToWord(word, wordForm);
+		convertToWord(word, wordForm);
 		Word savedWord = wordRepository.save(word);
 		//関連語の相互参照
 		if (savedWord.getRelatedWords() != null) {
-			interactRelatedWord(savedWord);
+			linkWithRelatedWords(savedWord);
 		}
 		return savedWord;
 	}
@@ -175,17 +175,17 @@ public class WordServiceImpl implements WordService {
 	public Word updateWord(Integer id, WordForm wordForm) {
 		Optional<Word> wordOpt = wordRepository.findById(id);
 		Word word = wordOpt.get();
-		transferWordFormToWord(word, wordForm);//WordForm型 -> Word型　の変換
+		convertToWord(word, wordForm);//WordForm型 -> Word型　の変換
 		Word updatedWord = wordRepository.save(word);
 		//関連語の相互参照
 		if (updatedWord.getRelatedWords() != null) {
-			interactRelatedWord(updatedWord);
+			linkWithRelatedWords(updatedWord);
 		}
 		return updatedWord;
 	}
 
 	// 関連語にも新規作成した単語を関連づけるメソッド
-	public void interactRelatedWord(Word savedWord) {
+	public void linkWithRelatedWords(Word savedWord) {
 		// 自身のwordを関連語として登録しようとするとConcurrentModificationExceptionが発生するので
 		// ループの中で 自身のwordじゃないかをチェック & 自身のrelatedWordsのコピーを作成してループ
 		// (関連語フィールドに自身のwordを登録しないようバリデーションチェックはかけているが、念の為)

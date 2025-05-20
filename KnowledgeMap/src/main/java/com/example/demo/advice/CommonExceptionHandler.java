@@ -18,7 +18,7 @@ public class CommonExceptionHandler {
 	@ExceptionHandler(UnexpectedException.class)
 	public String errorHandling(UnexpectedException e, Model model) {
 		model.addAttribute("errorMsg", e.getMessage());
-		return "unexpeted_error.html";
+		return "unexpected_error";
 	}
 	
 	// リクエストで指定されたidが見つからない場合

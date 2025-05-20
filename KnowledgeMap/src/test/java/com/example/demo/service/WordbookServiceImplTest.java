@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -17,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.demo.dto.WordbookDto;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Wordbook;
+import com.example.demo.exception.DeleteFailException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.WordRelationRepository;
 import com.example.demo.repository.WordRepository;
@@ -58,15 +61,16 @@ public class WordbookServiceImplTest {
 
         assertThat(result).containsExactly(testWordbook);
     }
-
+    // 登録 (成功)
     @Test
-    void testSave() {
+    void testSave_success() {
         doReturn(testWordbook).when(wordbookRepository).save(any(Wordbook.class));
         WordbookDto result = wordbookService.save(testWordbook);
 
         assertThat(result.getId()).isEqualTo(testWordbook.getId());
         assertThat(result.getWordbookName()).isEqualTo(testWordbook.getName());
     }
+
 
     @Test
     void testFindByWordbookNameAndUserId() {
@@ -79,22 +83,36 @@ public class WordbookServiceImplTest {
     @Test
     void testDeleteById_Success() {
         doReturn(Optional.of(testWordbook)).when(wordbookRepository).findById(10);
-        boolean result = wordbookService.deleteById(10);
+        wordbookService.deleteById(10);
 
-        assertThat(result).isTrue();
         verify(wordRepository).deleteByWordbookId(10);
         verify(categoryRepository).deleteByWordbookId(10);
         verify(wordbookRepository).deleteById(10);
     }
-
+    // 削除実行 (指定idが見つからない)
     @Test
-    void testDeleteById_NotFound() {
-        doReturn(Optional.empty()).when(wordbookRepository).findById(999);
-        boolean result = wordbookService.deleteById(999);
-
-        assertThat(result).isFalse();
+    void testDeleteById_ResourceNotFoundException() {
+        doThrow(new ResourceNotFoundException("指定された単語帳は見つかりません")).when(wordbookRepository).findById(999);
+        
+        assertThrows(ResourceNotFoundException.class,()->{       	
+        	wordbookService.deleteById(999);
+        	});
         verify(wordRepository, never()).deleteByWordbookId(anyInt());
         verify(categoryRepository, never()).deleteByWordbookId(anyInt());
         verify(wordbookRepository, never()).deleteById(anyInt());
+    }
+    // 削除実行 (DBエラー)
+    @Test
+    void testDeleteById_DeleteFailExceptionn() {
+    	doReturn(Optional.of(testWordbook)).when(wordbookRepository).findById(1);
+    	doThrow(new DeleteFailException("削除処理中にエラーが発生しました")).when(categoryRepository).deleteByWordbookId(1);
+    	
+    	assertThrows(DeleteFailException.class,()->{       	
+    		wordbookService.deleteById(1);
+    	});
+    	verify(wordRepository, atLeastOnce()).deleteByWordbookId(anyInt());
+    	verify(categoryRepository, atLeastOnce()).deleteByWordbookId(anyInt());
+    	verify(wordbookRepository, never()).deleteById(anyInt());
+
     }
 }

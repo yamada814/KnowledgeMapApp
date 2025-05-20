@@ -24,15 +24,17 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.demo.WebSecurityConfig;
+import com.example.demo.advice.CommonExceptionHandler;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
+import com.example.demo.exception.UnexpectedException;
 import com.example.demo.form.WordForm;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.WordService;
 import com.example.demo.validator.WordFormValidator;
 
 @WebMvcTest(WordDetailController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class,CommonExceptionHandler.class})
 public class WordDetailControllerTest {
 	@Autowired
 	MockMvc mockMvc;
@@ -99,16 +101,17 @@ public class WordDetailControllerTest {
 		doReturn(updatedWord).when(wordService).updateWord(eq(1), any());
 
 		doReturn(list).when(wordService).findAll();
-		doReturn(Optional.of(word1)).when(wordService).findById(1);
-		doReturn(Optional.empty()).when(wordService).findById(999);
+		doReturn(word1).when(wordService).findById(1);
+		doReturn(word2).when(wordService).findById(2);
+		doThrow(new UnexpectedException("指定された単語は存在しません")).when(wordService).findById(999);
 		doReturn(Optional.empty()).when(wordService).findByWordName("newWordName");//word重複なし
 		doReturn(Optional.of(newWord1)).when(wordService).findByWordNameAndWordbookId("ExistingWordName",1);//word重複あり
 
 		doReturn(Optional.empty()).when(categoryService).findByNameAndWordbookId("newCategoryName",1);
 		doReturn(Optional.of(category1)).when(categoryService).findByNameAndWordbookId("category1",1);
 		doReturn(newCategory).when(categoryService).addCategory("newCategoryName", 1);
-		doReturn(Optional.of(category1)).when(categoryService).findByCategoryId(1);
-		doReturn(Optional.of(newCategory)).when(categoryService).findByCategoryId(2);
+		doReturn(category1).when(categoryService).findByCategoryId(1);
+		doReturn(newCategory).when(categoryService).findByCategoryId(2);
 	}
 
 	@Test
@@ -125,12 +128,11 @@ public class WordDetailControllerTest {
 	@Test
 	//編集画面表示 失敗
 	void testShowEditForm_NotExistsWord() throws Exception {
-		doReturn(Optional.empty()).when(wordService).findById(999);
 		mockMvc.perform(get("/wordbooks/1/words/{id}/editForm", 999)
 				.with(csrf())
 				.with(user("testUser")))
 				.andExpect(status().isOk())
-				.andExpect(view().name("edit_error"));
+				.andExpect(view().name("unexpected_error"));
 	}
 
 	@Test
