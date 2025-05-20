@@ -20,12 +20,11 @@
 		&nbsp;単語帳を追加
 	</button>
 	<!-- 登録用フォーム -->
-	<form th:object="${wordbookForm}" class="commonForm hidden">
-		<input type="hidden" th:field="*{userId}" />
+	<div  th:object="${wordbookForm}" class="commonForm hidden">
 		<label>単語帳名：<input type="text" th:field="*{wordbookName}" autofocus></label>
 		<ul id="errorMsgList" class="errorMsgHidden"></ul>
 		<button type="submit" id="registBtn">追加する</button>
-	</form>
+	</div>
 	<!-- 単語帳リスト -->
 	<div id="wordbookListContainer" class="outer">
 

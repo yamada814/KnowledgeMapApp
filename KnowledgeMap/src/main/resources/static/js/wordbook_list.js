@@ -29,7 +29,6 @@ registForm.addEventListener("submit", async (event) => {
 	event.preventDefault();
 	errorMsgList.innerHTML = "";
 	const wordbookName = document.getElementById("wordbookName").value.trim();
-	const userId = document.getElementById("userId").value;//バリデータ用
 	try {
 		const res = await fetch(`/wordbooks/api/regist`, {
 			method: "POST",
@@ -37,7 +36,7 @@ registForm.addEventListener("submit", async (event) => {
 				"Content-Type": "application/x-www-form-urlencoded",
 				"X-CSRF-TOKEN": csrfToken
 			},
-			body: `wordbookName=${encodeURIComponent(wordbookName)}&userId=${userId}`
+			body: `wordbookName=${encodeURIComponent(wordbookName)}`
 		});
 		if (res.ok) {
 			const wordbook = await res.json();
