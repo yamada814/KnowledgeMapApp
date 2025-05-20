@@ -15,7 +15,7 @@ public interface WordService {
 	Word addWord(WordForm wordForm);
     List<Word> findAll();
     List<Word> findByWordbookId(Integer wordbookId);
-    Optional<Word> findById(Integer id);
+    Word findById(Integer id);
     boolean deleteById(Integer id);
     Word updateWord(Integer id, WordForm wordForm);
     List<WordDto> findWordsByCategoryId(Integer id);

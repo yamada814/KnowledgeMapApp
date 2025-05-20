@@ -57,8 +57,7 @@ public class WordServiceTest {
 
 		//関連語として指定された側（word.id=2）でも、
 		//関連語として更新処理した側（word.id=1）が登録されていることを確認
-		Optional<Word> related = wordService.findById(2);
-		assertThat(related.get().getRelatedWords().get(0).getId()).isEqualTo(1);
+		assertThat(wordService.findById(2).getRelatedWords().get(0).getId()).isEqualTo(1);
 	}
 
 	@Test
@@ -78,7 +77,6 @@ public class WordServiceTest {
 		assertThat(WordOpt.get().getContent()).isEqualTo("newContent");
 		assertThat(WordOpt.get().getRelatedWords().size()).isEqualTo(0);
 
-		Optional<Word> relatedWord = wordService.findById(1);
-		assertThat(relatedWord.get().getRelatedWords().size()).isEqualTo(0);
+		assertThat(wordService.findById(1).getRelatedWords().size()).isEqualTo(0);
 	}
 }

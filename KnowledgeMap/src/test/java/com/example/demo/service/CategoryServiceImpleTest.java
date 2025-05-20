@@ -62,8 +62,7 @@ public class CategoryServiceImpleTest {
 	@Test
 	void testFindByCategoryId() {
 		doReturn(Optional.of(testCategory1)).when(categoryRepository).findById(1);
-		Optional<Category> categoryOpt = categoryServiceImpl.findByCategoryId(1);
-		assertThat(categoryOpt.get().getName()).isEqualTo("category1");
+		assertThat(categoryServiceImpl.findByCategoryId(1).getName()).isEqualTo("category1");
 	}
 
 	@Test

@@ -22,8 +22,6 @@ public class CategoryServiceTest {
 	@Test
 	void testAddCategory() {
 		Category category = categoryService.addCategory("category2",1);
-		var found = categoryService.findByCategoryId(category.getId());
-		assertThat(found).isPresent();
-		assertThat(found.get().getId()).isEqualTo(category.getId());
+		assertThat(categoryService.findByCategoryId(category.getId()).getId()).isEqualTo(category.getId());
 	}
 }

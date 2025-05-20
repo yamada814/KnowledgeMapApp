@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
@@ -23,15 +22,17 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.demo.WebSecurityConfig;
+import com.example.demo.advice.CommonExceptionHandler;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
+import com.example.demo.exception.UnexpectedException;
 import com.example.demo.form.WordForm;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.WordService;
 import com.example.demo.validator.WordFormValidator;
 
 @WebMvcTest(WordController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class, CommonExceptionHandler.class})
 public class WordControllerTest {
 	@Autowired
 	MockMvc mockMvc;
@@ -104,17 +105,21 @@ public class WordControllerTest {
 		doReturn(list).when(wordService).findAll();
 		doReturn(Optional.of(existingWord)).when(wordService).findByWordNameAndWordbookId("existingWordName", 1);
 		doReturn(Optional.empty()).when(wordService).findByWordNameAndWordbookId("newWordName",1);//wordが未登録
-		doReturn(Optional.of(word2)).when(wordService).findById(2);
-		doReturn(Optional.of(newWord)).when(wordService).findById(3);
+		doReturn(word1).when(wordService).findById(1);
+		doReturn(word2).when(wordService).findById(2);
+		doReturn(newWord).when(wordService).findById(3);
 		List<String> relatedWordNames = new ArrayList<>(List.of(word1.getWordName(), word2.getWordName()));
 		doReturn(relatedWordNames).when(wordService).getRelatedWordNames(any());
+		doThrow(new UnexpectedException("指定された単語が見つかりません")).when(wordService).findById(99);
 
 		doReturn(Optional.of(category1)).when(categoryService).findByNameAndWordbookId("category1",1);//categoryNameが既存
 		doReturn(Optional.empty()).when(categoryService).findByName("newCategoryName");//categoryNameが未登録
 		doReturn(newCategory).when(categoryService).addCategory("newCategoryName", 1);//新規カテゴリを追加
-		doReturn(Optional.of(category1)).when(categoryService).findByCategoryId(1);//categoryIdによる検索
-		doReturn(Optional.of(category2)).when(categoryService).findByCategoryId(2);//categoryIdによる検索
-		doReturn(Optional.of(newCategory)).when(categoryService).findByCategoryId(3);//categoryIdによる検索
+		doReturn(category1).when(categoryService).findByCategoryId(1);//categoryIdによる検索
+		doReturn(category2).when(categoryService).findByCategoryId(2);//categoryIdによる検索
+		doReturn(newCategory).when(categoryService).findByCategoryId(3);//categoryIdによる検索
+		doThrow(new UnexpectedException("指定されたカテゴリが見つかりません")).when(categoryService).findByCategoryId(99);
+
 	}
 
 	@Test
@@ -127,11 +132,23 @@ public class WordControllerTest {
 				.param("content", "")
 				.param("categoryId", "")
 				.param("categoryName", "")
-				.param("relatedWordIds", "1"))
-				.andDo(print())
+				.param("relatedWordIds", "2"))
 				.andExpect(view().name("regist_form"))
 				.andExpect(model().attributeHasFieldErrors(
 						"wordForm", "wordName", "content", "categoryNotNull"));
+	}
+	@Test
+	//登録確認画面 バリデーションのチェック時にResourceNotFoundException発生
+	void testRegistConfirm_Validation_Exception() throws Exception {
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.with(user("testUser")) 
+				.param("wordName", "")
+				.param("content", "")
+				.param("categoryId", "")
+				.param("categoryName", "")
+				.param("relatedWordIds", "99")) //存在しないwordIdを関連語として指定された時
+		.andExpect(view().name("unexpected_error"));
 	}
 
 	@Test
@@ -203,17 +220,15 @@ public class WordControllerTest {
 	@Test
 	//登録確認 ( categoryIdに入力あり -> そのidで未登録 -> エラー画面 )
 	void testRegistConfirm_InputCategoryId_NotExistCategory() throws Exception {
-		int categoryId = 99;
-		doReturn(Optional.empty()).when(categoryService).findByCategoryId(categoryId);
 		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
 				.with(csrf())
 				.with(user("testUser")) 
 				.param("wordName", "newWordName")
 				.param("content", "newContent")
-				.param("categoryId", Integer.toString(categoryId))
+				.param("categoryId", "99") //存在しないcategoryIdで登録
 				.param("categoryName", "")
 				.param("relatedWordIds", ""))
-				.andExpect(view().name("regist_error"));
+				.andExpect(view().name("unexpected_error"));
 	}
 
 	@Test
@@ -257,17 +272,12 @@ public class WordControllerTest {
 	@Test
 	// 登録 ( 関連語入力 ->カテゴリ既存 -> word新規登録 -> wordListへリダイレクト )
 	void testRegist_ExistCategory_relatedWords() throws Exception {
-		WordForm wordform = new WordForm();
-		wordform.setWordName("newWordName");
-		wordform.setContent("content");
-		wordform.setCategoryId(1);
-
 		mockMvc.perform(post("/wordbooks/1/words/regist")
 				.with(csrf())
 				.with(user("testUser")) 
-				.param("wordName", wordform.getWordName())
-				.param("content", wordform.getContent())
-				.param("categoryId", String.valueOf(wordform.getCategoryId()))
+				.param("wordName", "newWordName")
+				.param("content", "content")
+				.param("categoryId", "1")
 				.param("relatedWordIds", "1", "2"))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/wordbooks/1/words?categoryId=1&id=5"))
@@ -277,21 +287,14 @@ public class WordControllerTest {
 	@Test
 	// 登録 ( カテゴリ未登録 -> エラー )
 	void testRegist_NotExistCategory() throws Exception {
-		int categoryId = 99;
-		doReturn(Optional.empty()).when(categoryService).findByCategoryId(categoryId);
-		WordForm wordform = new WordForm();
-		wordform.setWordName("newWordName");
-		wordform.setContent("content");
-		wordform.setCategoryId(categoryId);
-
+		doThrow(new UnexpectedException("指定されたカテゴリが見つかりません")).when(wordService).addWord(any());
 		mockMvc.perform(post("/wordbooks/1/words/regist")
 				.with(csrf())
 				.with(user("testUser")) 
-				.param("wordName", wordform.getWordName())
-				.param("content", wordform.getContent())
-				.param("categoryId", String.valueOf(wordform.getCategoryId())))
-				.andExpect(status().isOk())
-				.andExpect(view().name("regist_error"));
+				.param("wordName", "newWordName")
+				.param("content", "content")
+				.param("categoryId", "99"))
+				.andExpect(view().name("unexpected_error"));
 	}
 
 

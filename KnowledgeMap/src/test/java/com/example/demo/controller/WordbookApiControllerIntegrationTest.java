@@ -31,7 +31,7 @@ public class WordbookApiControllerIntegrationTest {
 	private MockMvc mockMvc;
 	@Autowired
 	WordbookRepository wordbookRepository;
-	
+		
 	@BeforeEach
 	void setUp() {
 		user = new User();
@@ -75,7 +75,7 @@ public class WordbookApiControllerIntegrationTest {
 	}
 	
 	@Test
-	// 削除
+	// 削除 (成功)
 	void testDelete() throws Exception {
 		mockMvc.perform(delete("/wordbooks/api/delete/{id}",1)
 		.with(csrf())
@@ -84,6 +84,14 @@ public class WordbookApiControllerIntegrationTest {
 		
 		assertThat(wordbookRepository.findById(1)).isEmpty();	
 	}
-	
+	@Test
+	// 削除 (指定idで見つからない)
+	void testDelete_ResourceNotFoundExceptiond() throws Exception {
+		mockMvc.perform(delete("/wordbooks/api/delete/{id}",2)
+				.with(csrf())
+				.with(user(userDetails)))
+		.andExpect(status().isNotFound())
+		.andExpect(jsonPath("$.error").value("指定された単語帳は見つかりません"));			
+	}
 
 }

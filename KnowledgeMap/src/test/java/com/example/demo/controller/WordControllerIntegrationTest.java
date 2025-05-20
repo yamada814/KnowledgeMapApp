@@ -34,6 +34,31 @@ public class WordControllerIntegrationTest {
 				.param("relatedWordIds", ""))
 				.andExpect(view().name("regist_confirm"));
 	}
+	@Test
+	//登録確認画面 存在しない単語を関連語として登録
+	public void test_registConfirm_Exception_RelatedWords() throws Exception {
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.param("wordName", "newWordName")
+				.param("content", "content")
+				.param("categoryId", "1")
+				.param("categoryName", "")
+				.param("relatedWordIds", "99"))
+		.andExpect(view().name("unexpected_error"));
+	}
+
+	@Test
+	//登録確認画面 存在しないカテゴリで登録
+	public void test_registConfirm_Exception_Category() throws Exception {
+		mockMvc.perform(post("/wordbooks/1/words/registConfirm")
+				.with(csrf())
+				.param("wordName", "newWordName")
+				.param("content", "content")
+				.param("categoryId", "99")
+				.param("categoryName", "")
+				.param("relatedWordIds", ""))
+		.andExpect(view().name("unexpected_error"));
+	}
 
 	@Test
 	//登録実行 ( 成功 )

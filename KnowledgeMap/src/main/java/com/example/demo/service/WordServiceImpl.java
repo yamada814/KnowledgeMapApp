@@ -14,6 +14,7 @@ import com.example.demo.dto.WordDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
 import com.example.demo.entity.Wordbook;
+import com.example.demo.exception.UnexpectedException;
 import com.example.demo.form.WordForm;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.WordRelationRepository;
@@ -31,28 +32,24 @@ public class WordServiceImpl implements WordService {
 	private final WordbookRepository wordbookRepository;
 
 	// WordForm型からWord型への変換を行うユーティリティメソッド
-	public void transferWordFormToWord(Word word, WordForm wordForm) {
+	public void convertToWord(Word word, WordForm wordForm) {
 
 		word.setWordName(wordForm.getWordName());
 		word.setContent(wordForm.getContent());
 
 		// category (Integer -> Category へ変換)
-		Optional<Category> categoryOpt = categoryRepository.findById(wordForm.getCategoryId());
-		if (categoryOpt.isPresent()) {
-			word.setCategory(categoryOpt.get());
-		}
+		Category category = categoryRepository.findById(wordForm.getCategoryId())
+				.orElseThrow(()->new UnexpectedException("指定されたカテゴリが存在しません"));
+		word.setCategory(category);
 
 		// wordbook (Integer -> Wordbook へ変換)
-		Optional<Wordbook> wordbookOpt = wordbookRepository.findById(wordForm.getWordbookId());
-		if (wordbookOpt.isPresent()) {
-			word.setWordbook(wordbookOpt.get());
-		}
+		Wordbook wordbook = wordbookRepository.findById(wordForm.getWordbookId())
+				.orElseThrow(()->new UnexpectedException("指定された単語帳が存在しません"));
+		word.setWordbook(wordbook);
 
 		// relatedWords (List<Integer> -> List<Word> へ変換)		
-		List<Word> relatedWords = new ArrayList<>();
-		
+		List<Word> relatedWords = new ArrayList<>();		
 		if (wordForm.getRelatedWordIds() != null 
-				// && word.getId() != null
 				 && !wordForm.getRelatedWordIds().contains(word.getId())
 				) {// List<>.contains(null)はfalseを返す
 			relatedWords = wordForm.getRelatedWordIds().stream()
@@ -70,9 +67,8 @@ public class WordServiceImpl implements WordService {
 	@Override
 	public List<String> getRelatedWordNames(WordForm wordForm) {
 		return wordForm.getRelatedWordIds().stream()
-				.map(this::findById)
-				.filter(Optional::isPresent)
-				.map(wordOpt -> wordOpt.get().getWordName())
+				.map(this::findById)//見つからなければUnexpectedExeptionが発生しエラー画面へ
+				.map(Word::getWordName)
 				.toList();
 	}
 
@@ -82,12 +78,13 @@ public class WordServiceImpl implements WordService {
 	}
 
 	@Override
-	public Optional<Word> findById(Integer id) {
-		return wordRepository.findById(id);
+	public Word findById(Integer id) {
+		return wordRepository.findById(id).
+				orElseThrow(()->new UnexpectedException("指定された単語が見つかりません"));
 	}
 
 	// wordDetail表示
-	//(JSONで返す際に循環参照防止のため WordエンティティではなくWordDto型で返す)
+	// JSONで返す際に循環参照防止のため WordエンティティではなくWordDto型で返す
 	@Override
 	public WordDetailDto findWordDetailDtoById(Integer id) {
 		Optional<Word> wordOpt = wordRepository.findById(id);
@@ -159,34 +156,36 @@ public class WordServiceImpl implements WordService {
 		wordRepository.deleteById(id);
 		return true;
 	}
-
+	
+	@Transactional
 	@Override
 	public Word addWord(WordForm wordForm) {
 		Word word = new Word();
-		transferWordFormToWord(word, wordForm);
+		convertToWord(word, wordForm);
 		Word savedWord = wordRepository.save(word);
 		//関連語の相互参照
 		if (savedWord.getRelatedWords() != null) {
-			interactRelatedWord(savedWord);
+			linkWithRelatedWords(savedWord);
 		}
 		return savedWord;
 	}
 
+	@Transactional
 	@Override
 	public Word updateWord(Integer id, WordForm wordForm) {
 		Optional<Word> wordOpt = wordRepository.findById(id);
 		Word word = wordOpt.get();
-		transferWordFormToWord(word, wordForm);//WordForm型 -> Word型　の変換
+		convertToWord(word, wordForm);//WordForm型 -> Word型　の変換
 		Word updatedWord = wordRepository.save(word);
 		//関連語の相互参照
 		if (updatedWord.getRelatedWords() != null) {
-			interactRelatedWord(updatedWord);
+			linkWithRelatedWords(updatedWord);
 		}
 		return updatedWord;
 	}
 
 	// 関連語にも新規作成した単語を関連づけるメソッド
-	public void interactRelatedWord(Word savedWord) {
+	public void linkWithRelatedWords(Word savedWord) {
 		// 自身のwordを関連語として登録しようとするとConcurrentModificationExceptionが発生するので
 		// ループの中で 自身のwordじゃないかをチェック & 自身のrelatedWordsのコピーを作成してループ
 		// (関連語フィールドに自身のwordを登録しないようバリデーションチェックはかけているが、念の為)

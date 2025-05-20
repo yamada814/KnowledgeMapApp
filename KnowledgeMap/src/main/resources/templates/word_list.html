@@ -25,7 +25,7 @@
 			<h4>Category</h4>
 			<div class="categoryContainer">
 				<ul id="categoryList">
-					<li th:each="category : ${categories}" th:object="${category}">
+					<li th:each="category : ${categoryList}" th:object="${category}">
 						<button class="categoryBtn" th:text="*{name}" th:attr="data-id=*{id}"></button>
 					</li>
 				</ul>

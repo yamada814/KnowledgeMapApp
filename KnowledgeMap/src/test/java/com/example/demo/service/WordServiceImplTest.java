@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Word;
 import com.example.demo.entity.Wordbook;
+import com.example.demo.exception.UnexpectedException;
 import com.example.demo.form.WordForm;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.WordRepository;
@@ -137,8 +139,7 @@ public class WordServiceImplTest {
 		word1.setCategory(testCategory1);
 		doReturn(Optional.of(word1)).when(wordRepository).findById(1);
 
-		Optional<Word> wordOpt = wordServiceImpl.findById(1);
-		assertThat(wordOpt.get().getWordName()).isEqualTo("word1");
+		assertThat(wordServiceImpl.findById(1).getWordName()).isEqualTo("word1");
 	}
 
 	@Test
@@ -176,6 +177,7 @@ public class WordServiceImplTest {
 		wordForm.setContent("newContent");
 		wordForm.setCategoryId(2);
 		wordForm.setRelatedWordIds(List.of(13));
+		wordForm.setWordbookId(1);
 		doReturn(Optional.of(testCategory2)).when(categoryRepository).findById(wordForm.getCategoryId());
 		doReturn(Optional.of(w3)).when(wordRepository).findById(13);
 
@@ -185,6 +187,7 @@ public class WordServiceImplTest {
 		savedWord.setContent("newContent");
 		savedWord.setRelatedWords(relatedWords2);
 
+		doReturn(Optional.of(testWordbook)).when(wordbookRepository).findById(1);
 		doReturn(savedWord).when(wordRepository).save(any());
 		wordServiceImpl.updateWord(1, wordForm);
 		assertThat(word.getWordName()).isEqualTo("newWordName");
@@ -194,7 +197,7 @@ public class WordServiceImplTest {
 
 	@Test
 	//WordForm -> Word　への変換(正常)
-	void testTransferWordFormToWord_success() {
+	void testConvertToWord_success() {
 		
 		doReturn(Optional.of(testCategory1)).when(categoryRepository).findById(1);
 		doReturn(Optional.of(testWordbook)).when(wordbookRepository).findById(1);
@@ -202,7 +205,7 @@ public class WordServiceImplTest {
 		doReturn(Optional.of(w2)).when(wordRepository).findById(12);
 				
 		Word testWord = new Word();
-		wordServiceImpl.transferWordFormToWord(testWord, wordForm);
+		wordServiceImpl.convertToWord(testWord, wordForm);
 		
 		assertThat(testWord.getWordName()).isEqualTo("word1");
 		assertThat(testWord.getContent()).isEqualTo("content");
@@ -211,19 +214,17 @@ public class WordServiceImplTest {
 	}
 	@Test
 	//WordForm -> Word　への変換(categoryなし)
-	void testTransferWordFormToWord_NotFoundCategory() {
+	void testConvertToWord_NotFoundCategory() {
 		
-		doReturn(Optional.empty()).when(categoryRepository).findById(1);
-		doReturn(Optional.of(testWordbook)).when(wordbookRepository).findById(1);
-		doReturn(Optional.of(w1)).when(wordRepository).findById(11);
-		doReturn(Optional.of(w2)).when(wordRepository).findById(12);
+		wordForm.setCategoryId(99);
+		doThrow(new UnexpectedException("指定されたカテゴリが存在しません")).when(categoryRepository).findById(99);
 		
 		Word testWord = new Word();
-		wordServiceImpl.transferWordFormToWord(testWord, wordForm);
 		
-		assertThat(testWord.getWordName()).isEqualTo("word1");
-		assertThat(testWord.getContent()).isEqualTo("content");
-		assertThat(testWord.getCategory()).isNull();
-		assertThat(testWord.getRelatedWords()).contains(w1,w2);
+		assertThrows(UnexpectedException.class,()->{
+			wordServiceImpl.convertToWord(testWord, wordForm);			
+		});
+		
+
 	}
 }

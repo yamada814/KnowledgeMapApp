@@ -9,3 +9,6 @@ VALUES(2, 'テストワード2', 'テストコンテント2', 1, 1);
 INSERT INTO word(id, word_name, content, category_id,wordbook_id)
 VALUES(3, 'テストワード3', 'テストコンテント3', 1, 1);
 
+-- 自動採番を100からスタートさせる
+ALTER TABLE category ALTER COLUMN id RESTART WITH 2;
+
